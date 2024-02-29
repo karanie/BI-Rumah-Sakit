@@ -26,9 +26,9 @@ import axios from 'axios';
 const demografiChartData1 = ref()
 const demografiChartData2 = ref()
 
-function reduceData(data, threshold=10, lainnya=true) {
+function reduceData(data: any, threshold=10, lainnya=true) {
   data.index = data.index.slice(0, data.index.length > threshold ? -(data.index.length - threshold) : 0);
-  const totalLainnya = data.values.slice(0, data.index.length).reduce((total, i) => total + i)
+  const totalLainnya = data.values.slice(0, data.index.length).reduce((total: number, i: number) => total + i)
   data.values = data.values.slice(0, data.index.length);
   if (lainnya) {
     data.index.push("Lainnya");
@@ -43,9 +43,7 @@ onMounted(async () => {
   demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
 })
 
-const setDemografiChartData = data => {
-  const documentStyle = getComputedStyle(document.body);
-
+const setDemografiChartData = (data: any) => {
   return {
     labels: data.index,
     datasets: [

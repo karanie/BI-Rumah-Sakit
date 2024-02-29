@@ -13,4 +13,7 @@ export default defineNuxtConfig({
     'primeicons/primeicons.css',
     '/removebodymargin.css'
   ],
+  typescript: {
+    typeCheck: true
+  }
 })
