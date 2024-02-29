@@ -1,0 +1,144 @@
+<template>
+  <div>
+    <BiBase>
+      <Message :closable="false">Data terakhir di-update pada <b>20xx/xx/xx</b></Message>
+
+      <Card>
+        <template #title>Distribusi Jenis Kelamin</template>
+        <template #content>
+          <p class="m-0">
+            <Chart type="doughnut" :data="genderchartdata" />
+          </p>
+
+        </template>
+      </Card>
+      <div class="perseberangender">
+        <Card style="width: 100%;">
+          <template #title>Pasien Laki-Laki</template>
+          <template #content>
+            <div class="value_column">
+              <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
+              <div class="percentage_value">
+                <b class="percentage_value__count percentage_value__count--male">{{ countdata_male }}</b>
+                <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female) *
+                  100) }}%</b>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <Card style="width: 100%;">
+          <template #title>Pasien Perempuan</template>
+          <template #content>
+            <div class="value_column">
+              <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
+              <div class="percentage_value">
+                <b class="percentage_value__count percentage_value__count--female">{{ countdata_female }}</b>
+                <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male + countdata_female)
+                  *
+                  100) }}% </b>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
+    </BiBase>
+  </div>
+</template>
+
+<script setup>
+
+import Card from 'primevue/card';
+import Chart from 'primevue/chart';
+import axios from 'axios';
+
+const genderchartdata = ref()
+const countdata_male = ref(0)
+const countdata_female = ref(0)
+
+onMounted(async () => {
+  let data = (await axios.get("http://localhost:5000/api/jeniskelamin")).data
+  data.index = data.index.slice(0, 2)
+  genderchartdata.value = setPieChartData(data);
+  countdata_female.value = data.values[0]
+  countdata_male.value = data.values[1]
+});
+
+
+const setPieChartData = data => {
+  const documentStyle = getComputedStyle(document.body);
+
+  return {
+    labels: data.index,
+    datasets: [
+      {
+        data: data.values,
+
+        backgroundColor: [documentStyle.getPropertyValue('--pink-500'), documentStyle.getPropertyValue('--cyan-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--pink-400'), documentStyle.getPropertyValue('--cyan-400')]
+      }
+    ]
+  };
+}
+
+
+</script>
+
+<style lang="scss" scoped>
+.perseberangender {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+
+
+
+  &__female {
+    color: var(--pink-400);
+    margin: 40px;
+    font-size: larger;
+  }
+
+  &__value {
+    display: flex;
+    background-color: red;
+  }
+
+
+}
+
+.percentage_value {
+  display: flex;
+  flex-direction: column;
+
+
+  &__count {
+
+    font-size: larger;
+
+    &--male {
+      color: var(--blue-400);
+    }
+
+    &--female {
+      color: var(--red-400);
+    }
+  }
+
+  &__percent {
+    color: var(--cyan-700);
+    font-size: larger;
+    background-color: var(--teal-100);
+    border-radius: var(--border-radius);
+    flex: 0;
+  }
+}
+
+.value_column {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+</style>
