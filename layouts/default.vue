@@ -3,6 +3,7 @@
     <div class="default-layout__header">
       <div class="default-layout__header__content">
         <div class="default-layout__header__content__leading">
+          <Icon style="font-size: 24px" name="twemoji:hospital" />
           <span>BI Rumah Sakit</span>
         </div>
         <div class="default-layout__header__content__trailing">
@@ -35,8 +36,8 @@
 <style scoped lang="scss">
 .default-layout {
   display: flex;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   flex-direction: column;
 
   &__content {
@@ -53,10 +54,14 @@
   }
 
   &__header {
-    position: sticky;
     display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 500;
     width: 100%;
+    height: 55px;
     border-bottom: 1px solid #a0a0a050;
+    background: rgba(var(--surface-ground), 0.8);
     align-items: center;
     justify-content: center;
     padding: 4px;
