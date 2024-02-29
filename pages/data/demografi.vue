@@ -3,33 +3,54 @@
     <Message :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
 
     <Card>
-    <template #title>Pie Chart</template>
+    <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
     <template #content>
-      <Chart type="doughnut" :data="demografiChartData" />
+      <Chart type="doughnut" :data="demografiChartData1" />
     </template>
     </Card>
+
+    <Card>
+    <template #title>Top 10 Kabupaten/Kota</template>
+    <template #content>
+      <Chart type="doughnut" :data="demografiChartData2" />
+    </template>
+    </Card>
+
   </BiBase>
 </template>
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
+import axios from 'axios';
 
-const demografiChartData = ref()
+const demografiChartData1 = ref()
+const demografiChartData2 = ref()
 
-onMounted(() => {
-  demografiChartData.value = setDemografiChartData();
+function reduceData(data, threshold=10, lainnya=true) {
+  data.index = data.index.slice(0, data.index.length > threshold ? -(data.index.length - threshold) : 0);
+  const totalLainnya = data.values.slice(0, data.index.length).reduce((total, i) => total + i)
+  data.values = data.values.slice(0, data.index.length);
+  if (lainnya) {
+    data.index.push("Lainnya");
+    data.values.push(totalLainnya);
+  }
+  return data
+}
+
+onMounted(async () => {
+  const data = (await axios.get("http://localhost:5000/api/demografi")).data
+  demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
+  demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
 })
 
-const setDemografiChartData = () => {
+const setDemografiChartData = data => {
   const documentStyle = getComputedStyle(document.body);
 
   return {
-    labels: ['A', 'B', 'C'],
+    labels: data.index,
     datasets: [
       {
-        data: [540, 325, 702],
-        backgroundColor: [documentStyle.getPropertyValue('--cyan-500'), documentStyle.getPropertyValue('--orange-500'), documentStyle.getPropertyValue('--gray-500')],
-        hoverBackgroundColor: [documentStyle.getPropertyValue('--cyan-400'), documentStyle.getPropertyValue('--orange-400'), documentStyle.getPropertyValue('--gray-400')]
+        data: data.values,
       }
     ]
   };
