@@ -19,7 +19,7 @@
   </BiBase>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import Chart from 'primevue/chart';
 import axios from 'axios';
 
@@ -42,7 +42,7 @@ onMounted(async () => {
   }
 });
 
-const processChartData = (apiData: Record<string, number>) => {
+const processChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.body);
   // console.log('hasil', Object.keys(apiData));
 
@@ -68,7 +68,7 @@ const processChartData = (apiData: Record<string, number>) => {
   };
 };
 
-const setLineChartData = (apiData: Record<string, number>) => {
+const setLineChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.documentElement);
   
   const labels = Object.keys(apiData.bytahun);
