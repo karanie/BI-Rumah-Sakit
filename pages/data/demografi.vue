@@ -23,12 +23,12 @@
 import Chart from 'primevue/chart';
 import axios from 'axios';
 
-const demografiChartData1 = ref()
-const demografiChartData2 = ref()
+const demografiChartData1 = ref();
+const demografiChartData2 = ref();
 
 function reduceData(data: any, threshold=10, lainnya=true) {
   data.index = data.index.slice(0, data.index.length > threshold ? -(data.index.length - threshold) : 0);
-  const totalLainnya = data.values.slice(0, data.index.length).reduce((total: number, i: number) => total + i)
+  const totalLainnya = data.values.slice(0, data.index.length).reduce((total: number, i: number) => total + i);
   data.values = data.values.slice(0, data.index.length);
   if (lainnya) {
     data.index.push("Lainnya");
@@ -38,7 +38,7 @@ function reduceData(data: any, threshold=10, lainnya=true) {
 }
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/demografi")).data
+  const data = (await axios.get("http://localhost:5000/api/demografi")).data;
   demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
   demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
 })
