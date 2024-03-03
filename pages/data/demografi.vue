@@ -16,6 +16,13 @@
     </template>
     </Card>
 
+    <Card>
+    <template #title>Kabupaten/Kota Seiring Waktu</template>
+    <template #content>
+      <Chart id="asdf" type="line" :data="demografiChartData3" />
+    </template>
+    </Card>
+
   </BiBase>
 </template>
 
@@ -25,6 +32,7 @@ import axios from 'axios';
 
 const demografiChartData1 = ref();
 const demografiChartData2 = ref();
+const demografiChartData3 = ref();
 
 function reduceData(data: any, threshold=10, lainnya=true) {
   data.index = data.index.slice(0, data.index.length > threshold ? -(data.index.length - threshold) : 0);
@@ -41,6 +49,17 @@ onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/demografi")).data;
   demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
   demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
+
+  const timeSeriesData = (await axios.get("http://localhost:5000/api/demografi?tipe_data=timeseries")).data;
+  demografiChartData3.value = {
+    labels: timeSeriesData.index,
+    datasets: timeSeriesData.columns.map((val: string, i: number) => {
+      return {
+        label: val,
+        data: timeSeriesData.values[i]
+      }
+    })
+  };
 })
 
 const setDemografiChartData = (data: any) => {
