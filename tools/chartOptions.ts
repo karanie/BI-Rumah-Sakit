@@ -1,0 +1,6 @@
+export function tooltipLabelCallback(ctx: any) {
+  const total = ctx.dataset.data.reduce((cum: number, i: number) => cum += i);
+  const currentValue = ctx.dataset.data[ctx.dataIndex];
+  const percentage = parseFloat((currentValue/total*100).toFixed(1));
+  return new Intl.NumberFormat().format(currentValue) + ' (' + percentage + '%)';
+}

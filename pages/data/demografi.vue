@@ -5,14 +5,14 @@
     <Card>
     <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
     <template #content>
-      <Chart type="doughnut" :data="demografiChartData1" />
+      <Chart type="doughnut" :data="demografiChartData1" :options="demografiChartData1Opt" />
     </template>
     </Card>
 
     <Card>
     <template #title>Top 10 Kabupaten/Kota</template>
     <template #content>
-      <Chart type="doughnut" :data="demografiChartData2" />
+      <Chart type="doughnut" :data="demografiChartData2" :options="demografiChartData2Opt" />
     </template>
     </Card>
 
@@ -29,9 +29,12 @@
 <script setup lang="ts">
 import Chart from 'primevue/chart';
 import axios from 'axios';
+import { tooltipLabelCallback } from '@/tools/chartOptions';
 
 const demografiChartData1 = ref();
+const demografiChartData1Opt = ref();
 const demografiChartData2 = ref();
+const demografiChartData2Opt = ref();
 const demografiChartData3 = ref();
 
 function reduceData(data: any, threshold=10, lainnya=true) {
@@ -48,7 +51,10 @@ function reduceData(data: any, threshold=10, lainnya=true) {
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/demografi")).data;
   demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
+  demografiChartData1Opt.value = setDemografiChartDataOpt();
+  console.log(demografiChartData1Opt.value);
   demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
+  demografiChartData2Opt.value = setDemografiChartDataOpt();
 
   const timeSeriesData = (await axios.get("http://localhost:5000/api/demografi?tipe_data=timeseries")).data;
   demografiChartData3.value = {
@@ -71,6 +77,21 @@ const setDemografiChartData = (data: any) => {
       }
     ]
   };
+}
+
+const setDemografiChartDataOpt = () => {
+  return {
+    plugins: {
+      legend: {
+        align: "end",
+      },
+      tooltip: {
+        callbacks: {
+          label: tooltipLabelCallback,
+        }
+      }
+    }
+  }
 }
 </script>
 
