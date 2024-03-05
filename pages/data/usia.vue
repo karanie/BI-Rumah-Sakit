@@ -4,16 +4,19 @@
 
     <Card>
       <template #title>Distribusi Pasien by Kelompok Usia</template>
+
       <template #content>
         <Chart type="doughnut" :data="demografiChartData" />
       </template>
     </Card>
 
     <Card>
-    <template #title>Line Chart</template>
-    <template #content>
-      <Chart type="line" :data="lineChartData" />
-    </template>
+
+      <template #title>Line Chart</template>
+
+      <template #content>
+        <Chart type="line" :data="lineChartData" />
+      </template>
     </Card>
 
   </BiBase>
@@ -42,12 +45,22 @@ onMounted(async () => {
   }
 });
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const processChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.body);
   // console.log('hasil', Object.keys(apiData));
 
+  // Tentukan urutan yang diinginkan untuk label
+  const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
+
+  // Buat array labels sesuai dengan urutan yang diinginkan
+  const labels = desiredOrder.filter(category => apiData.kategori.hasOwnProperty(category)).map(category => capitalizeFirstLetter(category));
+
   return {
-    labels: Object.keys(apiData.kategori),
+    labels: labels,
     datasets: [
       {
         data: Object.values(apiData.kategori),
@@ -70,23 +83,33 @@ const processChartData = (apiData) => {
 
 const setLineChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.documentElement);
-  
+
   const labels = Object.keys(apiData.bytahun);
   const datasets = [];
 
+  const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
+
+  const categoryColors = {
+    "bayi & balita": '--cyan-500',
+    "anak-anak": '--orange-500',
+    "remaja": '--gray-500',
+    "dewasa": '--indigo-500',
+    "lansia": '--teal-500',
+  };
+
   // Loop melalui setiap kategori
-  const kategori = Object.keys(apiData.bytahun[labels[0]]);
-  kategori.forEach((kategori) => {
+  for (const kategori of desiredOrder) {
     const data = labels.map((tahun) => apiData.bytahun[tahun][kategori]);
 
     datasets.push({
-      label: kategori,
+      label: capitalizeFirstLetter(kategori),
       data,
       fill: false,
-      borderColor: documentStyle.getPropertyValue(`--${kategori.toLowerCase()}-500`),
+      borderColor: documentStyle.getPropertyValue(categoryColors[kategori]),
+      backgroundColor: documentStyle.getPropertyValue(categoryColors[kategori]),
       tension: 0.4,
     });
-  });
+  }
 
   return {
     labels,
