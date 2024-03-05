@@ -3,45 +3,65 @@
     <BiBase>
       <Message :closable="false">Data terakhir di-update pada <b>20xx/xx/xx</b></Message>
 
-      <Card>
-        <template #title>Distribusi Jenis Kelamin</template>
-        <template #content>
-          <p class="m-0">
-            <Chart type="doughnut" :data="genderchartdata" />
-          </p>
-
-        </template>
-      </Card>
       <div class="perseberangender">
         <Card style="width: 100%;">
           <template #title>Pasien Laki-Laki</template>
+
           <template #content>
             <div class="value_column">
               <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
               <div class="percentage_value">
-                <b class="percentage_value__count percentage_value__count--male">{{ countdata_male }}</b>
-                <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female) *
-                  100) }}%</b>
+                <b class="percentage_value__count percentage_value__count--male">{{ new
+        Intl.NumberFormat().format(countdata_male) }}</b>
+                <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female)
+        *
+        100) }}%</b>
               </div>
             </div>
           </template>
         </Card>
 
         <Card style="width: 100%;">
+
           <template #title>Pasien Perempuan</template>
+
           <template #content>
             <div class="value_column">
               <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
               <div class="percentage_value">
-                <b class="percentage_value__count percentage_value__count--female">{{ countdata_female }}</b>
-                <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male + countdata_female)
-                  *
-                  100) }}% </b>
+                <b class="percentage_value__count percentage_value__count--female">{{ new
+        Intl.NumberFormat().format(countdata_female) }}</b>
+                <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male +
+        countdata_female)
+        *
+        100) }}% </b>
               </div>
             </div>
           </template>
         </Card>
       </div>
+
+      <Card>
+
+        <template #title>Distribusi Jenis Kelamin</template>
+
+        <template #content>
+          <p class="m-0">
+            <Chart type="doughnut" :data="genderchartdata" :options="genderChartDataOpt" />
+          </p>
+
+        </template>
+      </Card>
+
+      <Card>
+
+        <template #title>Distribusi Jenis Kelamin Per Tahun</template>
+
+        <template #content>
+          <Chart type="line" :data="genderchartdata2" />
+        </template>
+      </Card>
+
     </BiBase>
   </div>
 </template>
@@ -51,17 +71,38 @@
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import axios from 'axios';
+import { tooltipLabelCallback } from '~/tools/chartOptions';
 
 const genderchartdata = ref()
+const genderchartdata2 = ref()
 const countdata_male = ref(0)
 const countdata_female = ref(0)
+const genderChartDataOpt = ref()
+
 
 onMounted(async () => {
   let data = (await axios.get("http://localhost:5000/api/jeniskelamin")).data
-  data.index = data.index.slice(0, 2)
+  data.index = data.index.slice(1, 3)
+  data.values = data.values.slice(1, 3)
   genderchartdata.value = setPieChartData(data);
-  countdata_female.value = data.values[0]
-  countdata_male.value = data.values[1]
+  countdata_female.value = data.values[1]
+  countdata_male.value = data.values[0]
+
+  genderChartDataOpt.value = setGenderChartDataOpt()
+
+  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin?tipe_data=timeseries")).data
+  dataTimeseries.values = dataTimeseries.values.slice(1, 3)
+  dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
+  genderchartdata2.value = {
+    labels: dataTimeseries.index,
+    datasets: dataTimeseries.columns.map((val, i) => {
+      return {
+        label: val,
+        data: dataTimeseries.values[i]
+      }
+    })
+  }
+  console.log(dataTimeseries)
 });
 
 
@@ -74,11 +115,26 @@ const setPieChartData = data => {
       {
         data: data.values,
 
-        backgroundColor: [documentStyle.getPropertyValue('--pink-500'), documentStyle.getPropertyValue('--cyan-500')],
-        hoverBackgroundColor: [documentStyle.getPropertyValue('--pink-400'), documentStyle.getPropertyValue('--cyan-400')]
+        backgroundColor: [documentStyle.getPropertyValue('--cyan-500'), documentStyle.getPropertyValue('--pink-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--cyan-400'), documentStyle.getPropertyValue('--pink-400')]
       }
     ]
   };
+}
+
+const setGenderChartDataOpt = () => {
+  return {
+    plugins: {
+      legend: {
+        align: "start",
+      },
+      tooltip: {
+        callbacks: {
+          label: tooltipLabelCallback,
+        }
+      }
+    }
+  }
 }
 
 
