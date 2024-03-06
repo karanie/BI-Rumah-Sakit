@@ -45,8 +45,9 @@ const sidemenuItems = [
 
   &__sidemenu {
     position: sticky;
-    top: 0;
+    top: calc(55px + 8px); //topbar height + padding
     max-width: 256px;
+    height: fit-content;
   }
 
   &__content {
