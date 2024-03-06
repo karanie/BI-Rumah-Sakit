@@ -8,15 +8,15 @@
         </div>
         <div class="default-layout__header__content__trailing">
           <NuxtLink to="/">
-            <Button label="Home" outlined />
+            <Button label="Home" text plain />
           </NuxtLink>
           <NuxtLink to="/data">
-            <Button label="Data" outlined />
+            <Button label="Data" text plain />
           </NuxtLink>
           <NuxtLink to="/about">
-            <Button label="About" outlined />
+            <Button label="About" text plain />
           </NuxtLink>
-          <Button text>
+          <Button text plain>
             <template #icon><Icon name="material-symbols:login"/></template>
           </Button>
         </div>
