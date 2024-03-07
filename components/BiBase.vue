@@ -1,6 +1,7 @@
 <template>
   <div class="bi">
     <div class="bi__sidemenu">
+      <Filter @filter="filter" />
       <Menu :model="sidemenuItems" />
     </div>
     <div class="bi__content">
@@ -10,6 +11,14 @@
 </template>
 
 <script setup lang="ts">
+const emit = defineEmits<{
+  (e: "filter", selectedData: any): void
+}>();
+
+const filter = (selectedData: any) => {
+  emit('filter', selectedData);
+}
+
 const sidemenuItems = [
   {
     label: "Usia",
@@ -44,6 +53,9 @@ const sidemenuItems = [
   flex-direction: row;
 
   &__sidemenu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     position: sticky;
     top: calc(55px + 8px); //topbar height + padding
     max-width: 256px;

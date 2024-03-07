@@ -1,5 +1,5 @@
 <template>
-  <BiBase>
+  <BiBase @filter="filter">
     <Message :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
 
     <Card>
@@ -92,6 +92,33 @@ const setDemografiChartDataOpt = () => {
       }
     }
   }
+}
+const filter = async (selectedData: any) => {
+  const data = (await axios.get("http://localhost:5000/api/demografi", {
+    params: {
+      tahun: selectedData.tahun,
+      bulan: selectedData.bulan
+    }
+  })).data;
+  demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
+  demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
+
+  const timeSeriesData = (await axios.get("http://localhost:5000/api/demografi", {
+    params: {
+      tipe_data: "timeseries",
+      tahun: selectedData.tahun,
+      bulan: selectedData.bulan
+    }
+  })).data;
+  demografiChartData3.value = {
+    labels: timeSeriesData.index,
+    datasets: timeSeriesData.columns.map((val: string, i: number) => {
+      return {
+        label: val,
+        data: timeSeriesData.values[i]
+      }
+    })
+  };
 }
 </script>
 
