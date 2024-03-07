@@ -2,18 +2,35 @@
   <BiBase>
     <Message :closable="false">Data terakhir di-update pada <b>{{ lastUpdate }}</b></Message>
 
+    <Card class="card">
+      <template #title>Total Pasien</template>
+      <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
+      <template #content>
+        <b>{{ new Intl.NumberFormat().format(jumlah_pasien) }}</b>
+      </template>
+    </Card>
+
+    <Card class="card">
+      <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
+      <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
+      <template #content>
+        <Chart type="bar" :data="BarChartData" />
+      </template>
+    </Card>
+
+
     <Card>
       <template #title>Distribusi Pasien by Kelompok Usia</template>
 
       <template #content>
-        <Chart type="doughnut" :data="demografiChartData" />
+        <Chart type="doughnut" :data="kelompokUsiaChartData" />
       </template>
     </Card>
 
     <Card>
 
-      <template #title>Line Chart</template>
-
+      <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
+      <template #subtitle>sepertinya lebih cocok untuk kunjungan ???</template>
       <template #content>
         <Chart type="line" :data="lineChartData" />
       </template>
@@ -25,18 +42,24 @@
 <script setup>
 import Chart from 'primevue/chart';
 import axios from 'axios';
+import { tooltipLabelCallback } from '~/tools/chartOptions';
 
-const demografiChartData = ref();
+const kelompokUsiaChartData = ref();
 const lastUpdate = ref('');
-const lineChartData = ref()
+const lineChartData = ref();
+const BarChartData = ref();
+const jumlah_pasien = ref();
 
 onMounted(async () => {
   try {
     const data = (await axios.get("http://localhost:5000/api/usia")).data
 
     // Proses data API untuk digunakan dalam pembuatan Pie Chart
-    demografiChartData.value = processChartData(data);
+    kelompokUsiaChartData.value = processChartData(data);
     lineChartData.value = setLineChartData(data)
+    jumlah_pasien.value = data.jumlah_pasien
+    BarChartData.value = setBarChartData(data)
+    // console.log("hasil : ",data.jumlah_pasien)
 
     // Set waktu terakhir data di-update (gantilah dengan data timestamp yang sesuai)
     lastUpdate.value = '20xx/xx/xx';
@@ -45,9 +68,27 @@ onMounted(async () => {
   }
 });
 
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+const capitalizeEachLetter = (string) => {
+  return string.replace(/\b\w/g, match => match.toUpperCase());
 };
+
+// const capitalizeFirstLetter = (string) => {
+//   return string.charAt(0).toUpperCase() + string.slice(1);
+// };
+
+const setBarChartData = (apiData) => {
+  const documentStyle = getComputedStyle(document.body);
+
+  return {
+    labels: Object.keys(apiData.jumlah_pasien_tahunan),
+    datasets: [
+      {
+        label: "Jumlah Pasien",
+        data: Object.values(apiData.jumlah_pasien_tahunan),
+      },
+    ],
+  };
+}
 
 const processChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.body);
@@ -57,13 +98,17 @@ const processChartData = (apiData) => {
   const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
 
   // Buat array labels sesuai dengan urutan yang diinginkan
-  const labels = desiredOrder.filter(category => apiData.kategori.hasOwnProperty(category)).map(category => capitalizeFirstLetter(category));
+  // const labels = desiredOrder.filter(category => apiData.kategori.hasOwnProperty(category)).map(category => capitalizeEachLetter(category));
+
+  const labels = desiredOrder.map(category => capitalizeEachLetter(category));
+const values = desiredOrder.map(category => apiData.kategori[category]);
 
   return {
     labels: labels,
     datasets: [
       {
-        data: Object.values(apiData.kategori),
+        // data: Object.values(apiData.kategori),
+        data : values,
         backgroundColor: [
           documentStyle.getPropertyValue('--cyan-500'),
           documentStyle.getPropertyValue('--orange-500'),
@@ -76,6 +121,11 @@ const processChartData = (apiData) => {
           documentStyle.getPropertyValue('--orange-400'),
           documentStyle.getPropertyValue('--gray-400'),
         ],
+        tooltip: {
+          callbacks: {
+            label: tooltipLabelCallback,
+          }
+        }
       },
     ],
   };
@@ -102,7 +152,7 @@ const setLineChartData = (apiData) => {
     const data = labels.map((tahun) => apiData.bytahun[tahun][kategori]);
 
     datasets.push({
-      label: capitalizeFirstLetter(kategori),
+      label: capitalizeEachLetter(kategori),
       data,
       fill: false,
       borderColor: documentStyle.getPropertyValue(categoryColors[kategori]),
@@ -121,4 +171,7 @@ const setLineChartData = (apiData) => {
 
 <style scoped lang="scss">
 /* Styling sesuai kebutuhan */
-</style>
+// .card-container {
+//   display: flex;
+//   justify-content: space-between;  /* Untuk memberi ruang antara dua card */
+// }</style>
