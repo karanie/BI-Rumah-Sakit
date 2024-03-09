@@ -49,8 +49,8 @@ const {
   server: false,
   lazy: true,
   params: {
-    tahun: filterTahun.value,
-    bulan: filterBulan.value
+    tahun: filterTahun,
+    bulan: filterBulan
   }
 })
 const {
@@ -62,8 +62,8 @@ const {
   lazy: true,
   params: {
     tipe_data: "timeseries",
-    tahun: filterTahun.value,
-    bulan: filterBulan.value
+    tahun: filterTahun,
+    bulan: filterBulan
   },
 });
 
