@@ -46,7 +46,7 @@ const {
   pending: dataIsPending,
   refresh: refreshData,
   } = await useFetch("http://localhost:5000/api/demografi", {
-  server: true,
+  server: false,
   lazy: true,
   params: {
     tahun: filterTahun.value,
@@ -58,7 +58,7 @@ const {
   pending: timeSeriesDataIsPending,
   refresh: refreshTimeSeriesData,
   }: any = await useFetch("http://localhost:5000/api/demografi?tipe_data=timeseries", {
-  server: true,
+  server: false,
   lazy: true,
   params: {
     tipe_data: "timeseries",
