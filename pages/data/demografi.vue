@@ -5,21 +5,24 @@
     <Card>
     <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
     <template #content>
-      <Chart type="doughnut" :data="demografiChartData1" :options="demografiChartData1Opt" />
+      <Skeleton height="8rem" v-if="dataIsPending" />
+      <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData1" :options="demografiChartData1Opt" />
     </template>
     </Card>
 
     <Card>
     <template #title>Top 10 Kabupaten/Kota</template>
     <template #content>
-      <Chart type="doughnut" :data="demografiChartData2" :options="demografiChartData2Opt" />
+      <Skeleton height="8rem" v-if="dataIsPending" />
+      <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData2" :options="demografiChartData2Opt" />
     </template>
     </Card>
 
     <Card>
     <template #title>Kabupaten/Kota Seiring Waktu</template>
     <template #content>
-      <Chart id="asdf" type="line" :data="demografiChartData3" />
+      <Skeleton height="8rem" v-if="timeSeriesDataIsPending" />
+      <Chart v-if="!timeSeriesDataIsPending" id="asdf" type="line" :data="demografiChartData3" />
     </template>
     </Card>
 
@@ -28,7 +31,6 @@
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
-import axios from 'axios';
 import { tooltipLabelCallback } from '@/tools/chartOptions';
 
 const demografiChartData1 = ref();
@@ -36,6 +38,59 @@ const demografiChartData1Opt = ref();
 const demografiChartData2 = ref();
 const demografiChartData2Opt = ref();
 const demografiChartData3 = ref();
+const filterTahun = ref();
+const filterBulan = ref();
+
+const {
+  data: data,
+  pending: dataIsPending,
+  refresh: refreshData,
+  } = await useFetch("http://localhost:5000/api/demografi", {
+  server: true,
+  lazy: true,
+  params: {
+    tahun: filterTahun.value,
+    bulan: filterBulan.value
+  }
+})
+const {
+  data: timeSeriesData,
+  pending: timeSeriesDataIsPending,
+  refresh: refreshTimeSeriesData,
+  }: any = await useFetch("http://localhost:5000/api/demografi?tipe_data=timeseries", {
+  server: true,
+  lazy: true,
+  params: {
+    tipe_data: "timeseries",
+    tahun: filterTahun.value,
+    bulan: filterBulan.value
+  },
+});
+
+watch(data, () => {
+  if (!data.value) {
+    return;
+  }
+  demografiChartData1.value = setDemografiChartData(reduceData(data.value, 10));
+  demografiChartData1Opt.value = setDemografiChartDataOpt();
+  demografiChartData2.value = setDemografiChartData(reduceData(data.value, 10, false));
+  demografiChartData2Opt.value = setDemografiChartDataOpt();
+});
+
+watch(timeSeriesData, () => {
+  if (!timeSeriesData.value) {
+    return;
+  }
+  demografiChartData3.value = {
+    labels: timeSeriesData.value.index,
+    datasets: timeSeriesData.value.columns.map((val: string, i: number) => {
+      return {
+        label: val,
+        data: timeSeriesData.value.values[i]
+      }
+    })
+  };
+});
 
 function reduceData(data: any, threshold=10, lainnya=true) {
   data.index = data.index.slice(0, data.index.length > threshold ? -(data.index.length - threshold) : 0);
@@ -47,26 +102,6 @@ function reduceData(data: any, threshold=10, lainnya=true) {
   }
   return data
 }
-
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/demografi")).data;
-  demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
-  demografiChartData1Opt.value = setDemografiChartDataOpt();
-  console.log(demografiChartData1Opt.value);
-  demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
-  demografiChartData2Opt.value = setDemografiChartDataOpt();
-
-  const timeSeriesData = (await axios.get("http://localhost:5000/api/demografi?tipe_data=timeseries")).data;
-  demografiChartData3.value = {
-    labels: timeSeriesData.index,
-    datasets: timeSeriesData.columns.map((val: string, i: number) => {
-      return {
-        label: val,
-        data: timeSeriesData.values[i]
-      }
-    })
-  };
-})
 
 const setDemografiChartData = (data: any) => {
   return {
@@ -93,48 +128,11 @@ const setDemografiChartDataOpt = () => {
     }
   }
 }
-const filter = async (selectedData: any) => {
-  const data = (await axios.get("http://localhost:5000/api/demografi", {
-    params: {
-      tahun: selectedData.tahun,
-      bulan: selectedData.bulan
-    }
-  })).data;
-  demografiChartData1.value = setDemografiChartData(reduceData(data, 10));
-  demografiChartData2.value = setDemografiChartData(reduceData(data, 10, false));
 
-  const timeSeriesData = (await axios.get("http://localhost:5000/api/demografi", {
-    params: {
-      tipe_data: "timeseries",
-      tahun: selectedData.tahun,
-      bulan: selectedData.bulan
-    }
-  })).data;
-  demografiChartData3.value = {
-    labels: timeSeriesData.index,
-    datasets: timeSeriesData.columns.map((val: string, i: number) => {
-      return {
-        label: val,
-        data: timeSeriesData.values[i]
-      }
-    })
-  };
+const filter = async (selectedData: any) => {
+  filterTahun.value = selectedData.tahun;
+  filterBulan.value = selectedData.bulan;
+  refreshData();
+  refreshTimeSeriesData();
 }
 </script>
-
-<style scoped lang="scss">
-.peningkatan-penurunan {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  width: 100%;
-
-  &__peningkatan {
-    color: var(--primary-color);
-  }
-
-  &__peningkatan {
-    color: var(--red-400);
-  }
-}
-</style>
