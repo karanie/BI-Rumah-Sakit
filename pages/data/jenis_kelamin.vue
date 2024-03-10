@@ -71,7 +71,6 @@
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import axios from 'axios';
-import { tooltipLabelCallback } from '~/tools/chartOptions';
 
 const genderchartdata = ref()
 const genderchartdata2 = ref()

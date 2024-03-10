@@ -42,7 +42,6 @@
 <script setup>
 import Chart from 'primevue/chart';
 import axios from 'axios';
-import { tooltipLabelCallback } from '~/tools/chartOptions';
 
 const kelompokUsiaChartData = ref();
 const lastUpdate = ref('');

@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
-import { tooltipLabelCallback } from '@/tools/chartOptions';
 
 const demografiChartData1 = ref();
 const demografiChartData1Opt = ref();
