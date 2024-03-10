@@ -81,7 +81,7 @@ const genderChartDataOpt = ref()
 
 
 onMounted(async () => {
-  let data = (await axios.get("http://localhost:5000/api/jeniskelamin")).data
+  let data = (await axios.get("/api/jeniskelamin")).data
   data.index = data.index.slice(1, 3)
   data.values = data.values.slice(1, 3)
   genderchartdata.value = setPieChartData(data);
@@ -90,7 +90,7 @@ onMounted(async () => {
 
   genderChartDataOpt.value = setGenderChartDataOpt()
 
-  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin?tipe_data=timeseries")).data
+  let dataTimeseries = (await axios.get("/api/jeniskelamin?tipe_data=timeseries")).data
   dataTimeseries.values = dataTimeseries.values.slice(1, 3)
   dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
   genderchartdata2.value = {

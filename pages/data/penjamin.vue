@@ -27,7 +27,7 @@ const barChartData = ref(null);
 const instansiChartData = ref(null);
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/penjamin');
+  const response = await axios.get('/api/penjamin');
   const data = response.data;
 
   // Proses data untuk format grafik batang
@@ -46,7 +46,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi');
+  const response = await axios.get('/api/instansi');
   const data = response.data;
 
   const limitedData = {
