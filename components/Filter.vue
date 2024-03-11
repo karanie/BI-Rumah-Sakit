@@ -13,7 +13,7 @@
           :virtualScrollerOptions="{ itemSize: 38 }"
           filter
           />
-        <Button class="overlay-panel__option__clear" v-if="selectedKabupaten" severity="danger" @click="clearOptionWrapper(() => selectedKabupaten = null)" outlined>
+        <Button class="overlay-panel__option__clear" v-if="selectedKabupaten" severity="danger" @click="clearKabupatenOption" outlined>
           <template #icon><Icon name="material-symbols:close" /></template>
         </Button>
       </div>
@@ -26,7 +26,7 @@
           :virtualScrollerOptions="{ itemSize: 38 }"
           filter
           />
-        <Button class="overlay-panel__option__clear" v-if="selectedTahun" severity="danger" @click="clearOptionWrapper(() => { selectedTahun = null; selectedBulan = null })" outlined>
+        <Button class="overlay-panel__option__clear" v-if="selectedTahun" severity="danger" @click="clearTahunOption" outlined>
           <template #icon><Icon name="material-symbols:close" /></template>
         </Button>
       </div>
@@ -41,13 +41,13 @@
           filter
           :disabled="!selectedTahun"
           />
-        <Button class="overlay-panel__option__clear" v-if="selectedBulan" severity="danger" @click="clearOptionWrapper(() => selectedBulan = null)" outlined>
+        <Button class="overlay-panel__option__clear" v-if="selectedBulan" severity="danger" @click="clearBulanOption" outlined>
           <template #icon><Icon name="material-symbols:close" /></template>
         </Button>
       </div>
 
       <div class="overlay-panel__confirm">
-        <Button label="Clear" outlined @click="clearAll" :disabled="!filterOptionAvailable" />
+        <Button label="Clear" outlined @click="$reset" :disabled="!filterOptionAvailable" />
         <Button label="Filter" :disabled="!filterOptionAvailable" @click="filter" />
       </div>
     </div>
@@ -59,14 +59,32 @@ import axios from 'axios';
 
 const overlayPanel = ref();
 
-const selectedKabupaten = ref();
-const selectedTahun = ref();
-const selectedBulan = ref();
-const isFiltering = ref(false);
+const {
+  selectedKabupaten,
+  selectedTahun,
+  selectedBulan,
+  isFiltering,
+  filterOptionAvailable,
+  } = storeToRefs(useDataFilter());
 
-const filterOptionAvailable = computed(() => {
-  return [selectedKabupaten.value, selectedTahun.value, selectedBulan.value].some((el: any) => el);
-});
+const {
+  filter,
+  clearOption,
+  $reset,
+  } = useDataFilter();
+
+watch(() => isFiltering, () => console.log(isFiltering));
+
+// Could be the most stupidest thing i've written
+function clearKabupatenOption() {
+  clearOption(selectedKabupaten);
+}
+function clearTahunOption() {
+  clearOption([selectedTahun, selectedBulan]);
+}
+function clearBulanOption() {
+  clearOption(selectedBulan);
+}
 
 const kabupaten = ref();
 const tahun = ref();
@@ -85,10 +103,6 @@ const bulan = ref([
   { name: "Desember", value: 12 }
 ]);
 
-const emit = defineEmits<{
-  (e: "filter", selectedData: any): void
-}>();
-
 onMounted(async () => {
   window.onscroll = (e: any) => overlayPanel.value.hide(e);
   const filterOptions = (await axios.get("http://localhost:5000/api/filter-options")).data
@@ -97,36 +111,6 @@ onMounted(async () => {
 });
 
 const toggleOverlayPanel = (e: any) => overlayPanel.value.toggle(e);
-const clearOptionWrapper = (callback: () => any) => {
-  callback();
-  if (!filterOptionAvailable.value) {
-    isFiltering.value = false;
-    emit('filter', {
-      kabupaten: selectedKabupaten.value,
-      tahun: selectedTahun.value,
-      bulan: selectedBulan.value?.value
-    });
-  }
-}
-const clearAll = () => {
-  selectedKabupaten.value = null;
-  selectedTahun.value = null;
-  selectedBulan.value = null;
-  isFiltering.value = false;
-  emit('filter', {
-    kabupaten: selectedKabupaten.value,
-    tahun: selectedTahun.value,
-    bulan: selectedBulan.value?.value
-  });
-}
-const filter = () => {
-  isFiltering.value = true;
-  emit('filter', {
-    kabupaten: selectedKabupaten.value,
-    tahun: selectedTahun.value,
-    bulan: selectedBulan.value?.value
-  });
-}
 </script>
 
 <style scoped lang="scss">

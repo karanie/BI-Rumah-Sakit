@@ -1,5 +1,5 @@
 <template>
-  <BiBase @filter="filter">
+  <BiBase>
     <Message :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
 
     <Card>
@@ -37,8 +37,11 @@ const demografiChartData1Opt = ref();
 const demografiChartData2 = ref();
 const demografiChartData2Opt = ref();
 const demografiChartData3 = ref();
-const filterTahun = ref();
-const filterBulan = ref();
+const {
+  tahun,
+  bulan,
+  lastFilter,
+  } = storeToRefs(useDataFilter());
 
 const {
   data: data,
@@ -48,9 +51,10 @@ const {
   server: false,
   lazy: true,
   params: {
-    tahun: filterTahun,
-    bulan: filterBulan
-  }
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false,
 })
 const {
   data: timeSeriesData,
@@ -61,9 +65,10 @@ const {
   lazy: true,
   params: {
     tipe_data: "timeseries",
-    tahun: filterTahun,
-    bulan: filterBulan
+    tahun: tahun,
+    bulan: bulan
   },
+  watch: false,
 });
 
 watch(data, () => {
@@ -89,6 +94,11 @@ watch(timeSeriesData, () => {
       }
     })
   };
+});
+
+watch(lastFilter, () => {
+  refreshData();
+  refreshTimeSeriesData();
 });
 
 function reduceData(data: any, threshold=10, lainnya=true) {
@@ -126,12 +136,5 @@ const setDemografiChartDataOpt = () => {
       }
     }
   }
-}
-
-const filter = async (selectedData: any) => {
-  filterTahun.value = selectedData.tahun;
-  filterBulan.value = selectedData.bulan;
-  refreshData();
-  refreshTimeSeriesData();
 }
 </script>

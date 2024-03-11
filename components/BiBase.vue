@@ -1,7 +1,7 @@
 <template>
   <div class="bi">
     <div class="bi__sidemenu">
-      <Filter @filter="filter" />
+      <Filter />
       <Menu :model="sidemenuItems" />
     </div>
     <div class="bi__content">
@@ -11,14 +11,6 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits<{
-  (e: "filter", selectedData: any): void
-}>();
-
-const filter = (selectedData: any) => {
-  emit('filter', selectedData);
-}
-
 const sidemenuItems = [
   {
     label: "Usia",
