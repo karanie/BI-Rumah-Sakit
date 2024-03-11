@@ -60,7 +60,7 @@ const {
   data: timeSeriesData,
   pending: timeSeriesDataIsPending,
   refresh: refreshTimeSeriesData,
-  }: any = await useFetch("/api/demografi?tipe_data=timeseries", {
+  }: any = await useFetch("/api/demografi", {
   server: false,
   lazy: true,
   params: {
