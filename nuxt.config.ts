@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-primevue',
     'nuxt-icon',
+    '@pinia/nuxt',
   ],
   primevue: {
     /* option */
