@@ -1,36 +1,35 @@
 <template>
-  <BiBase>
-    <Message :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
+  <Card>
+  <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
+  <template #content>
+    <Skeleton height="8rem" v-if="dataIsPending" />
+    <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData1" :options="demografiChartData1Opt" />
+  </template>
+  </Card>
 
-    <Card>
-    <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
-    <template #content>
-      <Skeleton height="8rem" v-if="dataIsPending" />
-      <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData1" :options="demografiChartData1Opt" />
-    </template>
-    </Card>
+  <Card>
+  <template #title>Top 10 Kabupaten/Kota</template>
+  <template #content>
+    <Skeleton height="8rem" v-if="dataIsPending" />
+    <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData2" :options="demografiChartData2Opt" />
+  </template>
+  </Card>
 
-    <Card>
-    <template #title>Top 10 Kabupaten/Kota</template>
-    <template #content>
-      <Skeleton height="8rem" v-if="dataIsPending" />
-      <Chart v-if="!dataIsPending" type="doughnut" :data="demografiChartData2" :options="demografiChartData2Opt" />
-    </template>
-    </Card>
-
-    <Card>
-    <template #title>Kabupaten/Kota Seiring Waktu</template>
-    <template #content>
-      <Skeleton height="8rem" v-if="timeSeriesDataIsPending" />
-      <Chart v-if="!timeSeriesDataIsPending" id="asdf" type="line" :data="demografiChartData3" />
-    </template>
-    </Card>
-
-  </BiBase>
+  <Card>
+  <template #title>Kabupaten/Kota Seiring Waktu</template>
+  <template #content>
+    <Skeleton height="8rem" v-if="timeSeriesDataIsPending" />
+    <Chart v-if="!timeSeriesDataIsPending" id="asdf" type="line" :data="demografiChartData3" />
+  </template>
+  </Card>
 </template>
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
+
+definePageMeta({
+  layout: "data",
+});
 
 const demografiChartData1 = ref();
 const demografiChartData1Opt = ref();

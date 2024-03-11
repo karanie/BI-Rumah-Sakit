@@ -1,49 +1,49 @@
 <template>
-  <BiBase>
-    <Message :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
-
-    <div class="peningkatan-penurunan">
-      <Card>
-      <template #title>Peningkatan</template>
-      <template #content>
-        <b class="peningkatan-penurunan__peningkatan">+80 Item</b>
-      </template>
-      </Card>
-
-      <Card>
-      <template #title>Penurunan</template>
-      <template #content>
-        <b class="peningkatan-penurunan__penurunan">-15 Item</b>
-      </template>
-      </Card>
-    </div>
-
-
+  <div class="peningkatan-penurunan">
     <Card>
-    <template #title>Bar Chart</template>
+    <template #title>Peningkatan</template>
     <template #content>
-      <Chart type="bar" :data="barChartData" />
+      <b class="peningkatan-penurunan__peningkatan">+80 Item</b>
     </template>
     </Card>
 
     <Card>
-    <template #title>Pie Chart</template>
+    <template #title>Penurunan</template>
     <template #content>
-      <Chart type="doughnut" :data="pieChartData" />
+      <b class="peningkatan-penurunan__penurunan">-15 Item</b>
     </template>
     </Card>
+  </div>
 
-    <Card>
-    <template #title>Line Chart</template>
-    <template #content>
-      <Chart type="line" :data="lineChartData" />
-    </template>
-    </Card>
-  </BiBase>
+
+  <Card>
+  <template #title>Bar Chart</template>
+  <template #content>
+    <Chart type="bar" :data="barChartData" />
+  </template>
+  </Card>
+
+  <Card>
+  <template #title>Pie Chart</template>
+  <template #content>
+    <Chart type="doughnut" :data="pieChartData" />
+  </template>
+  </Card>
+
+  <Card>
+  <template #title>Line Chart</template>
+  <template #content>
+    <Chart type="line" :data="lineChartData" />
+  </template>
+  </Card>
 </template>
 
 <script setup lang="ts">
 import Chart from 'primevue/chart';
+
+definePageMeta({
+  layout: "data",
+});
 
 const barChartData = ref()
 const pieChartData = ref()

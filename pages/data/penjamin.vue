@@ -1,27 +1,26 @@
 <template>
-  <div>
-    <BiBase>
-      <Message :closable="false">Data terakhir di-update pada <b>20xx/xx/xx</b></Message>
-      <Card>
-        <template #title>Distribusi Jenis Penjamin</template>
-        <template #content>
-          <Chart type="bar" :data="barChartData" />
-        </template>
-      </Card>
+  <Card>
+    <template #title>Distribusi Jenis Penjamin</template>
+    <template #content>
+      <Chart type="bar" :data="barChartData" />
+    </template>
+  </Card>
 
-      <Card>
-        <template #title>10 Instansi Terfavorit</template>
-        <template #content>
-          <Chart type="bar" :data="instansiChartData" />
-        </template>
-      </Card>
-    </BiBase>
-  </div>
+  <Card>
+    <template #title>10 Instansi Terfavorit</template>
+    <template #content>
+      <Chart type="bar" :data="instansiChartData" />
+    </template>
+  </Card>
 </template>
 
 <script setup>
 import axios from 'axios';
 import Chart from 'primevue/chart';
+
+definePageMeta({
+  layout: "data",
+});
 
 const barChartData = ref(null);
 const instansiChartData = ref(null);

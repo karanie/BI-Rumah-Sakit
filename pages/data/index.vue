@@ -1,13 +1,17 @@
 <template>
-  <BiBase>
-    <div class="no-data">
-      <div class="no-data__message">
-        <span style="font-size: 72px; color: var(--text-color);"><Icon name="material-symbols:bar-chart" /></span>
-        <span style="font-size: 24px;">Mohon pilih data</span>
-      </div>
+  <div class="no-data">
+    <div class="no-data__message">
+      <span style="font-size: 72px; color: var(--text-color);"><Icon name="material-symbols:bar-chart" /></span>
+      <span style="font-size: 24px;">Mohon pilih data</span>
     </div>
-  </BiBase>
+  </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: "data",
+});
+</script>
 
 <style scoped lang="scss">
 .no-data {

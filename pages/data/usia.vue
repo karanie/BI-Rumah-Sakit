@@ -1,50 +1,48 @@
 <template>
-  <BiBase>
-    <Message :closable="false">Data terakhir di-update pada <b>{{ lastUpdate }}</b></Message>
+  <Card class="card">
+    <template #title>Total Pasien</template>
+    <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
+    <template #content>
+      <b>{{ new Intl.NumberFormat().format(jumlah_pasien) }}</b>
+    </template>
+  </Card>
 
-    <Card class="card">
-      <template #title>Total Pasien</template>
-      <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
-      <template #content>
-        <b>{{ new Intl.NumberFormat().format(jumlah_pasien) }}</b>
-      </template>
-    </Card>
-
-    <Card class="card">
-      <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
-      <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
-      <template #content>
-        <Chart type="bar" :data="BarChartData" />
-      </template>
-    </Card>
+  <Card class="card">
+    <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
+    <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
+    <template #content>
+      <Chart type="bar" :data="BarChartData" />
+    </template>
+  </Card>
 
 
-    <Card>
-      <template #title>Distribusi Pasien by Kelompok Usia</template>
+  <Card>
+    <template #title>Distribusi Pasien by Kelompok Usia</template>
 
-      <template #content>
-        <Chart type="doughnut" :data="kelompokUsiaChartData" />
-      </template>
-    </Card>
+    <template #content>
+      <Chart type="doughnut" :data="kelompokUsiaChartData" />
+    </template>
+  </Card>
 
-    <Card>
+  <Card>
 
-      <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
-      <template #subtitle>sepertinya lebih cocok untuk kunjungan ???</template>
-      <template #content>
-        <Chart type="line" :data="lineChartData" />
-      </template>
-    </Card>
-
-  </BiBase>
+    <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
+    <template #subtitle>sepertinya lebih cocok untuk kunjungan ???</template>
+    <template #content>
+      <Chart type="line" :data="lineChartData" />
+    </template>
+  </Card>
 </template>
 
 <script setup>
 import Chart from 'primevue/chart';
 import axios from 'axios';
 
+definePageMeta({
+  layout: "data",
+});
+
 const kelompokUsiaChartData = ref();
-const lastUpdate = ref('');
 const lineChartData = ref();
 const BarChartData = ref();
 const jumlah_pasien = ref();
@@ -59,9 +57,6 @@ onMounted(async () => {
     jumlah_pasien.value = data.jumlah_pasien
     BarChartData.value = setBarChartData(data)
     // console.log("hasil : ",data.jumlah_pasien)
-
-    // Set waktu terakhir data di-update (gantilah dengan data timestamp yang sesuai)
-    lastUpdate.value = '20xx/xx/xx';
   } catch (error) {
     console.error('Error fetching data from API:', error);
   }

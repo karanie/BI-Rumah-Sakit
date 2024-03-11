@@ -1,13 +1,16 @@
 <template>
-  <div class="bi">
-    <div class="bi__sidemenu">
-      <Filter />
-      <Menu :model="sidemenuItems" />
+  <NuxtLayout name="default">
+    <div class="bi">
+      <div class="bi__sidemenu">
+        <Filter />
+        <Menu :model="sidemenuItems" />
+      </div>
+      <div class="bi__content">
+        <Message class="message" :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
+        <slot />
+      </div>
     </div>
-    <div class="bi__content">
-      <slot />
-    </div>
-  </div>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -62,4 +65,7 @@ const sidemenuItems = [
   }
 }
 
+.message {
+  margin: 0;
+}
 </style>

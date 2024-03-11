@@ -1,69 +1,62 @@
 <template>
-  <div>
-    <BiBase>
-      <Message :closable="false">Data terakhir di-update pada <b>20xx/xx/xx</b></Message>
+  <div class="perseberangender">
+    <Card style="width: 100%;">
+      <template #title>Pasien Laki-Laki</template>
 
-      <div class="perseberangender">
-        <Card style="width: 100%;">
-          <template #title>Pasien Laki-Laki</template>
+      <template #content>
+        <div class="value_column">
+          <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
+          <div class="percentage_value">
+            <b class="percentage_value__count percentage_value__count--male">{{ new
+    Intl.NumberFormat().format(countdata_male) }}</b>
+            <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female)
+    *
+    100) }}%</b>
+          </div>
+        </div>
+      </template>
+    </Card>
 
-          <template #content>
-            <div class="value_column">
-              <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
-              <div class="percentage_value">
-                <b class="percentage_value__count percentage_value__count--male">{{ new
-        Intl.NumberFormat().format(countdata_male) }}</b>
-                <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female)
-        *
-        100) }}%</b>
-              </div>
-            </div>
-          </template>
-        </Card>
+    <Card style="width: 100%;">
 
-        <Card style="width: 100%;">
+      <template #title>Pasien Perempuan</template>
 
-          <template #title>Pasien Perempuan</template>
-
-          <template #content>
-            <div class="value_column">
-              <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
-              <div class="percentage_value">
-                <b class="percentage_value__count percentage_value__count--female">{{ new
-        Intl.NumberFormat().format(countdata_female) }}</b>
-                <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male +
-        countdata_female)
-        *
-        100) }}% </b>
-              </div>
-            </div>
-          </template>
-        </Card>
-      </div>
-
-      <Card>
-
-        <template #title>Distribusi Jenis Kelamin</template>
-
-        <template #content>
-          <p class="m-0">
-            <Chart type="doughnut" :data="genderchartdata" :options="genderChartDataOpt" />
-          </p>
-
-        </template>
-      </Card>
-
-      <Card>
-
-        <template #title>Distribusi Jenis Kelamin Per Tahun</template>
-
-        <template #content>
-          <Chart type="line" :data="genderchartdata2" />
-        </template>
-      </Card>
-
-    </BiBase>
+      <template #content>
+        <div class="value_column">
+          <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
+          <div class="percentage_value">
+            <b class="percentage_value__count percentage_value__count--female">{{ new
+    Intl.NumberFormat().format(countdata_female) }}</b>
+            <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male +
+    countdata_female)
+    *
+    100) }}% </b>
+          </div>
+        </div>
+      </template>
+    </Card>
   </div>
+
+  <Card>
+
+    <template #title>Distribusi Jenis Kelamin</template>
+
+    <template #content>
+      <p class="m-0">
+        <Chart type="doughnut" :data="genderchartdata" :options="genderChartDataOpt" />
+      </p>
+
+    </template>
+  </Card>
+
+  <Card>
+
+    <template #title>Distribusi Jenis Kelamin Per Tahun</template>
+
+    <template #content>
+      <Chart type="line" :data="genderchartdata2" />
+    </template>
+  </Card>
 </template>
 
 <script setup>
@@ -71,6 +64,10 @@
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
 import axios from 'axios';
+
+definePageMeta({
+  layout: "data",
+});
 
 const genderchartdata = ref()
 const genderchartdata2 = ref()
