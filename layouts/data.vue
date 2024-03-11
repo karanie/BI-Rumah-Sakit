@@ -6,7 +6,14 @@
         <Menu :model="sidemenuItems" />
       </div>
       <div class="bi__content">
-        <Message class="message" :closable="false">Data terkahir di-update pada <b>20xx/xx/xx</b></Message>
+        <Message class="message" :closable="false">
+          Data terkahir di-update pada
+          <b>{{ data?.mtimeLocaltime }}</b>
+        </Message>
+        <Message class="message" :closable="false">
+          Waktu registrasi pasien terkahir dari tanggal
+          <b>{{ data?.waktuRegistrasiTerakhir }}</b>
+        </Message>
         <slot />
       </div>
     </div>
@@ -14,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+// TODO: format datetime based on browser locale
+const { data } = useFetch("/api/last-update");
 const sidemenuItems = [
   {
     label: "Usia",
