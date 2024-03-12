@@ -3,8 +3,10 @@
     <div class="default-layout__header">
       <div class="default-layout__header__content">
         <div class="default-layout__header__content__leading">
-          <Icon style="font-size: 24px" name="twemoji:hospital" />
-          <span>BI Rumah Sakit</span>
+          <div class="website-logo">
+            <Icon style="font-size: 24px" name="twemoji:hospital" />
+            <span>BI Rumah Sakit</span>
+          </div>
         </div>
         <div class="default-layout__header__content__trailing">
           <NuxtLink to="/">
@@ -91,5 +93,14 @@
       }
     }
   }
+}
+
+.website-logo {
+  display: flex;
+  height: 100%;
+  gap: 8px;
+  align-items: center;
+  align-self: start;
+  user-select: none;
 }
 </style>
