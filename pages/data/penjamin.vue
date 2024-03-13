@@ -2,7 +2,7 @@
   <Card>
     <template #title>Distribusi Jenis Penjamin</template>
     <template #content>
-      <Chart type="bar" :data="barChartData" />
+      <Chart type="doughnut" :data="barChartData" />
     </template>
   </Card>
 
@@ -36,8 +36,6 @@ onMounted(async () => {
       {
         label: 'Jumlah',
         data: data.values,
-        backgroundColor: '#007bff', // Warna latar belakang batang
-        borderColor: '#007bff', // Warna garis batas batang
         borderWidth: 1 // Lebar garis batas
       }
     ]
@@ -60,8 +58,6 @@ onMounted(async () => {
       {
         label: 'Jumlah',
         data: limitedData.values,
-        backgroundColor: '#007bff', // Warna latar belakang batang
-        borderColor: '#007bff', // Warna garis batas batang
         borderWidth: 1 // Lebar garis batas
       }
     ]
