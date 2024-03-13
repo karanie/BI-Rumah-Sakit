@@ -46,7 +46,7 @@ const {
   data: data,
   pending: dataIsPending,
   refresh: refreshData,
-  } = await useFetch("/api/demografi", {
+  } = await useFetch("http://localhost:5000/api/demografi", {
   server: false,
   lazy: true,
   params: {
@@ -59,7 +59,7 @@ const {
   data: timeSeriesData,
   pending: timeSeriesDataIsPending,
   refresh: refreshTimeSeriesData,
-  }: any = await useFetch("/api/demografi", {
+  }: any = await useFetch("http://localhost:5000/api/demografi", {
   server: false,
   lazy: true,
   params: {

@@ -85,7 +85,7 @@ const {
 
 
 onMounted(async () => {
-  let data = (await axios.get("/api/jeniskelamin", {
+  let data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,
@@ -100,7 +100,7 @@ onMounted(async () => {
 
   genderChartDataOpt.value = setGenderChartDataOpt()
 
-  let dataTimeseries = (await axios.get("/api/jeniskelamin", {
+  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin", {
     params: {
       tipe_data: "timeseries",
       kabupaten: kabupaten.value,
@@ -122,7 +122,7 @@ onMounted(async () => {
 });
 
 watch(lastFilter,async () => {
-  let data = (await axios.get("/api/jeniskelamin", {
+  let data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,
@@ -139,7 +139,7 @@ watch(lastFilter,async () => {
 
   genderChartDataOpt.value = setGenderChartDataOpt()
 
-  let dataTimeseries = (await axios.get("/api/jeniskelamin", {
+  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin", {
     params: {
       tipe_data: "timeseries",
       kabupaten: kabupaten.value,
