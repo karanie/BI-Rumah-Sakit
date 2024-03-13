@@ -74,21 +74,42 @@ const genderchartdata2 = ref()
 const countdata_male = ref(0)
 const countdata_female = ref(0)
 const genderChartDataOpt = ref()
+const {
+  tahun,
+  bulan,
+  lastFilter,
+  kabupaten,
+} = storeToRefs(useDataFilter())
+
+
 
 
 onMounted(async () => {
-  let data = (await axios.get("/api/jeniskelamin")).data
-  data.index = data.index.slice(1, 3)
-  data.values = data.values.slice(1, 3)
+  let data = (await axios.get("/api/jeniskelamin", {
+    params: {
+      kabupaten: kabupaten.value,
+      tahun: tahun.value,
+      bulan: bulan.value
+    }
+  })).data
+  // data.index = data.index.slice(1, 3)
+  // data.values = data.values.slice(1, 3)
   genderchartdata.value = setPieChartData(data);
   countdata_female.value = data.values[1]
   countdata_male.value = data.values[0]
 
   genderChartDataOpt.value = setGenderChartDataOpt()
 
-  let dataTimeseries = (await axios.get("/api/jeniskelamin?tipe_data=timeseries")).data
-  dataTimeseries.values = dataTimeseries.values.slice(1, 3)
-  dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
+  let dataTimeseries = (await axios.get("/api/jeniskelamin", {
+    params: {
+      tipe_data: "timeseries",
+      kabupaten: kabupaten.value,
+      tahun: tahun.value,
+      bulan: bulan.value
+    }
+  })).data
+  // dataTimeseries.values = dataTimeseries.values.slice(1, 3)
+  // dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
   genderchartdata2.value = {
     labels: dataTimeseries.index,
     datasets: dataTimeseries.columns.map((val, i) => {
@@ -98,9 +119,46 @@ onMounted(async () => {
       }
     })
   }
-  console.log(dataTimeseries)
 });
 
+watch(lastFilter,async () => {
+  let data = (await axios.get("/api/jeniskelamin", {
+    params: {
+      kabupaten: kabupaten.value,
+      tahun: tahun.value,
+      bulan: bulan.value
+    }
+  })).data
+  console.log(data)
+
+  // data.index = data.index.slice(1, 3)
+  // data.values = data.values.slice(1, 3)
+  genderchartdata.value = setPieChartData(data);
+  countdata_female.value = data.values[1]
+  countdata_male.value = data.values[0]
+
+  genderChartDataOpt.value = setGenderChartDataOpt()
+
+  let dataTimeseries = (await axios.get("/api/jeniskelamin", {
+    params: {
+      tipe_data: "timeseries",
+      kabupaten: kabupaten.value,
+      tahun: tahun.value,
+      bulan: bulan.value
+    }
+  })).data
+  // dataTimeseries.values = dataTimeseries.values.slice(1, 3)
+  // dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
+  genderchartdata2.value = {
+    labels: dataTimeseries.index,
+    datasets: dataTimeseries.columns.map((val, i) => {
+      return {
+        label: val,
+        data: dataTimeseries.values[i]
+      }
+    })
+  }
+});
 
 const setPieChartData = data => {
   const documentStyle = getComputedStyle(document.body);
