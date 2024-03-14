@@ -1,52 +1,52 @@
 <template>
-  <div class="no-data">
-    <Card class="card">
+  <div class="numeric-data">
+    <Card class="numeric-data__card">
       <template #title>Total Pasien</template>
       <template #subtitle>Jumlah pasien</template>
       <template #content>
-        <b>{{ new Intl.NumberFormat().format(jumlah_pasien) }}</b>
+        <div class="big-number">{{ getJumlahPasien }}</div>
       </template>
     </Card>
 
-    <Card class="card">
+    <Card class="numeric-data__card">
       <template #title>Total Kunjungan</template>
       <template #subtitle>Jumlah Kunjungan</template>
       <template #content>
-        <b>{{ new Intl.NumberFormat().format(jumlah_kunjungan) }}</b>
+        <div class="big-number">{{ getJumlahKunjungan }}</div>
       </template>
     </Card>
 
-    <Card class="card">
+    <Card class="numeric-data__card">
       <template #title>Total Pendapatan</template>
       <template #subtitle>Jumlah Pendapatan</template>
       <template #content>
-        <b>{{ new Intl.NumberFormat().format(0) }}</b>
+        <div class="big-number">{{ getJumlahPendapatan }}</div>
       </template>
     </Card>
   </div>
 
   <div class="perseberangender">
-    <Card style="width: 100%;">
+    <Card class="perseberangender__card">
       <template #title>Pasien Laki-Laki</template>
       <template #content>
         <div class="value_column">
           <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
           <div class="percentage_value">
-            <b class="percentage_value__count percentage_value__count--male">{{ new Intl.NumberFormat().format(countdata_male) }}</b>
-            <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female)*100) }}%</b>
+            <b class="percentage_value__count percentage_value__count--male">{{ getMaleCount }}</b>
+            <b class="percentage_value__percent">{{ getMalePercentage }}</b>
           </div>
         </div>
       </template>
     </Card>
 
-    <Card style="width: 100%;">
+    <Card class="perseberangender__card">
       <template #title>Pasien Perempuan</template>
       <template #content>
         <div class="value_column">
           <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
           <div class="percentage_value">
-            <b class="percentage_value__count percentage_value__count--female">{{ new Intl.NumberFormat().format(countdata_female) }}</b>
-            <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male + countdata_female)*100) }}% </b>
+            <b class="percentage_value__count percentage_value__count--female">{{ getFemaleCount }}</b>
+            <b class="percentage_value__percent">{{ getFemalePercentage }}</b>
           </div>
         </div>
       </template>
@@ -58,7 +58,7 @@
     <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
     <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
     <template #content>
-      <Chart type="bar" :data="barChartData" />
+      <Chart type="bar" :data="perkembanganData" />
     </template>
   </Card>
 
@@ -97,18 +97,24 @@ const {
   lastFilter,
 } = storeToRefs(useDataFilter());
 
-const jumlah_pasien = ref();
-const jumlah_kunjungan = ref();
+const jumlahPasien = ref();
+const jumlahKunjungan = ref();
+const jumlahPendapatan = ref();
 
-const genderchartdata = ref();
-const genderChartDataOpt = ref();
-const genderchartdata2 = ref();
-const countdata_male = ref(0);
-const countdata_female = ref(0);
+const maleCount = ref(0);
+const femaleCount = ref(0);
 
 const kelompokUsiaChartData = ref();
 const lineChartData = ref();
-const barChartData = ref();
+const perkembanganData = ref();
+
+const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
+const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
+const getMaleCount = computed(() => new Intl.NumberFormat().format(maleCount.value));
+const getMalePercentage = computed(() => Math.round(maleCount.value / (maleCount.value + femaleCount.value)*100) + "%");
+const getFemaleCount = computed(() => new Intl.NumberFormat().format(femaleCount.value));
+const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value)*100) + "%");
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -118,8 +124,10 @@ onMounted(async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  jumlah_pasien.value = data.jumlah_pasien;
-  jumlah_kunjungan.value = data.jumlah_kunjungan;
+  console.log(data);
+  jumlahPasien.value = data.jumlahPasien;
+  jumlahKunjungan.value = data.jumlahKunjungan;
+  perkembanganData.value = setBarChartData(data);
 });
 
 onMounted(async () => {
@@ -130,8 +138,8 @@ onMounted(async () => {
       bulan: bulan.value
     }
   })).data
-  countdata_male.value = data.values[0];
-  countdata_female.value = data.values[1];
+  maleCount.value = data.values[0];
+  femaleCount.value = data.values[1];
 });
 
 onMounted(async () => {
@@ -142,10 +150,7 @@ onMounted(async () => {
       bulan: bulan.value
     }
   })).data
-  console.log(data);
   kelompokUsiaChartData.value = processUsiaChartData(data);
-  jumlah_pasien.value = data.jumlah_pasien;
-  barChartData.value = setBarChartData(data);
 });
 
 watch(lastFilter, async () => {
@@ -156,8 +161,8 @@ watch(lastFilter, async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  jumlah_pasien.value = data.jumlah_pasien;
-  jumlah_kunjungan.value = data.jumlah_kunjungan;
+  jumlahPasien.value = data.jumlahPasien;
+  jumlahKunjungan.value = data.jumlahKunjungan;
 });
 
 watch(lastFilter, async () => {
@@ -168,8 +173,8 @@ watch(lastFilter, async () => {
       bulan: bulan.value
     }
   })).data
-  countdata_female.value = data.values[1];
-  countdata_male.value = data.values[0];
+  femaleCount.value = data.values[1];
+  maleCount.value = data.values[0];
 });
 
 watch(lastFilter, async () => {
@@ -181,7 +186,7 @@ watch(lastFilter, async () => {
     }
   }).data
   kelompokUsiaChartData.value = processUsiaChartData(data);
-  jumlah_pasien.value = data.jumlah_pasien;
+  jumlahPasien.value = data.jumlahPasien;
   BarChartData.value = setBarChartData(data);
 });
 
@@ -191,11 +196,11 @@ const capitalizeEachLetter = (string) => {
 
 const setBarChartData = (apiData) => {
   return {
-    labels: Object.keys(apiData.jumlah_pasien_tahunan),
+    labels: Object.keys(apiData.jumlahPasienTahunan),
     datasets: [
       {
         label: "Jumlah Pasien",
-        data: Object.values(apiData.jumlah_pasien_tahunan),
+        data: Object.values(apiData.jumlahPasienTahunan),
       },
     ],
   };
@@ -238,18 +243,16 @@ const processUsiaChartData = (apiData) => {
 </script>
 
 <style scoped lang="scss">
-.no-data {
+.numeric-data {
   display: flex;
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
+  gap: 8px;
 
-  &__message {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  &__card {
+    width: 100%;
+  }
+
+  .big-number {
+    font-weight: bold;
   }
 }
 
@@ -258,7 +261,10 @@ const processUsiaChartData = (apiData) => {
   flex-direction: row;
   gap: 8px;
   width: 100%;
-  justify-content: center;
+
+  &__card {
+    width: 100%;
+  }
 
   &__female {
     color: var(--pink-400);
