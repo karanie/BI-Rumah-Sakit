@@ -3,7 +3,7 @@
     <template #title>Distribusi Jenis Penjamin</template>
     <template #content>
       <div style="width: 100%; display: flex; justify-content: center;">
-        <Chart type="doughnut" :options="{ showAllTooltips: true }" :data="barChartData" />
+        <Chart type="doughnut" :data="barChartData" />
       </div>
     </template>
   </Card>
