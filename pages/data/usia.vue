@@ -20,7 +20,18 @@
     <template #title>Distribusi Pasien by Kelompok Usia</template>
 
     <template #content>
-      <Chart type="doughnut" :data="kelompokUsiaChartData" />
+      <Chart type="polarArea" :options="{
+        responsive: true,
+        scales: {
+          r: {
+            pointLabels: {
+              display: true,
+              centerPointLabels: true,
+              font: {
+                size: 18
+              }
+            }
+          }}}" :data="kelompokUsiaChartData" />
     </template>
   </Card>
 
