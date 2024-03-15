@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     BIApiBase: process.env.BI_API_BASE ? process.env.BI_API_BASE : "http://localhost:5000",
     BIDatabaseAddr: process.env.BI_DATABASE_ADDR ? process.env.BI_DATABASE_ADDR : "localhost",
+    saltRounds: 11,
   },
   modules: [
     'nuxt-primevue',
