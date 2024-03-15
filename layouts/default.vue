@@ -18,9 +18,11 @@
           <NuxtLink to="/about">
             <Button label="About" text plain />
           </NuxtLink>
-          <Button text plain>
-            <template #icon><Icon name="material-symbols:login"/></template>
-          </Button>
+          <NuxtLink to="/login">
+            <Button text plain>
+              <template #icon><Icon name="material-symbols:login"/></template>
+            </Button>
+          </NuxtLink>
         </div>
       </div>
     </div>
