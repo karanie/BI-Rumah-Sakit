@@ -18,11 +18,27 @@
           <NuxtLink to="/about">
             <Button label="About" text plain />
           </NuxtLink>
-          <NuxtLink to="/login">
+          <NuxtLink v-if="status == 'unauthenticated'" to="/login">
             <Button text plain>
               <template #icon><Icon name="material-symbols:login"/></template>
             </Button>
           </NuxtLink>
+          <Button v-if="status != 'unauthenticated'" @click="e => profileOverlayLayout.toggle(e)" text plain>
+            <template #icon><Icon name="material-symbols:person"/></template>
+          </Button>
+          <OverlayPanel ref="profileOverlayLayout">
+            <div class="profile">
+              <div class="profile__icon">
+                <Icon name="material-symbols:account-circle" size="40px" />
+              </div>
+              <div class="profile__name">
+                <span class="profile__name__fullname">{{ data?.nama_lengkap }}</span><br>
+                <span class="profile__name__username">{{ data?.username }}</span>
+              </div>
+            </div>
+            <Divider />
+            <Menu :model="profileMenu" />
+          </OverlayPanel>
         </div>
       </div>
     </div>
@@ -35,6 +51,26 @@
 </template>
 
 <script setup lang="ts">
+const { status, data, signOut } = useAuth();
+
+const profileOverlayLayout = ref();
+const profileMenu = [
+  {
+    label: "Profile",
+    command: profileMenuClickWrapper(() => navigateTo("/profile")),
+  },
+  {
+    label: "Logout",
+    command: profileMenuClickWrapper(() => signOut()),
+  },
+];
+
+function profileMenuClickWrapper(func: Function) {
+  return () => {
+    func();
+    profileOverlayLayout.value.hide();
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -104,5 +140,23 @@
   align-items: center;
   align-self: start;
   user-select: none;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__name {
+    &__fullname {
+      font-weight: bold;
+      color: var(--text-primary-color);
+    }
+
+    &__username {
+      font-size: 0.8rem;
+      color: var(--text-secondary-color);
+    }
+  }
 }
 </style>
