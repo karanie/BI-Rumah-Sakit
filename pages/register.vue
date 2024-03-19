@@ -4,7 +4,7 @@
       Silahkan register dengan username dan password anda. Laman ini
       dipergunakan untuk development saja.
     </div>
-    <div class="form__content">
+    <form @submit.prevent="register" class="form__content">
       <FloatLabel>
         <InputText id="username" v-model="username" />
         <label for="username">Username</label>
@@ -14,7 +14,7 @@
         <label for="username">Nama Lengkap</label>
       </FloatLabel>
       <FloatLabel>
-        <InputText id="nama_lengkap" v-model="jabatan" />
+        <InputText id="jabatan" v-model="jabatan" />
         <label for="username">Jabatan</label>
       </FloatLabel>
       <FloatLabel>
@@ -29,17 +29,21 @@
         <NuxtLink to="/login">
           <Button class="form-button__button" label="Login" outlined />
         </NuxtLink>
-        <Button class="form-button__button" label="Register" />
+        <Button :disabled="registerCheck" type="submit" class="form-button__button" label="Register" />
       </div>
-    </div>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
   layout: "loginregis",
+  auth: false,
+  unauthenticatedOnly: true,
+  navigateAuthenticatedTo: "/login"
 });
 
+const { signIn } = useAuth();
 const username = ref();
 const nama_lengkap = ref();
 const password = ref();
@@ -49,6 +53,37 @@ const roles = ref([
   { name: "Admin", value: "admin"},
   { name: "Non-admin", value: "non_admin"},
 ]);
+
+const registerCheck = computed(() => !(username.value && nama_lengkap.value && password.value && jabatan.value && role.value));
+const getRole = computed(() => role.value.value);
+
+const { execute } = await useFetch('/api/auth/register', {
+  method: "POST",
+  body: {
+    username: username,
+    nama_lengkap: nama_lengkap,
+    password: password,
+    jabatan: jabatan,
+    role: getRole
+  },
+  server: false,
+  lazy: true,
+  immediate: false,
+  watch: false,
+  onResponse() {
+    signIn({
+      username: username.value,
+      password: password.value
+    },{
+      callbackUrl: "/",
+    })
+  }
+})
+
+async function register() {
+  execute()
+}
+
 </script>
 
 <style scoped lang="scss">
