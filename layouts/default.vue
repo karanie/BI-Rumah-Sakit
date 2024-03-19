@@ -61,7 +61,7 @@ const profileMenu = [
   },
   {
     label: "Logout",
-    command: profileMenuClickWrapper(() => signOut()),
+    command: profileMenuClickWrapper(() => signOut({ callbackUrl: "/login" })),
   },
 ];
 
