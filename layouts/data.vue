@@ -3,7 +3,7 @@
     <div class="bi">
       <div class="bi__sidemenu">
         <Filter />
-        <Menu :model="sidemenuItems" />
+        <!-- <Menu :model="sidemenuItems" /> -->
       </div>
       <div class="bi__content">
         <Message class="message" :closable="false">

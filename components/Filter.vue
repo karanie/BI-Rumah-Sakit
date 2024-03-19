@@ -1,63 +1,50 @@
 <template>
-  <Button class="filter-button__filter" :label="isFiltering ? 'Filtering' : 'Filter'" :outlined="isFiltering" @click="toggleOverlayPanel">
-    <template #icon><Icon name="material-symbols:filter-list" /></template>
-  </Button>
-  <OverlayPanel ref="overlayPanel">
-    <div class="overlay-panel">
-      <div class="overlay-panel__option">
-        <Dropdown
-          class="overlay-panel__option__dropdown"
-          v-model="selectedKabupaten"
-          :options="kabupaten"
-          placeholder="Pilih Kabupaten"
-          :virtualScrollerOptions="{ itemSize: 38 }"
-          filter
-          />
-        <Button class="overlay-panel__option__clear" v-if="selectedKabupaten" severity="danger" @click="clearKabupatenOption" outlined>
-          <template #icon><Icon name="material-symbols:close" /></template>
-        </Button>
-      </div>
-      <div class="overlay-panel__option">
-        <Dropdown
-          class="overlay-panel__option__dropdown"
-          v-model="selectedTahun"
-          :options="tahun"
-          placeholder="Pilih Tahun"
-          :virtualScrollerOptions="{ itemSize: 38 }"
-          filter
-          />
-        <Button class="overlay-panel__option__clear" v-if="selectedTahun" severity="danger" @click="clearTahunOption" outlined>
-          <template #icon><Icon name="material-symbols:close" /></template>
-        </Button>
-      </div>
-      <div class="overlay-panel__option">
-        <Dropdown
-          class="overlay-panel__option__dropdown"
-          v-model="selectedBulan"
-          :options="bulan"
-          optionLabel="name"
-          placeholder="Pilih Bulan"
-          :virtualScrollerOptions="{ itemSize: 38 }"
-          filter
-          :disabled="!selectedTahun"
-          />
-        <Button class="overlay-panel__option__clear" v-if="selectedBulan" severity="danger" @click="clearBulanOption" outlined>
-          <template #icon><Icon name="material-symbols:close" /></template>
-        </Button>
-      </div>
+  <Card>
+    <template #title>Filter</template>
+    <template #content>
+      <div class="filter-panel">
+        <div class="filter-panel__option">
+          <Dropdown class="filter-panel__option__dropdown" v-model="selectedKabupaten" :options="kabupaten"
+            placeholder="Pilih Kabupaten" :virtualScrollerOptions="{ itemSize: 38 }" filter />
+          <Button class="filter-panel__option__clear" v-if="selectedKabupaten" severity="danger"
+            @click="clearKabupatenOption" outlined>
+            <template #icon>
+              <Icon name="material-symbols:close" />
+            </template>
+          </Button>
+        </div>
+        <div class="filter-panel__option">
+          <Dropdown class="filter-panel__option__dropdown" v-model="selectedTahun" :options="tahun"
+            placeholder="Pilih Tahun" :virtualScrollerOptions="{ itemSize: 38 }" filter />
+          <Button class="filter-panel__option__clear" v-if="selectedTahun" severity="danger" @click="clearTahunOption"
+            outlined>
+            <template #icon>
+              <Icon name="material-symbols:close" />
+            </template>
+          </Button>
+        </div>
+        <div class="filter-panel__option">
+          <Dropdown class="filter-panel__option__dropdown" v-model="selectedBulan" :options="bulan" optionLabel="name"
+            placeholder="Pilih Bulan" :virtualScrollerOptions="{ itemSize: 38 }" filter :disabled="!selectedTahun" />
+          <Button class="filter-panel__option__clear" v-if="selectedBulan" severity="danger" @click="clearBulanOption"
+            outlined>
+            <template #icon>
+              <Icon name="material-symbols:close" />
+            </template>
+          </Button>
+        </div>
 
-      <div class="overlay-panel__confirm">
-        <Button label="Clear" outlined @click="$reset" :disabled="!filterOptionAvailable" />
-        <Button label="Filter" :disabled="!filterOptionAvailable" @click="filter" />
+        <div class="filter-panel__confirm">
+          <Button label="Clear" outlined @click="$reset" :disabled="!filterOptionAvailable" />
+          <Button label="Filter" :disabled="!filterOptionAvailable" @click="filter" />
+        </div>
       </div>
-    </div>
-  </OverlayPanel>
+    </template>
+  </Card>
 </template>
 
 <script setup lang="ts">
 import axios from 'axios';
-
-const overlayPanel = ref();
 
 const {
   selectedKabupaten,
@@ -65,13 +52,13 @@ const {
   selectedBulan,
   isFiltering,
   filterOptionAvailable,
-  } = storeToRefs(useDataFilter());
+} = storeToRefs(useDataFilter());
 
 const {
   filter,
   clearOption,
   $reset,
-  } = useDataFilter();
+} = useDataFilter();
 
 watch(() => isFiltering, () => console.log(isFiltering));
 
@@ -104,21 +91,18 @@ const bulan = ref([
 ]);
 
 onMounted(async () => {
-  window.onscroll = (e: any) => overlayPanel.value.hide(e);
   const filterOptions = (await axios.get("http://localhost:5000/api/filter-options")).data
   kabupaten.value = filterOptions.kabupaten;
   tahun.value = filterOptions.tahun;
 });
-
-const toggleOverlayPanel = (e: any) => overlayPanel.value.toggle(e);
 </script>
 
 <style scoped lang="scss">
-.overlay-panel {
+.filter-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 256px;
+  width: 210px;
 
   &__option {
     display: flex;
