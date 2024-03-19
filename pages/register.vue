@@ -11,15 +11,19 @@
       </FloatLabel>
       <FloatLabel>
         <InputText id="nama_lengkap" v-model="nama_lengkap" />
-        <label for="username">Nama Lengkap</label>
+        <label for="nama_lengkap">Nama Lengkap</label>
       </FloatLabel>
       <FloatLabel>
         <InputText id="jabatan" v-model="jabatan" />
-        <label for="username">Jabatan</label>
+        <label for="jabatan">Jabatan</label>
+      </FloatLabel>
+      <FloatLabel>
+        <InputText id="no_hp" v-model="no_hp" />
+        <label for="no_hp">Nomor Handphone</label>
       </FloatLabel>
       <FloatLabel>
         <Dropdown id="role" :options="roles" optionLabel="name" v-model="role" />
-        <label for="username">Role</label>
+        <label for="role">Role</label>
       </FloatLabel>
       <FloatLabel>
         <Password id="password" v-model="password" :feedback="false" toggleMask />
@@ -48,13 +52,14 @@ const username = ref();
 const nama_lengkap = ref();
 const password = ref();
 const jabatan = ref();
+const no_hp = ref();
 const role = ref();
 const roles = ref([
   { name: "Admin", value: "admin"},
   { name: "Non-admin", value: "non_admin"},
 ]);
 
-const registerCheck = computed(() => !(username.value && nama_lengkap.value && password.value && jabatan.value && role.value));
+const registerCheck = computed(() => !(username.value && nama_lengkap.value && password.value && jabatan.value && no_hp.value && role.value));
 const getRole = computed(() => role.value.value);
 
 const { execute } = await useFetch('/api/auth/register', {
@@ -64,6 +69,7 @@ const { execute } = await useFetch('/api/auth/register', {
     nama_lengkap: nama_lengkap,
     password: password,
     jabatan: jabatan,
+    no_hp: no_hp,
     role: getRole
   },
   server: false,
