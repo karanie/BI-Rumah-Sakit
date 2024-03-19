@@ -7,11 +7,11 @@
       </div>
       <div class="bi__content">
         <Message class="message" :closable="false">
-          Data terkahir di-update pada
+          Data terakhir di-update pada
           <b>{{ data?.mtimeLocaltime }}</b>
         </Message>
         <Message class="message" :closable="false">
-          Waktu registrasi pasien terkahir dari tanggal
+          Waktu registrasi pasien terakhir dari tanggal
           <b>{{ data?.waktuRegistrasiTerakhir }}</b>
         </Message>
         <slot />
