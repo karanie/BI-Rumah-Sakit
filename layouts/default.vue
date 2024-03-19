@@ -87,8 +87,7 @@ function profileMenuClickWrapper(func: Function) {
     justify-content: center;
 
     &__main {
-      width: 100%;
-      max-width: 90%;
+      width: 90%;
     }
   }
 
@@ -108,9 +107,8 @@ function profileMenuClickWrapper(func: Function) {
 
     &__content {
       display: flex;
-      width: 100%;
+      width: 90%;
       height: 100%;
-      max-width: 90%;
       align-items: center;
       justify-content: space-between;
 
