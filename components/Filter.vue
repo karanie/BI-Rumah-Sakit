@@ -77,7 +77,7 @@ const kabupaten = ref();
 const tahun = ref();
 const bulan = ref([
   { name: "Januari", value: 1 },
-  { name: "Febuari", value: 2 },
+  { name: "Februari", value: 2 },
   { name: "Maret", value: 3 },
   { name: "April", value: 4 },
   { name: "Mei", value: 5 },
