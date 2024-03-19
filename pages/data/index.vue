@@ -1,29 +1,36 @@
 <template>
   <div class="numeric-data">
-    <Card class="numeric-data__card">
-      <template #title>Total Pasien</template>
-      <template #subtitle>Jumlah pasien</template>
-      <template #content>
-        <div class="big-number">{{ getJumlahPasien }}</div>
-      </template>
-    </Card>
+    <Nuxt-link to="/data/pasien" class="no-underline">
+      <Card class="numeric-data__card">
+        <template #title>Total Pasien</template>
+        <template #subtitle>Jumlah pasien</template>
+        <template #content>
+          <div class="big-number">{{ getJumlahPasien }}</div>
+        </template>
+      </Card>
+    </Nuxt-link>
 
-    <Card class="numeric-data__card">
-      <template #title>Total Kunjungan</template>
-      <template #subtitle>Jumlah Kunjungan</template>
-      <template #content>
-        <div class="big-number">{{ getJumlahKunjungan }}</div>
-      </template>
-    </Card>
+    <Nuxt-link to="/data/pasien" class="no-underline">
+      <Card class="numeric-data__card">
+        <template #title>Total Kunjungan</template>
+        <template #subtitle>Jumlah Kunjungan</template>
+        <template #content>
+          <div class="big-number">{{ getJumlahKunjungan }}</div>
+        </template>
+      </Card>
+    </Nuxt-link>
 
-    <Card class="numeric-data__card">
-      <template #title>Total Pendapatan</template>
-      <template #subtitle>Jumlah Pendapatan</template>
-      <template #content>
-        <div class="big-number">{{ getJumlahPendapatan }}</div>
-      </template>
-    </Card>
+    <Nuxt-link to="/data/pasien" class="no-underline">
+      <Card class="numeric-data__card">
+        <template #title>Total Pendapatan</template>
+        <template #subtitle>Jumlah Pendapatan</template>
+        <template #content>
+          <div class="big-number">{{ getJumlahPendapatan }}</div>
+        </template>
+      </Card>
+    </Nuxt-link>
   </div>
+  
 
   <div class="perseberangender">
     <Card class="perseberangender__card">
@@ -55,30 +62,32 @@
 
   <div class="data-pasien">
     <Card class="card">
-    <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
-    <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
-    <template #content>
-      <Chart type="bar" :data="perkembanganData" />
-    </template>
-  </Card>
+      <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
+      <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
+      <template #content>
+        <Chart type="bar" :data="perkembanganData" />
+      </template>
+    </Card>
 
-  <Card>
-    <template #title>Distribusi Pasien by Kelompok Usia</template>
-    <template #content>
-      <Chart type="polarArea" :options="{
-        responsive: true,
-        scales: {
-          r: {
-            pointLabels: {
-              display: true,
-              centerPointLabels: true,
-              font: {
-                size: 18
+    <Card>
+      <template #title>Distribusi Pasien by Kelompok Usia</template>
+      <template #content>
+        <Chart type="polarArea" :options="{
+            responsive: true,
+            scales: {
+              r: {
+                pointLabels: {
+                  display: true,
+                  centerPointLabels: true,
+                  font: {
+                    size: 18
+                  }
+                }
               }
             }
-          }}}" :data="kelompokUsiaChartData" />
-    </template>
-  </Card>
+          }" :data="kelompokUsiaChartData" />
+      </template>
+    </Card>
   </div>
 </template>
 
@@ -112,9 +121,9 @@ const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasi
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
 const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
 const getMaleCount = computed(() => new Intl.NumberFormat().format(maleCount.value));
-const getMalePercentage = computed(() => Math.round(maleCount.value / (maleCount.value + femaleCount.value)*100) + "%");
+const getMalePercentage = computed(() => Math.round(maleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
 const getFemaleCount = computed(() => new Intl.NumberFormat().format(femaleCount.value));
-const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value)*100) + "%");
+const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -217,7 +226,7 @@ const processUsiaChartData = (apiData) => {
     labels: labels,
     datasets: [
       {
-        data : values,
+        data: values,
         backgroundColor: [
           documentStyle.getPropertyValue('--cyan-500'),
           documentStyle.getPropertyValue('--orange-500'),
@@ -244,16 +253,27 @@ const processUsiaChartData = (apiData) => {
 
 <style scoped lang="scss">
 .numeric-data {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
 
   &__card {
     width: 100%;
+    text-decoration: none;
+  }
+
+  &__card:hover {
+    transform: scale(1.05);
+    background-color: var(--cyan-50);
   }
 
   .big-number {
     font-weight: bold;
   }
+}
+
+.no-underline {
+  text-decoration: none;
 }
 
 .perseberangender {
