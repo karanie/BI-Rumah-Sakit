@@ -25,7 +25,7 @@
             </Card>
           </Nuxt-link>
 
-          <Nuxt-link to="/data/usia" class="no-underline">
+          <Nuxt-link to="/data/kunjungan" class="no-underline">
             <Card :class="{ 'active': activeCard === 1 }" class="numeric-data__card" @click="setActiveCard(1)">
               <template #title>Total Kunjungan</template>
               <template #subtitle>Jumlah Kunjungan</template>
@@ -99,6 +99,7 @@ watch(lastFilter, async () => {
   })).data
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
+  
 });
 
 const setActiveCard = (index) => {
