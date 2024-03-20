@@ -3,7 +3,6 @@
     <div class="bi">
       <div class="bi__sidemenu">
         <Filter />
-        <!-- <Menu :model="sidemenuItems" /> -->
       </div>
       <div class="bi__content">
         <Message class="message" :closable="false">
@@ -55,14 +54,10 @@
 
 <script setup>
 // TODO: format datetime based on browser locale
-const { data }= useFetch("http://localhost:5000/api/last-update");
+const { data } = useFetch("http://localhost:5000/api/last-update");
 
 import Chart from 'primevue/chart';
 import axios from 'axios';
-
-definePageMeta({
-  layout: "data",
-});
 
 const {
   bulan,
@@ -106,15 +101,13 @@ watch(lastFilter, async () => {
   jumlahKunjungan.value = data.jumlahKunjungan;
 });
 
-  const setActiveCard = (index) => {
-    activeCard.value = index
-    console.log('hasil', activeCard.value)
-  }
-
+const setActiveCard = (index) => {
+  activeCard.value = index
+  console.log('hasil', activeCard.value)
+}
 </script>
 
 <style scoped lang="scss">
-
 .bi {
   display: flex;
   width: 100%;
@@ -149,11 +142,23 @@ watch(lastFilter, async () => {
   &__card {
     width: 100%;
     text-decoration: none;
-  }
 
-  &__card:hover {
-    transform: scale(1.05);
-    background-color: var(--cyan-50);
+    &.active {
+      background-color: var(--cyan-100);
+      color : var(--surface-800);
+      // color: white; /* Jika ingin teks menjadi putih */
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      background-color: var(--cyan-50);
+    }
+
+    /* Style untuk card yang tidak aktif */
+    &:not(.active) {
+      background-color: var(--surface-100);
+      color: var(--surface-500);
+    }
   }
 
   .big-number {
@@ -167,17 +172,5 @@ watch(lastFilter, async () => {
 
 .message {
   margin: 0;
-}
-
-.numeric-data__card.active {
-  background-color: var(--cyan-100);
-  color : var(--surface-800);
-  // color: white; /* Jika ingin teks menjadi putih */
-}
-
-/* Style untuk card yang tidak aktif */
-.numeric-data__card:not(.active) {
-  background-color: var(--surface-100);
-  color: var(--surface-500);
 }
 </style>
