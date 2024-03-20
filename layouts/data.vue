@@ -14,40 +14,107 @@
           Waktu registrasi pasien terakhir dari tanggal
           <b>{{ data?.waktuRegistrasiTerakhir }}</b>
         </Message>
+
+        <div class="numeric-data">
+          <Nuxt-link to="/data/pasien" class="no-underline">
+            <Card :class="{ 'active': activeCard === 0 }" class="numeric-data__card" @click="setActiveCard(0)">
+              <template #title>Total Pasien</template>
+              <template #subtitle>Jumlah pasien</template>
+              <template #content>
+                <div class="big-number">{{ getJumlahPasien }}</div>
+              </template>
+            </Card>
+          </Nuxt-link>
+
+          <Nuxt-link to="/data/usia" class="no-underline">
+            <Card :class="{ 'active': activeCard === 1 }" class="numeric-data__card" @click="setActiveCard(1)">
+              <template #title>Total Kunjungan</template>
+              <template #subtitle>Jumlah Kunjungan</template>
+              <template #content>
+                <div class="big-number">{{ getJumlahKunjungan }}</div>
+              </template>
+            </Card>
+          </Nuxt-link>
+
+          <Nuxt-link to="/data/demografi" class="no-underline">
+            <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card" @click="setActiveCard(2)">
+              <template #title>Total Pendapatan</template>
+              <template #subtitle>Jumlah Pendapatan</template>
+              <template #content>
+                <div class="big-number">{{ getJumlahPendapatan }}</div>
+              </template>
+            </Card>
+          </Nuxt-link>
+        </div>
+
         <slot />
       </div>
     </div>
   </NuxtLayout>
 </template>
 
-<script setup lang="ts">
+<script setup>
 // TODO: format datetime based on browser locale
-const { data }: any = useFetch("http://localhost:5000/api/last-update");
-const sidemenuItems = [
-  {
-    label: "Usia",
-    command: () => navigateTo("/data/usia"),
-  },
-  {
-    label: "Jenis Kelamin",
-    command: () => navigateTo("/data/jenis_kelamin"),
-  },
-  {
-    label: "Demografi",
-    command: () => navigateTo("/data/demografi"),
-  },
-  {
-    label: "Penjamin",
-    command: () => navigateTo("/data/penjamin"),
-  },
-  {
-    label: "Contoh Chart",
-    command: () => navigateTo("/data/contoh_chart"),
-  },
-]
+const { data }= useFetch("http://localhost:5000/api/last-update");
+
+import Chart from 'primevue/chart';
+import axios from 'axios';
+
+definePageMeta({
+  layout: "data",
+});
+
+const {
+  bulan,
+  tahun,
+  kabupaten,
+  lastFilter,
+} = storeToRefs(useDataFilter());
+
+const jumlahPasien = ref();
+const jumlahKunjungan = ref();
+const jumlahPendapatan = ref();
+
+const activeCard = ref(0);
+
+const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
+const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
+
+onMounted(async () => {
+  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+    params: {
+      tahun: tahun.value,
+      bulan: bulan.value,
+      kabupaten: kabupaten.value,
+    }
+  })).data
+  console.log(data);
+  jumlahPasien.value = data.jumlahPasien;
+  jumlahKunjungan.value = data.jumlahKunjungan;
+});
+
+watch(lastFilter, async () => {
+  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+    params: {
+      tahun: tahun.value,
+      bulan: bulan.value,
+      kabupaten: kabupaten.value,
+    }
+  })).data
+  jumlahPasien.value = data.jumlahPasien;
+  jumlahKunjungan.value = data.jumlahKunjungan;
+});
+
+  const setActiveCard = (index) => {
+    activeCard.value = index
+    console.log('hasil', activeCard.value)
+  }
+
 </script>
 
 <style scoped lang="scss">
+
 .bi {
   display: flex;
   width: 100%;
@@ -74,7 +141,43 @@ const sidemenuItems = [
   }
 }
 
+.numeric-data {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+
+  &__card {
+    width: 100%;
+    text-decoration: none;
+  }
+
+  &__card:hover {
+    transform: scale(1.05);
+    background-color: var(--cyan-50);
+  }
+
+  .big-number {
+    font-weight: bold;
+  }
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
 .message {
   margin: 0;
+}
+
+.numeric-data__card.active {
+  background-color: var(--cyan-100);
+  color : var(--surface-800);
+  // color: white; /* Jika ingin teks menjadi putih */
+}
+
+/* Style untuk card yang tidak aktif */
+.numeric-data__card:not(.active) {
+  background-color: var(--surface-100);
+  color: var(--surface-500);
 }
 </style>

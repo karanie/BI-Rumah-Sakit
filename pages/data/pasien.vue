@@ -1,4 +1,5 @@
 <template>
+    <!-- <NuxtLayout name="data"> -->
     <div class="grid">
         <div class="item-1">
             <Card class="card">
@@ -51,10 +52,7 @@
                     <Chart type="bar" :data="BarChartData" />
                 </template>
             </Card>
-        </div>
 
-
-        <div class="item-3">
             <Card>
                 <template #title>Distribusi Pasien by Kelompok Usia</template>
                 <template #content>
@@ -82,6 +80,29 @@
             </Card>
         </div>
 
+
+        <div class="item-3">
+            <!-- <Card>
+                <template #title>Distribusi Pasien by Kelompok Usia</template>
+                <template #content>
+                    <Chart type="polarArea" :options="{
+                        responsive: true,
+                        scales: {
+                            r: {
+                                pointLabels: {
+                                    display: true,
+                                    centerPointLabels: true,
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            }
+                        }
+                    }" :data="kelompokUsiaChartData" />
+                </template>
+            </Card> -->
+        </div>
+
         <div class="item-4">
             <Card>
                 <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
@@ -93,6 +114,7 @@
 
         </div>
     </div>
+<!-- </NuxtLayout> -->
 </template>
 
 <script setup>
@@ -170,6 +192,10 @@ onMounted(async () => {
             }
         ]
     };
+});
+
+definePageMeta({
+  layout: "data",
 });
 
 onMounted(async () => {
@@ -304,17 +330,21 @@ const setLineChartData = (apiData) => {
 
 .item-2 {
     grid-column: 2 / 3;
-    grid-row: 1 / 2;
+    grid-row: 1 / 3;
 }
 
 .item-3 {
     grid-column: 2 / 3;
-    grid-row: 2/3;
+    // grid-row: 2/3;
 }
 
 .item-4 {
     grid-column: 1 / 2;
-    grid-row: 2 / 3;
+    grid-row: 2 / 4;
+}
+
+.card{
+    margin-bottom: 10px;
 }
 
 .perseberangender {
