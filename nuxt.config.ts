@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     'nuxt-icon',
     '@pinia/nuxt',
     '@sidebase/nuxt-auth',
+    'nuxt3-leaflet',
   ],
   primevue: {
     /* option */
