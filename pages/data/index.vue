@@ -1,37 +1,4 @@
 <template>
-  <!-- <div class="numeric-data">
-    <Nuxt-link to="/data/pasien" class="no-underline">
-      <Card class="numeric-data__card">
-        <template #title>Total Pasien</template>
-        <template #subtitle>Jumlah pasien</template>
-        <template #content>
-          <div class="big-number">{{ getJumlahPasien }}</div>
-        </template>
-      </Card>
-    </Nuxt-link>
-
-    <Nuxt-link to="/data/pasien" class="no-underline">
-      <Card class="numeric-data__card">
-        <template #title>Total Kunjungan</template>
-        <template #subtitle>Jumlah Kunjungan</template>
-        <template #content>
-          <div class="big-number">{{ getJumlahKunjungan }}</div>
-        </template>
-      </Card>
-    </Nuxt-link>
-
-    <Nuxt-link to="/data/pasien" class="no-underline">
-      <Card class="numeric-data__card">
-        <template #title>Total Pendapatan</template>
-        <template #subtitle>Jumlah Pendapatan</template>
-        <template #content>
-          <div class="big-number">{{ getJumlahPendapatan }}</div>
-        </template>
-      </Card>
-    </Nuxt-link>
-  </div> -->
-  
-
   <div class="perseberangender">
     <Card class="perseberangender__card">
       <template #title>Pasien Laki-Laki</template>

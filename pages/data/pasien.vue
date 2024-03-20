@@ -1,5 +1,4 @@
 <template>
-    <!-- <NuxtLayout name="data"> -->
     <div class="grid">
         <div class="item-1">
             <Card class="card">
@@ -80,29 +79,6 @@
             </Card>
         </div>
 
-
-        <div class="item-3">
-            <!-- <Card>
-                <template #title>Distribusi Pasien by Kelompok Usia</template>
-                <template #content>
-                    <Chart type="polarArea" :options="{
-                        responsive: true,
-                        scales: {
-                            r: {
-                                pointLabels: {
-                                    display: true,
-                                    centerPointLabels: true,
-                                    font: {
-                                        size: 18
-                                    }
-                                }
-                            }
-                        }
-                    }" :data="kelompokUsiaChartData" />
-                </template>
-            </Card> -->
-        </div>
-
         <div class="item-4">
             <Card>
                 <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
@@ -111,10 +87,8 @@
                     <Chart type="line" :data="lineChartData" />
                 </template>
             </Card>
-
         </div>
     </div>
-<!-- </NuxtLayout> -->
 </template>
 
 <script setup>
@@ -207,7 +181,6 @@ onMounted(async () => {
         lineChartData.value = setLineChartData(data)
         jumlah_pasien.value = data.jumlah_pasien
         BarChartData.value = setBarChartData(data)
-        // console.log("hasil : ",data.jumlah_pasien)
     } catch (error) {
         console.error('Error fetching data from API:', error);
     }
@@ -216,10 +189,6 @@ onMounted(async () => {
 const capitalizeEachLetter = (string) => {
     return string.replace(/\b\w/g, match => match.toUpperCase());
 };
-
-// const capitalizeFirstLetter = (string) => {
-//   return string.charAt(0).toUpperCase() + string.slice(1);
-// };
 
 const setBarChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
@@ -237,14 +206,9 @@ const setBarChartData = (apiData) => {
 
 const processChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
-    // console.log('hasil', Object.keys(apiData));
 
     // Tentukan urutan yang diinginkan untuk label
     const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
-
-    // Buat array labels sesuai dengan urutan yang diinginkan
-    // const labels = desiredOrder.filter(category => apiData.kategori.hasOwnProperty(category)).map(category => capitalizeEachLetter(category));
-
     const labels = desiredOrder.map(category => capitalizeEachLetter(category));
     const values = desiredOrder.map(category => apiData.kategori[category]);
 
