@@ -1,5 +1,5 @@
 <template>
-  <div class="numeric-data">
+  <!-- <div class="numeric-data">
     <Nuxt-link to="/data/pasien" class="no-underline">
       <Card class="numeric-data__card">
         <template #title>Total Pasien</template>
@@ -29,7 +29,7 @@
         </template>
       </Card>
     </Nuxt-link>
-  </div>
+  </div> -->
   
 
   <div class="perseberangender">
