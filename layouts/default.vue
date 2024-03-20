@@ -9,14 +9,11 @@
           </div>
         </div>
         <div class="default-layout__header__content__trailing">
-          <NuxtLink to="/">
-            <Button label="Home" text plain />
-          </NuxtLink>
-          <NuxtLink to="/data">
-            <Button label="Data" text plain />
+          <NuxtLink to="/data/pasien">
+            <Button label="Dashboard" text plain />
           </NuxtLink>
           <NuxtLink to="/about">
-            <Button label="About" text plain />
+            <Button label="Registrasi Akun" text plain />
           </NuxtLink>
           <NuxtLink v-if="status == 'unauthenticated'" to="/login">
             <Button text plain>

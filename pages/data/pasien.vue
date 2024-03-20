@@ -27,10 +27,7 @@
                     <Chart type="bar" :data="BarChartData" />
                 </template>
             </Card>
-        </div>
 
-
-        <div class="item-3">
             <Card>
                 <template #title>Distribusi Pasien by Kelompok Usia</template>
                 <template #content>
@@ -61,7 +58,6 @@
                 </template>
             </Card>
         </div>
-
     </div>
 </template>
 
@@ -74,6 +70,10 @@ const lineChartData = ref();
 const BarChartData = ref();
 const jumlah_pasien = ref();
 
+definePageMeta({
+  layout: "data",
+});
+
 onMounted(async () => {
     try {
         const data = (await axios.get("http://localhost:5000/api/usia")).data
@@ -83,7 +83,6 @@ onMounted(async () => {
         lineChartData.value = setLineChartData(data)
         jumlah_pasien.value = data.jumlah_pasien
         BarChartData.value = setBarChartData(data)
-        // console.log("hasil : ",data.jumlah_pasien)
     } catch (error) {
         console.error('Error fetching data from API:', error);
     }
@@ -92,10 +91,6 @@ onMounted(async () => {
 const capitalizeEachLetter = (string) => {
     return string.replace(/\b\w/g, match => match.toUpperCase());
 };
-
-// const capitalizeFirstLetter = (string) => {
-//   return string.charAt(0).toUpperCase() + string.slice(1);
-// };
 
 const setBarChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
@@ -113,14 +108,9 @@ const setBarChartData = (apiData) => {
 
 const processChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
-    // console.log('hasil', Object.keys(apiData));
 
     // Tentukan urutan yang diinginkan untuk label
     const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
-
-    // Buat array labels sesuai dengan urutan yang diinginkan
-    // const labels = desiredOrder.filter(category => apiData.kategori.hasOwnProperty(category)).map(category => capitalizeEachLetter(category));
-
     const labels = desiredOrder.map(category => capitalizeEachLetter(category));
     const values = desiredOrder.map(category => apiData.kategori[category]);
 
@@ -205,16 +195,20 @@ const setLineChartData = (apiData) => {
 
 .item-2{
     grid-column: 2 / 3;
-    grid-row: 1 / 2;
+    grid-row: 1 / 3;
 }
 
 .item-3{
     grid-column: 2 / 3;
-    grid-row: 2/3;
+    // grid-row: 2/3;
 }
 
 .item-4{
     grid-column: 1 / 2;
-    grid-row: 2 / 3;
+    grid-row: 2 / 4;
+}
+
+.card{
+    margin-bottom: 10px;
 }
 </style>
