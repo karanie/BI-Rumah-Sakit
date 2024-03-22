@@ -8,10 +8,10 @@
           <Icon style="font-size: 3.5rem;" color="var(--blue-400)" name="material-symbols:man-3-rounded" />
           <div class="percentage_value">
             <b class="percentage_value__count percentage_value__count--male">{{ new
-    Intl.NumberFormat().format(countdata_male) }}</b>
+              Intl.NumberFormat().format(countdata_male) }}</b>
             <b class="percentage_value__percent">{{ Math.round(countdata_male / (countdata_male + countdata_female)
-    *
-    100) }}%</b>
+              *
+              100) }}%</b>
           </div>
         </div>
       </template>
@@ -26,11 +26,11 @@
           <Icon style="font-size: 3.5rem;" color="var(--red-400)" name="material-symbols:woman-2-rounded" />
           <div class="percentage_value">
             <b class="percentage_value__count percentage_value__count--female">{{ new
-    Intl.NumberFormat().format(countdata_female) }}</b>
+              Intl.NumberFormat().format(countdata_female) }}</b>
             <b class="percentage_value__percent"> {{ Math.round(countdata_female / (countdata_male +
-    countdata_female)
-    *
-    100) }}% </b>
+              countdata_female)
+              *
+              100) }}% </b>
           </div>
         </div>
       </template>
@@ -38,37 +38,68 @@
   </div>
 
   <Card>
-
     <template #title>Distribusi Jenis Kelamin</template>
-
     <template #content>
+      <skeleton height="8rem" v-if="genderDataIsPending"></skeleton>
       <p class="m-0">
-        <Chart type="doughnut" :data="genderchartdata" :options="genderChartDataOpt" />
+        <Chart type="doughnut" :data="genderchartdata" :options="genderChartDataOpt" v-if="!genderDataIsPending" />
       </p>
+    </template>
+  </Card>
 
+    <Card>
+    <template #title>Distribusi Jenis Kelamin Per Tahun</template>
+    <template #content>
+      <skeleton height="8rem" v-if="genderTimeSeriesDataIsPending"></skeleton>
+      <Chart type="line" :data="genderchartdata2" v-if="!genderTimeSeriesDataIsPending" />
+    </template>
+  </Card>
+
+  <h1>Data Kunjungan (Placeholder)</h1>
+
+  <Card>
+    <template #title>Pertumbuhan Kunjungan</template>
+    <template #content>
+      <skeleton height="8rem" v-if="kunjunganDataIsPending"></skeleton>
+      <Chart type="line" :data="kunjungangrowthdata" v-if="!kunjunganDataIsPending"/>
     </template>
   </Card>
 
   <Card>
-
-    <template #title>Distribusi Jenis Kelamin Per Tahun</template>
-
+    <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Registrasi</template>
     <template #content>
-      <Chart type="line" :data="genderchartdata2" />
+    <skeleton height="8rem" v-if="jenisRegisDataIsPending"></skeleton>
+      <Chart type="line" :data="jenisregisgrowthdata" v-if="!jenisRegisDataIsPending" />
     </template>
   </Card>
+
+  <Card>
+    <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Rujukan</template>
+    <template #content>
+    <skeleton height="8rem" v-if="RujukanDataIsPending"></skeleton>
+      <Chart type="line" :data="rujukangrowthdata" v-if="!RujukanDataIsPending" />
+    </template>
+  </Card>
+
 </template>
 
 <script setup>
 
 import Card from 'primevue/card';
 import Chart from 'primevue/chart';
-import axios from 'axios';
+import Skeleton from 'primevue/skeleton';
+
 
 definePageMeta({
   layout: "data",
 });
 
+// Data Kunjungan (Numpang Letak Xixi)
+const kunjungangrowthdata = ref()
+const jenisregisgrowthdata = ref()
+const rujukangrowthdata = ref()
+
+// Data Gender
 const genderchartdata = ref()
 const genderchartdata2 = ref()
 const countdata_male = ref(0)
@@ -81,83 +112,163 @@ const {
   kabupaten,
 } = storeToRefs(useDataFilter())
 
+// Data Pie Chart & Count Gender Pasien
+const {
+  data: genderData,
+  pending: genderDataIsPending,
+  refresh: genderDataRefresh,
+} = await useFetch("http://localhost:5000/api/jeniskelamin",{
+  server: false,
+  lazy: true,
+  params: {
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
+// Data Timeseries (Line Chart) Gender
+const {
+  data: genderTimeSeriesData,
+  pending: genderTimeSeriesDataIsPending,
+  refresh: genderTimeSeriesDataRefresh,
+} = await useFetch("http://localhost:5000/api/jeniskelamin", {
+  server: false,
+  lazy: true,
+  params: {
+    tipe_data: "timeseries",
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
+// Data Pertumbuhan Kunjungan
+const {
+  data: kunjunganData,
+  pending: kunjunganDataIsPending,
+  refresh: kunjunganDataRefresh,
+} = await useFetch("http://localhost:5000/api/kunjungan", {
+  server: false,
+  lazy: true,
+  params: {
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
-onMounted(async () => {
-  let data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
-    params: {
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  // data.index = data.index.slice(1, 3)
-  // data.values = data.values.slice(1, 3)
-  genderchartdata.value = setPieChartData(data);
-  countdata_female.value = data.values[1]
-  countdata_male.value = data.values[0]
+// Data Pertumbuhan Kunjungan Berdasarkan Jenis Regis
+const {
+  data: jenisRegisData,
+  pending: jenisRegisDataIsPending,
+  refresh: jenisRegisDataRefresh,
+} = await useFetch("http://localhost:5000/api/jenis_registrasi", {
+  server: false,
+  lazy: true,
+  params: {
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
-  genderChartDataOpt.value = setGenderChartDataOpt()
+//  Data Pertumbuhan Kunjungan Berdasarkan Rujukan
+const {
+  data: RujukanData,
+  pending: RujukanDataIsPending,
+  refresh: RujukanDataRefresh,
+} = await useFetch("http://localhost:5000/api/rujukan", {
+  server: false,
+  lazy: true,
+  params: {
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
-  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin", {
-    params: {
-      tipe_data: "timeseries",
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  // dataTimeseries.values = dataTimeseries.values.slice(1, 3)
-  // dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
-  genderchartdata2.value = {
-    labels: dataTimeseries.index,
-    datasets: dataTimeseries.columns.map((val, i) => {
-      return {
-        label: val,
-        data: dataTimeseries.values[i]
-      }
-    })
-  }
+watch(genderData, () => {
+if (!genderData.value) {
+  return;
+}
+genderchartdata.value = setPieChartData(genderData.value);
+countdata_female.value = genderData.value.values[1]
+countdata_male.value = genderData.value.values[0]
+genderChartDataOpt.value = setGenderChartDataOpt()
 });
 
-watch(lastFilter,async () => {
-  let data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
-    params: {
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  console.log(data)
-
-  // data.index = data.index.slice(1, 3)
-  // data.values = data.values.slice(1, 3)
-  genderchartdata.value = setPieChartData(data);
-  countdata_female.value = data.values[1]
-  countdata_male.value = data.values[0]
-
-  genderChartDataOpt.value = setGenderChartDataOpt()
-
-  let dataTimeseries = (await axios.get("http://localhost:5000/api/jeniskelamin", {
-    params: {
-      tipe_data: "timeseries",
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  // dataTimeseries.values = dataTimeseries.values.slice(1, 3)
-  // dataTimeseries.columns = dataTimeseries.columns.slice(1, 3)
+watch(genderTimeSeriesData, () => {
+  if (!genderTimeSeriesData.value) {
+    return;
+  }
   genderchartdata2.value = {
-    labels: dataTimeseries.index,
-    datasets: dataTimeseries.columns.map((val, i) => {
+    labels: genderTimeSeriesData.value.index,
+    datasets: genderTimeSeriesData.value.columns.map((val, i) => {
       return {
         label: val,
-        data: dataTimeseries.values[i]
+        data: genderTimeSeriesData.value.values[i]
       }
     })
+  };
+});
+
+watch(kunjunganData, () => {
+  if (!kunjunganData.value) {
+    return;
   }
+  kunjungangrowthdata.value = {
+    labels: kunjunganData.value.index,
+    datasets: kunjunganData.value.columns.map((val, i) => {
+      return {
+        label: val,
+        data: kunjunganData.value.values[i]
+      }
+    })
+  };
+});
+
+watch(jenisRegisData, () => {
+  if (!jenisRegisData.value) {
+    return;
+  }
+  jenisregisgrowthdata.value = {
+    labels: jenisRegisData.value.index,
+    datasets: jenisRegisData.value.columns.map((val, i) => {
+      return {
+        label: val,
+        data: jenisRegisData.value.values[i]
+      }
+    })
+  };
+});
+
+watch(RujukanData, () => {
+  if (!RujukanData.value) {
+    return;
+  }
+  rujukangrowthdata.value = {
+    labels: RujukanData.value.index,
+    datasets: RujukanData.value.columns.map((val, i) => {
+      return {
+        label: val,
+        data: RujukanData.value.values[i]
+      }
+    })
+  };
+});
+
+watch(lastFilter, () => {
+  genderDataRefresh();
+  genderTimeSeriesDataRefresh();
+  jenisRegisDataRefresh();
+  kunjunganDataRefresh();
+  RujukanDataRefresh();
 });
 
 const setPieChartData = data => {
