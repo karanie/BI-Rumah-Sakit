@@ -8,36 +8,52 @@
                     <b>{{ new Intl.NumberFormat().format(jumlahKunjungan) }}</b>
                 </template>
             </Card>
-        </div>
-
-        <div class="item-2">
-            <Card class="card">
-                <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
-                <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi
-                    pertama.</template>
-                <template #content>
-                    <Chart type="bar" :data="kunjunganBarChartData" />
-                </template>
-            </Card>
-
             <Card>
-                <template #title>10 Penyakit Terbanyak</template>
+                <template #title>TOP 5 Penyakit</template>
                 <template #content>
                     <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
                 </template>
             </Card>
             
+            <Card>
+                <template #title>TOP 5 Instansi/Perusahaan</template>
+                <template #content>
+                    <Chart type="bar" :options="{ indexAxis: 'y' }" :data="instansiChartData" />
+                </template>
+            </Card>
+        </div>
+
+        <div class="item-2">
+            <Card class="card">
+                <template #title>Perkembangan Jumlah Kunjungan Setiap Tahun</template>
+                <template #subtitle>Jumlah Kunjungan baru setiap tahun, hal ini berdasarkan waktu registrasi
+                    pertama.</template>
+                <template #content>
+                    <div style="width: 100%; display: flex; justify-content: center;">
+                        <Chart type="bar" :data="kunjunganBarChartData" />
+                    </div>
+                </template>
+            </Card>
+            <Card>
+                <template #title>Distribusi Jenis Penjamin</template>
+                <template #content>
+                    <div style="width: 100%; display: flex; justify-content: center;">
+                        <Chart type="doughnut" :data="penjaminBarChartData" />
+                    </div>
+                </template>
+            </Card>
         </div>
 
 
 
         <div class="item-3">
             
-            
+
+
         </div>
 
         <div class="item-4">
-        
+
 
         </div>
     </div>
@@ -48,7 +64,7 @@ import Chart from 'primevue/chart';
 import axios from 'axios';
 
 definePageMeta({
-  layout: "data",
+    layout: "data",
 });
 
 const jumlahKunjungan = ref();
@@ -58,21 +74,21 @@ const kunjunganBarChartData = ref();
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  })).data
-  jumlahKunjungan.value = data.jumlahKunjungan;
-  kunjunganBarChartData.value = setKunjunganBarChartData(data)
+    const data = (await axios.get("http://localhost:5000/api/dashboard", {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    })).data
+    jumlahKunjungan.value = data.jumlahKunjungan;
+    kunjunganBarChartData.value = setKunjunganBarChartData(data)
 });
 
 const setKunjunganBarChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
 
-    const dataValues =  Object.values(apiData.jumlahKunjunganTahunan);
+    const dataValues = Object.values(apiData.jumlahKunjunganTahunan);
 
     // Mencari index dari nilai tertinggi
     const maxIndex = dataValues.indexOf(Math.max(...dataValues));
@@ -89,7 +105,7 @@ const setKunjunganBarChartData = (apiData) => {
             {
                 label: "Jumlah Kunjungan",
                 data: dataValues,
-                backgroundColor : backgroundColors
+                backgroundColor: backgroundColors
             },
         ],
     };
@@ -131,8 +147,8 @@ onMounted(async () => {
     const data = response.data;
 
     const limitedData = {
-        index: data.index.slice(0, 10),
-        values: data.values.slice(0, 10)
+        index: data.index.slice(0, 5),
+        values: data.values.slice(0, 5)
     };
 
     // Misalkan limitedData.values berisi nilai-nilai data Anda
@@ -181,8 +197,7 @@ const capitalizeEachLetter = (string) => {
 };
 
 // const capitalizeFirstLetter = (string) => {
-//   return string.charAt(0).toUpperCase() + string.slice(1);
-// };
+//   return string.charAt(0).toUpperCase() + string.slice(1);5/ };
 
 const setBarChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
@@ -275,6 +290,134 @@ const setLineChartData = (apiData) => {
         datasets,
     };
 };
+
+const penjaminBarChartData = ref(null);
+const instansiChartData = ref(null);
+
+onMounted(async () => {
+    const response = await axios.get('http://localhost:5000/api/penjamin', {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    });
+    const data = response.data;
+
+    // Proses data untuk format grafik batang
+    penjaminBarChartData.value = {
+        labels: data.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: data.values,
+                borderWidth: 1 // Lebar garis batas
+            }
+        ]
+    };
+});
+
+onMounted(async () => {
+    const response = await axios.get('http://localhost:5000/api/instansi', {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    });
+    const data = response.data;
+
+    const limitedData = {
+        index: data.index.slice(0, 5),
+        values: data.values.slice(0, 5)
+    };
+
+    const dataValues = limitedData.values;
+
+    // Mencari index dari nilai tertinggi
+    const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+    // Membuat array warna, defaultnya semua warna sama
+    const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+    // Mengubah warna untuk bar dengan nilai tertinggi
+    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+    // Proses data untuk format grafik batang
+    instansiChartData.value = {
+        labels: limitedData.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: limitedData.values,
+                borderWidth: 1, // Lebar garis batas
+                backgroundColor : backgroundColors
+            }
+        ]
+    };
+});
+
+watch(lastFilter, async () => {
+    const response = await axios.get('http://localhost:5000/api/penjamin', {
+        params: {
+            tahun: tahun.value,
+        }
+    });
+    const data = response.data;
+
+    // Proses data untuk format grafik batang
+    penjaminBarChartData.value = {
+        labels: data.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: data.values,
+                borderWidth: 1 // Lebar garis batas
+            }
+        ]
+    };
+})
+
+watch(lastFilter, async () => {
+    const response = await axios.get('http://localhost:5000/api/instansi', {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    });
+    const data = response.data;
+
+    const limitedData = {
+        index: data.index.slice(0, 5),
+        values: data.values.slice(0, 5)
+    };
+
+    const dataValues = limitedData.values;
+
+    // Mencari index dari nilai tertinggi
+    const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+    // Membuat array warna, defaultnya semua warna sama
+    const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+    // Mengubah warna untuk bar dengan nilai tertinggi
+    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+    // Proses data untuk format grafik batang
+    instansiChartData.value = {
+        labels: limitedData.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: limitedData.values,
+                borderWidth: 1, // Lebar garis batas
+                backgroundColor : backgroundColors
+            }
+        ]
+    };
+})
+
 
 </script>
 
