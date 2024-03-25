@@ -2,22 +2,17 @@
   <div class="grid">
     <div class="item-1">
       <Card class="card">
-        <template #title>Total Kunjungan</template>
-        <template #subtitle>Jumlah Kunjungan dari tahun 2016-2021.</template>
+        <template #title>Total Pasien</template>
+        <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
         <template #content>
           <b>{{ new Intl.NumberFormat().format(jumlahKunjungan) }}</b>
         </template>
       </Card>
-      <Card>
-        <template #title>TOP 5 Penyakit</template>
+      <Card class="card">
+        <template #title>Total Pasien</template>
+        <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
         <template #content>
-          <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
-        </template>
-      </Card>
-      <Card>
-        <template #title>TOP 5 Instansi/Perusahaan</template>
-        <template #content>
-          <Chart type="bar" :options="{ indexAxis: 'y' }" :data="instansiChartData" />
+          <b>{{ new Intl.NumberFormat().format(jumlahKunjungan) }}</b>
         </template>
       </Card>
     </div>
@@ -28,9 +23,7 @@
         <template #subtitle>Jumlah Kunjungan baru setiap tahun, hal ini berdasarkan waktu registrasi
           pertama.</template>
         <template #content>
-          <div style="width: 100%; display: flex; justify-content: center;">
-            <Chart type="bar" :data="kunjunganBarChartData" />
-          </div>
+          <Chart type="bar" :data="kunjunganBarChartData" />
         </template>
       </Card>
       <Card>
@@ -42,11 +35,10 @@
         </template>
       </Card>
 
-      <Card class="card">
-        <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
-        <template #subtitle>Jumlah pasien baru setiap tahun, hal ini berdasarkan waktu registrasi pertama.</template>
+      <Card>
+        <template #title>10 Poliklinik Terfavorit untuk Pasien Rawat Jalan</template>
         <template #content>
-          <Chart type="bar" :data="kunjunganBarChartData" />
+          <Chart type="bar" :options="{ indexAxis: 'y' }" :data="poliklinikChartData" />
         </template>
       </Card>
 
@@ -60,8 +52,8 @@
       <Card>
         <template #title>Pertumbuhan Kunjungan</template>
         <template #content>
-        <Skeleton height="8rem" v-if="kunjunganDataIsPending" />
-        <Chart type="line" :data="kunjungangrowthdata" v-if="!kunjunganDataIsPending"/>
+          <Skeleton height="8rem" v-if="kunjunganDataIsPending" />
+          <Chart type="line" :data="kunjungangrowthdata" v-if="!kunjunganDataIsPending" />
         </template>
       </Card>
 
@@ -89,7 +81,7 @@ import Chart from 'primevue/chart';
 import axios from 'axios';
 
 definePageMeta({
-    layout: "data",
+  layout: "data",
 });
 
 const jumlahKunjungan = ref();
@@ -249,6 +241,7 @@ const lineChartData = ref();
 const BarChartData = ref();
 const jumlah_pasien = ref();
 const penyakitChartData = ref();
+const poliklinikChartData = ref();
 
 onMounted(async () => {
   const response = await axios.get('http://localhost:5000/api/gejala', {
@@ -261,8 +254,10 @@ onMounted(async () => {
   const data = response.data;
 
   const limitedData = {
-    index: data.index.slice(0, 5),
-    values: data.values.slice(0, 5)
+    index: data.index.slice(0, 10),
+    values: data.values.slice(0, 10),
+    indexP: data.indexPoliklinik.slice(0, 10),
+    valuesP: data.valuesPoliklinik.slice(0, 10),
   };
 
   // Misalkan limitedData.values berisi nilai-nilai data Anda
@@ -284,6 +279,18 @@ onMounted(async () => {
       {
         label: 'Jumlah',
         data: dataValues,
+        borderWidth: 1, // Lebar garis batas
+        backgroundColor: backgroundColors
+      }
+    ]
+  };
+
+  poliklinikChartData.value = {
+    labels: limitedData.indexP,
+    datasets: [
+      {
+        label: 'Jumlah',
+        data: limitedData.valuesP,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
@@ -506,7 +513,7 @@ onMounted(async () => {
         label: 'Jumlah',
         data: limitedData.values,
         borderWidth: 1, // Lebar garis batas
-        backgroundColor : backgroundColors
+        backgroundColor: backgroundColors
       }
     ]
   };
@@ -567,12 +574,66 @@ watch(lastFilter, async () => {
         label: 'Jumlah',
         data: limitedData.values,
         borderWidth: 1, // Lebar garis batas
-        backgroundColor : backgroundColors
+        backgroundColor: backgroundColors
       }
     ]
   };
 })
 
+watch(lastFilter, async () => {
+  const response = await axios.get('http://localhost:5000/api/gejala', {
+    params: {
+      tahun: tahun.value,
+      bulan: bulan.value,
+      kabupaten: kabupaten.value,
+    }
+  });
+  const data = response.data;
+
+  const limitedData = {
+    index: data.index.slice(0, 10),
+    values: data.values.slice(0, 10),
+    indexP: data.indexPoliklinik.slice(0, 10),
+    valuesP: data.valuesPoliklinik.slice(0, 10),
+  };
+
+  // Misalkan limitedData.values berisi nilai-nilai data Anda
+  const dataValues = limitedData.values;
+
+  // Mencari index dari nilai tertinggi
+  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+  // Membuat array warna, defaultnya semua warna sama
+  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+  // Mengubah warna untuk bar dengan nilai tertinggi
+  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+  // Proses data untuk format grafik batang
+  penyakitChartData.value = {
+    labels: limitedData.index,
+    datasets: [
+      {
+        label: 'Jumlah',
+        data: dataValues,
+        borderWidth: 1, // Lebar garis batas
+        backgroundColor: backgroundColors
+      }
+    ]
+  };
+
+  poliklinikChartData.value = {
+    labels: limitedData.indexP,
+    datasets: [
+      {
+        label: 'Jumlah',
+        data: limitedData.valuesP,
+        borderWidth: 1, // Lebar garis batas
+        backgroundColor: backgroundColors
+      }
+    ]
+  };
+})
 
 </script>
 
@@ -585,13 +646,10 @@ watch(lastFilter, async () => {
 }
 
 .item-1 {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-}
-
-.item-2 {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: 100%;
 }
 
 .item-3 {
