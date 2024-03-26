@@ -22,6 +22,14 @@
     <Chart v-if="!timeSeriesDataIsPending" id="asdf" type="line" :data="demografiChartData3" />
   </template>
   </Card>
+
+  <Card>
+  <template #title>Demografi Riau</template>
+  <template #content>
+    <Skeleton height="8rem" v-if="dataIsPending" />
+    <GeoChart :data="demografiChartData1" />
+  </template>
+  </Card>
 </template>
 
 <script setup lang="ts">
