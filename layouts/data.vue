@@ -35,10 +35,10 @@
             </Card>
           </Nuxt-link>
 
-          <Nuxt-link to="/data/demografi" class="no-underline">
+          <Nuxt-link to="/data/pendapatan" class="no-underline">
             <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card" @click="setActiveCard(2)">
               <template #title>Total Pendapatan</template>
-              <template #subtitle>Jumlah Pendapatan</template>
+              <template #subtitle>Jumlah Kolom total_tagihan</template>
               <template #content>
                 <div class="big-number">{{ getJumlahPendapatan }}</div>
               </template>
@@ -56,7 +56,6 @@
 // TODO: format datetime based on browser locale
 const { data } = useFetch("http://localhost:5000/api/last-update");
 
-import Chart from 'primevue/chart';
 import axios from 'axios';
 
 const {
@@ -74,7 +73,7 @@ const activeCard = ref(0);
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -87,6 +86,7 @@ onMounted(async () => {
   console.log(data);
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
+  jumlahPendapatan.value = data.jumlahPendapatanTahunan;
 });
 
 watch(lastFilter, async () => {
@@ -99,8 +99,10 @@ watch(lastFilter, async () => {
   })).data
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
-  
+  jumlahPendapatan.value = data.jumlahPendapatanTahunan;
 });
+
+console.log(jumlahPendapatan)
 
 const setActiveCard = (index) => {
   activeCard.value = index
@@ -164,6 +166,8 @@ const setActiveCard = (index) => {
 
   .big-number {
     font-weight: bold;
+    font-size: 20px
+
   }
 }
 
