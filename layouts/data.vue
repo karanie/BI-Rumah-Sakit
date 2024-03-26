@@ -35,12 +35,12 @@
             </Card>
           </Nuxt-link>
 
-          <Nuxt-link to="/data/demografi" class="no-underline">
+          <Nuxt-link to="/data/pendapatan" class="no-underline">
             <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card" @click="setActiveCard(2)">
               <template #title>Total Pendapatan</template>
               <template #subtitle>Jumlah Pendapatan</template>
               <template #content>
-                <div class="big-number">{{ getJumlahPendapatan }}</div>
+                <div class="big-number">Rp{{ getJumlahPendapatan }}</div>
               </template>
             </Card>
           </Nuxt-link>
@@ -87,6 +87,8 @@ onMounted(async () => {
   console.log(data);
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
+  jumlahPendapatan.value = data.pendapatan;
+
 });
 
 watch(lastFilter, async () => {
@@ -99,6 +101,7 @@ watch(lastFilter, async () => {
   })).data
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
+  jumlahPendapatan.value = data.pendapatan;
   
 });
 
@@ -164,6 +167,7 @@ const setActiveCard = (index) => {
 
   .big-number {
     font-weight: bold;
+    font-size: 30px;
   }
 }
 
