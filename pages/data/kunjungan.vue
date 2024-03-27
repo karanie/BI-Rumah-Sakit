@@ -1,22 +1,5 @@
 <template>
   <div class="grid">
-    <div class="item-1">
-      <Card class="card">
-        <template #title>Total Pasien</template>
-        <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
-        <template #content>
-          <b>{{ new Intl.NumberFormat().format(jumlahKunjungan) }}</b>
-        </template>
-      </Card>
-      <Card class="card">
-        <template #title>Total Pasien</template>
-        <template #subtitle>Jumlah pasien dari tahun 2016-2021.</template>
-        <template #content>
-          <b>{{ new Intl.NumberFormat().format(jumlahKunjungan) }}</b>
-        </template>
-      </Card>
-    </div>
-
     <div class="item-2">
       <Card class="card">
         <template #title>Perkembangan Jumlah Kunjungan Setiap Tahun</template>
