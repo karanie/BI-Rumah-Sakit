@@ -1,6 +1,7 @@
 <template>
   <div class="geochart">
     <LMap
+      v-if="data"
       ref="map"
       :zoom="7.5"
       :center="[0.720, 101.464]"
@@ -37,8 +38,15 @@ const props = defineProps(["options", "data"]);
 const geojsonLayer = ref();
 const isHovered = ref(false);
 const hoveredData = ref();
-const data = computed(() => toRaw(props.data));
-
+const legends = ref();
+const data = computed(() => {
+  return props.data?.labels.map((el, idx) => {
+    return {
+      label: el,
+      value: props.data?.datasets[0].data[idx],
+    }
+  });
+});
 const getHoveredData = computed(() => {
   const labelCallback = props?.options?.plugins?.tooltip?.callbacks?.label ?? (val => val);
   const titleCallback = props?.options?.plugins?.tooltip?.callbacks?.title ?? (val => val);
@@ -50,6 +58,12 @@ const getHoveredData = computed(() => {
 
 const pallete = ['#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858'];
 
+watch(data, () => {
+  const max = data.value[0].value;
+  const maxRounded = Math.ceil(max / 100000) * 100000;
+  legends.value = generateLegends(getColor, maxRounded);
+});
+
 function getColor(n, max=1000) {
   return n <= 0 ? pallete[0]
     : n >= max ? pallete[pallete.length - 1]
@@ -59,17 +73,25 @@ function getColor(n, max=1000) {
 function generateLegends(getColor, max=1000) {
   return [...Array(pallete.length).keys()].map(i => {
     return {
-      label: `${Math.round(i/pallete.length * max, 2)}-${Math.round((i+1)/pallete.length * max, 2)}`,
+      label: i == 0 ? `<${Math.round((i+1)/pallete.length * max, 2)}`
+        : i == pallete.length - 1 ? `>${Math.round((i)/pallete.length * max, 2)}`
+        :`${Math.round(i/pallete.length * max, 2)}-${Math.round((i+1)/pallete.length * max, 2)}`,
       color: getColor(i/pallete.length * max, max),
     }
   });
 }
 
-const legends = generateLegends(getColor, 1000000)
+function findCityInData(arr, city) {
+  city = city.replace(/(Kota|Kab\.|Kabupaten)/i, "").trim();
+  return arr.find(
+      i => i.label.match(new RegExp("\\w*" + city + "\\w*", "i"))
+  );
+}
 
 function setGeoStyle(feature) {
   return {
-    fillColor: getColor(feature.properties.tags.population, 1000000),
+    fillColor: getColor(findCityInData(data.value, feature.properties.tags.official_name)?.value, data.value[0].value),
+    //fillColor: getColor(feature.properties.tags.population, 1000000),
     weight: 2,
     opacity: 1,
     color: 'white',
@@ -91,10 +113,8 @@ function handleMouseOver(e) {
   isHovered.value = true;
   hoveredData.value = {
     name: layer.feature.properties.tags.official_name,
-    value: layer.feature.properties.tags.population,
+    value: findCityInData(data.value, layer.feature.properties.tags.official_name)?.value,
   }
-
-  console.log(data.value);
 }
 
 function handleMouseOut(e) {
