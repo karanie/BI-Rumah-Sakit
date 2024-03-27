@@ -86,7 +86,7 @@ onMounted(async () => {
   console.log(data);
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
-  jumlahPendapatan.value = data.jumlahPendapatanTahunan;
+  jumlahPendapatan.value = data.pendapatan;
 });
 
 watch(lastFilter, async () => {
@@ -99,7 +99,7 @@ watch(lastFilter, async () => {
   })).data
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
-  jumlahPendapatan.value = data.jumlahPendapatanTahunan;
+  jumlahPendapatan.value = data.pendapatan;
 });
 
 console.log(jumlahPendapatan)
@@ -166,8 +166,7 @@ const setActiveCard = (index) => {
 
   .big-number {
     font-weight: bold;
-    font-size: 20px
-
+    font-size: 30px;
   }
 }
 

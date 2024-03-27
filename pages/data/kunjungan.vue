@@ -239,8 +239,6 @@ onMounted(async () => {
   const limitedData = {
     index: data.index.slice(0, 10),
     values: data.values.slice(0, 10),
-    indexP: data.indexPoliklinik.slice(0, 10),
-    valuesP: data.valuesPoliklinik.slice(0, 10),
   };
 
   // Misalkan limitedData.values berisi nilai-nilai data Anda
@@ -268,21 +266,11 @@ onMounted(async () => {
     ]
   };
 
-  poliklinikChartData.value = {
-    labels: limitedData.indexP,
-    datasets: [
-      {
-        label: 'Jumlah',
-        data: limitedData.valuesP,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: backgroundColors
-      }
-    ]
-  };
+
 });
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/gejala', {
+  const response = await axios.get('http://localhost:5000/api/poliklinik', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -292,8 +280,8 @@ onMounted(async () => {
   const data = response.data;
 
   const limitedData = {
-    index: data.index.slice(0, 10),
-    values: data.values.slice(0, 10)
+    index: data.indexPoliklinik.slice(0, 10),
+    values: data.valuesPoliklinik.slice(0, 10),
   };
 
   // Misalkan limitedData.values berisi nilai-nilai data Anda
@@ -309,7 +297,7 @@ onMounted(async () => {
   backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
   // Proses data untuk format grafik batang
-  penyakitChartData.value = {
+  poliklinikChartData.value = {
     labels: limitedData.index,
     datasets: [
       {
@@ -321,6 +309,7 @@ onMounted(async () => {
     ]
   };
 });
+
 
 onMounted(async () => {
   try {
@@ -576,8 +565,7 @@ watch(lastFilter, async () => {
   const limitedData = {
     index: data.index.slice(0, 10),
     values: data.values.slice(0, 10),
-    indexP: data.indexPoliklinik.slice(0, 10),
-    valuesP: data.valuesPoliklinik.slice(0, 10),
+
   };
 
   // Misalkan limitedData.values berisi nilai-nilai data Anda
@@ -604,13 +592,42 @@ watch(lastFilter, async () => {
       }
     ]
   };
+})
 
+watch(lastFilter, async () => {
+  const response = await axios.get('http://localhost:5000/api/poliklinik', {
+    params: {
+      tahun: tahun.value,
+      bulan: bulan.value,
+      kabupaten: kabupaten.value,
+    }
+  });
+  const data = response.data;
+
+  const limitedData = {
+    index: data.indexPoliklinik.slice(0, 10),
+    values: data.valuesPoliklinik.slice(0, 10),
+  };
+
+  // Misalkan limitedData.values berisi nilai-nilai data Anda
+  const dataValues = limitedData.values;
+
+  // Mencari index dari nilai tertinggi
+  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+  // Membuat array warna, defaultnya semua warna sama
+  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+  // Mengubah warna untuk bar dengan nilai tertinggi
+  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+  // Proses data untuk format grafik batang
   poliklinikChartData.value = {
-    labels: limitedData.indexP,
+    labels: limitedData.index,
     datasets: [
       {
         label: 'Jumlah',
-        data: limitedData.valuesP,
+        data: dataValues,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
@@ -628,9 +645,9 @@ watch(lastFilter, async () => {
   gap: 20px;
 }
 
-.item-1 {
-  display: flex;
-  flex-direction: row;
+
+
+.item-2 {
   gap: 8px;
   width: 100%;
 }
