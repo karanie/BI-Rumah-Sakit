@@ -67,7 +67,7 @@ watch(data, () => {
   const max = data.value[0].value;
   const maxRounded = Math.ceil(max / 100000) * 100000;
   legends.value = generateLegends(getColor, maxRounded);
-});
+}, { immediate: true });
 
 function onGeoJsonReady(e) {
   map.value.leafletObject.fitBounds(e.getBounds());
