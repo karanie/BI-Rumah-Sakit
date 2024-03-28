@@ -104,10 +104,19 @@ watch(lastFilter, async () => {
 
 console.log(jumlahPendapatan)
 
+onMounted(() => {
+  const storedActiveCard = window.localStorage.getItem('activeCard');
+  if (storedActiveCard !== null) {
+    activeCard.value = parseInt(storedActiveCard);
+  }
+});
+
 const setActiveCard = (index) => {
-  activeCard.value = index
+  activeCard.value = index;
+  // Menyimpan nilai activeCard ke dalam local storage
+  window.localStorage.setItem('activeCard', index.toString());
   console.log('hasil', activeCard.value)
-}
+};
 </script>
 
 <style scoped lang="scss">
