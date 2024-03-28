@@ -65,7 +65,7 @@ const pallete = ['#ece7f2','#a6bddb','#74a9cf','#0570b0','#023858'];
 
 watch(data, () => {
   const max = data.value[0].value;
-  const maxRounded = Math.ceil(max / 100000) * 100000;
+  const maxRounded = Math.ceil(max / Math.pow(10, Math.floor(Math.log10(max)))) * Math.pow(10, Math.floor(Math.log10(max)));
   legends.value = generateLegends(getColor, maxRounded);
 }, { immediate: true });
 
