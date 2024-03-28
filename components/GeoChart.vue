@@ -5,6 +5,10 @@
       ref="map"
       :zoom="7.5"
       :center="[0.720, 101.464]"
+      :minZoom="7.5"
+      :maxZoom="7.5"
+      :options="{ zoomControl: false }"
+      @ready="onMapReady"
     >
       <LTileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -12,7 +16,7 @@
         layer-type="base"
         name="OpenStreetMap"
       />
-      <LGeoJson ref="geojsonLayer" :geojson="riauGeoData" :options="geoOptions" :optionsStyle="setGeoStyle" />
+      <LGeoJson ref="geojsonLayer" @ready="onGeoJsonReady" :geojson="riauGeoData" :options="geoOptions" :optionsStyle="setGeoStyle" />
       <LControl position="bottomleft">
         <LCustomControlColorLegends :legends="legends" />
       </LControl>
@@ -39,6 +43,7 @@ const geojsonLayer = ref();
 const isHovered = ref(false);
 const hoveredData = ref();
 const legends = ref();
+const map = ref();
 const data = computed(() => {
   return props.data?.labels.map((el, idx) => {
     return {
@@ -56,13 +61,17 @@ const getHoveredData = computed(() => {
   }
 });
 
-const pallete = ['#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858'];
+const pallete = ['#ece7f2','#a6bddb','#74a9cf','#0570b0','#023858'];
 
 watch(data, () => {
   const max = data.value[0].value;
   const maxRounded = Math.ceil(max / 100000) * 100000;
   legends.value = generateLegends(getColor, maxRounded);
 });
+
+function onGeoJsonReady(e) {
+  map.value.leafletObject.fitBounds(e.getBounds());
+}
 
 function getColor(n, max=1000) {
   return n <= 0 ? pallete[0]
@@ -91,10 +100,9 @@ function findCityInData(arr, city) {
 function setGeoStyle(feature) {
   return {
     fillColor: getColor(findCityInData(data.value, feature.properties.tags.official_name)?.value, data.value[0].value),
-    //fillColor: getColor(feature.properties.tags.population, 1000000),
     weight: 2,
     opacity: 1,
-    color: 'white',
+    color: 'gray',
     dashArray: '3',
     fillOpacity: 0.75,
   };

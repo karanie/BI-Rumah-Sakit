@@ -37,6 +37,7 @@ const props = defineProps<{
     &__color {
       height: 1rem;
       width: 1.2rem;
+      opacity: 0.75;
     }
   }
 }
