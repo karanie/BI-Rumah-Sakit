@@ -73,7 +73,7 @@ const activeCard = ref(0);
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value));
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -104,19 +104,10 @@ watch(lastFilter, async () => {
 
 console.log(jumlahPendapatan)
 
-onMounted(() => {
-  const storedActiveCard = window.localStorage.getItem('activeCard');
-  if (storedActiveCard !== null) {
-    activeCard.value = parseInt(storedActiveCard);
-  }
-});
-
 const setActiveCard = (index) => {
-  activeCard.value = index;
-  // Menyimpan nilai activeCard ke dalam local storage
-  window.localStorage.setItem('activeCard', index.toString());
+  activeCard.value = index
   console.log('hasil', activeCard.value)
-};
+}
 </script>
 
 <style scoped lang="scss">
@@ -157,7 +148,7 @@ const setActiveCard = (index) => {
 
     &.active {
       background-color: var(--cyan-100);
-      color: var(--surface-800);
+      color : var(--surface-800);
       // color: white; /* Jika ingin teks menjadi putih */
     }
 
