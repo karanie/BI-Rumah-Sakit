@@ -11,3 +11,20 @@ export function tooltipLabelCallbackCurrency(options: any) {
     return new Intl.NumberFormat(navigator.language, options).format(currentValue);
   }
 }
+
+export function generateChartOption(style: string) {
+  switch(style) {
+    case "percent":
+      return {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: tooltipLabelCallback,
+            }
+          }
+        }
+      };
+    default:
+      return {};
+  }
+}
