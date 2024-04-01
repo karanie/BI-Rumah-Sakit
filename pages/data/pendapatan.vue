@@ -4,7 +4,7 @@
       <template #title>Total Pendapatan</template>
       <template #subtitle>Jumlah total tagihan dari tahun 2020-2024.</template>
       <template #content>
-        <b class="big-number" style="color: rgb(70, 238, 70);">Rp{{ getJumlahPendapatan }}</b>
+        <b class="big-number" style="color: rgb(50,205,50);">Rp{{ getJumlahPendapatan }}</b>
       </template>
     </Card>
     <Card class="card">
@@ -15,6 +15,14 @@
       </template>
     </Card>
   </div>
+
+  <Card>
+    <template #title>Pertumbuhan Pendapatan</template>
+    <template #content>
+      <skeleton height="8rem" v-if="pendapatanDataIsPending"></skeleton>
+      <Chart type="line" :data="pendapatanData" v-if="!pendapatanDataIsPending" :options="setPendapatanChartDataOpt()" />
+    </template>
+  </Card>
 
   <Card>
     <template #title>Pertumbuhan Pendapatan Berdasarkan Jenis Registrasi</template>
@@ -79,8 +87,22 @@ const jumlahPengeluaran = ref();
 const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
 const getJumlahPengeluaran = computed(() => new Intl.NumberFormat().format(jumlahPengeluaran.value));
 
+const {
+  data: pendapatanData,
+  pending: pendapatanDataIsPending,
+  refresh: pendapatanDataRefresh,
+} = await useFetch("http://localhost:5000/api/pendapatan", {
+  server: false,
+  lazy: true,
+  params: {
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
 
-// Data Pertumbuhan Kunjungan
+// Data Pertumbuhan Pendapatan berdasarkan jenis_regis
 const {
   data: pendapatanJenisRegisData,
   pending: pendapatanJenisRegisDataIsPending,
@@ -112,8 +134,26 @@ watch(pendapatanJenisRegisData, () => {
   };
 });
 
+
+watch(pendapatanData, () => {
+  if (!pendapatanData.value) {
+    return;
+  }
+  console.log(pendapatanData.value)
+  pendapatanData.value = {
+    labels: pendapatanData.value.index,
+    datasets: pendapatanData.value.columns.map((val, i) => {
+      return {
+        label: val,
+        data: pendapatanData.value.values[i]
+      }
+    })
+  };
+});
+
 watch(lastFilter, () => {
   pendapatanJenisRegisDataRefresh()
+  pendapatanDataRefresh()
 });
 
 // Chart Options
@@ -362,7 +402,6 @@ onMounted(async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  console.log(data);
   jumlahPendapatan.value = data.pendapatan;
   jumlahPengeluaran.value = data.pengeluaran;
 });
@@ -375,7 +414,6 @@ watch(lastFilter, async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  console.log(data);
   jumlahPendapatan.value = data.pendapatan;
   jumlahPengeluaran.value = data.pengeluaran;
 })
