@@ -75,9 +75,9 @@ const activeCard = ref(0);
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
-const getJumlahPengeluaran = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPengeluaran.value));
-const getJumlahTotal = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value - jumlahPengeluaran.value));
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value));
+const getJumlahPengeluaran = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPengeluaran.value));
+const getJumlahTotal = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value - jumlahPengeluaran.value));
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -153,7 +153,7 @@ const setActiveCard = (index) => {
 
     &.active {
       background-color: var(--cyan-100);
-      color : var(--surface-800);
+      color: var(--surface-800);
       // color: white; /* Jika ingin teks menjadi putih */
     }
 
@@ -171,7 +171,7 @@ const setActiveCard = (index) => {
 
   .big-number {
     font-weight: bold;
-    font-size: 30px;
+    font-size: 24px;
   }
 }
 
