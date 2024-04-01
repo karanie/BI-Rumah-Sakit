@@ -40,7 +40,7 @@
               <template #title>Total Pendapatan</template>
               <template #subtitle>Jumlah Kolom total_tagihan</template>
               <template #content>
-                <div class="big-number">{{ getJumlahPendapatan }}</div>
+                <div class="big-number">{{ getJumlahTotal }}</div>
               </template>
             </Card>
           </Nuxt-link>
@@ -68,12 +68,16 @@ const {
 const jumlahPasien = ref();
 const jumlahKunjungan = ref();
 const jumlahPendapatan = ref();
+const jumlahPengeluaran = ref();
+
 
 const activeCard = ref(0);
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
 const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
+const getJumlahPengeluaran = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPengeluaran.value));
+const getJumlahTotal = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value - jumlahPengeluaran.value));
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -87,6 +91,7 @@ onMounted(async () => {
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
   jumlahPendapatan.value = data.pendapatan;
+  jumlahPengeluaran.value = data.pengeluaran;
 });
 
 watch(lastFilter, async () => {
