@@ -1,6 +1,11 @@
 <template>
   <Card>
-  <template #title><slot name="title" /></template>
+  <template #title>
+    <div class="title">
+      <span><slot name="title" /></span>
+      <Button v-if="props.forecast" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
+    </div>
+  </template>
   <template #content>
     <Skeleton height="8rem" v-if="pending" />
     <template v-if="!pending">
@@ -19,6 +24,7 @@ const props = defineProps<{
   type: string,
   chartOpt?: any,
   timeseries?: boolean,
+  forecast?: boolean,
 }>();
 
 const chartData = ref();
@@ -40,6 +46,18 @@ const { data, pending, refresh } = useFetch(props.src, {
   watch: false,
 });
 
+const { data: forecastData, pending: forecastPending, execute: forecastExecute } = useFetch(props.src, {
+  server: false,
+  lazy: true,
+  params: {
+    tahun: tahun,
+    bulan: bulan,
+    tipe_data: props.forecast ? "forecast" : undefined,
+  },
+  watch: false,
+  immediate: false,
+});
+
 watch(data, () => {
   if (!data.value)
     return;
@@ -47,20 +65,49 @@ watch(data, () => {
   console.log(chartData.value);
 });
 
+watch(forecastData, () => {
+  if (!forecastData.value && !data.value)
+    return;
+  chartData.value = setData(data.value, forecastData.value);
+  console.log(chartData.value);
+});
+
 watch(lastFilter, () => {
   refresh();
 });
 
-function setData(data: any) {
+function forecast() {
+  forecastExecute();
+}
+
+function setData(data: any, forecastData?: any) {
   if (props.timeseries) {
-    return {
+    const out = {
       labels: data.index,
       datasets: data.columns.map((val: string, i: number) => {
         return {
           label: val,
-          data: data.values[i]
+          data: data.values[i],
+          pointStyle: false,
         }
       })
+    }
+    if (!forecastData) {
+      return out;
+    } else {
+      console.log(forecastData);
+      forecastData.forEach((el: any) => {
+        out.datasets.push(
+          {
+            label: `${el.columns[0]} Forecast`,
+            data: el.values[0].map((val: number, i: number) => {
+              return { x: el.index[i], y: val }
+            }),
+            pointStyle: false,
+          }
+        );
+      });
+      return out;
     }
   }
   return {
@@ -73,3 +120,11 @@ function setData(data: any) {
   };
 }
 </script>
+
+<style scoped lang="scss">
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>
