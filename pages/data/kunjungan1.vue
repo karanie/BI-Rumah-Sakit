@@ -12,34 +12,68 @@
                 </Card>
             </div>
 
-            <div class="grid-item-chart__item2">
-                <Card style="height: 100%;">
+            <div class="grid-item-chart__item3">
+                <!-- <Card style="height: 100%;">
                     <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
                     <template #content>
                         <Chart type="line" :data="lineChartData" />
                     </template>
+                </Card> -->
+
+                <Card>
+                    <template #title>Distribusi Jenis Penjamin</template>
+                    <template #content>
+                        <div style="width: 100%; display: flex; justify-content: center;">
+                            <Chart type="doughnut" :data="penjaminBarChartData" />
+                        </div>
+                    </template>
                 </Card>
+
+
             </div>
 
-            <div class="grid-item-chart__item3">
-                <Card>
+            <div class="grid-item-chart__item2">
+                <!-- <Card>
                     <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Registrasi</template>
                     <template #content>
                         <Skeleton height="8rem" v-if="jenisRegisDataIsPending" />
                         <Chart type="line" :data="jenisregisgrowthdata" v-if="!jenisRegisDataIsPending" />
                     </template>
+                </Card> -->
+
+
+                <Card style="height: 100%;">
+                    <template #title>Grafik Distribusi Kelompok Usia dan Pertumbuhan Kunjungan</template>
+                    <template #content>
+                        <Chart :type="chartType" :data="chartData" />
+                    </template>
                 </Card>
             </div>
 
             <div class="grid-item-chart__item4">
+                <Card style="height:100%">
+                    <template #content>
+                        <DataTable :value="products">
+                            <Column field="code" header="Code"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                        </DataTable>
+                    </template>
+
+                </Card>
+
+            </div>
+
+            <div class="grid-item-chart__item5">
                 <div class="card">
                     <Accordion expandIcon="pi pi-plus" collapseIcon="pi pi-minus">
                         <AccordionTab>
                             <template #header>
                                 <span class="flex align-items-center gap-2 w-full">
-                                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-                                        shape="circle" />
-                                    <span class="font-bold white-space-nowrap">Amy Elsner</span>
+                                    <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
+                                        name="material-symbols:e911-emergency-rounded" />
+                                    <span class="font-bold white-space-nowrap">IGD</span>
                                     <Badge value="3" class="ml-auto mr-2" />
                                 </span>
                             </template>
@@ -59,9 +93,9 @@
                         <AccordionTab>
                             <template #header>
                                 <span class="flex align-items-center gap-2 w-full">
-                                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png"
-                                        shape="circle" />
-                                    <span class="font-bold white-space-nowrap">Onyama Limba</span>
+                                    <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
+                                        name="material-symbols:outpatient-rounded" />
+                                    <span class="font-bold white-space-nowrap">Rawat Jalan</span>
                                     <Badge value="4" class="ml-auto mr-2" />
                                 </span>
                             </template>
@@ -81,9 +115,9 @@
                         <AccordionTab>
                             <template #header>
                                 <span class="flex align-items-center gap-2 w-full">
-                                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/ionibowcher.png"
-                                        shape="circle" />
-                                    <span class="font-bold white-space-nowrap">Ioni Bowcher</span>
+                                    <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
+                                        name="material-symbols:inpatient-rounded" />
+                                    <span class="font-bold white-space-nowrap">Rawat Inap</span>
                                     <Badge value="2" class="ml-auto mr-2" />
                                 </span>
                             </template>
@@ -208,6 +242,7 @@ const setLineChartData = (apiData) => {
             borderColor: documentStyle.getPropertyValue(categoryColors[kategori]),
             backgroundColor: documentStyle.getPropertyValue(categoryColors[kategori]),
             tension: 0.4,
+            type: "line"
         });
     }
 
@@ -216,40 +251,126 @@ const setLineChartData = (apiData) => {
         datasets,
     };
 
-    
+
 }
 
 const jenisregisgrowthdata = ref()
 
 const {
-  data: jenisRegisData,
-  pending: jenisRegisDataIsPending,
-  refresh: jenisRegisDataRefresh,
+    data: jenisRegisData,
+    pending: jenisRegisDataIsPending,
+    refresh: jenisRegisDataRefresh,
 } = await useFetch("http://localhost:5000/api/jenis_registrasi", {
-  server: false,
-  lazy: true,
-  params: {
-    kabupaten: kabupaten,
-    tahun: tahun,
-    bulan: bulan
-  },
-  watch: false
+    server: false,
+    lazy: true,
+    params: {
+        kabupaten: kabupaten,
+        tahun: tahun,
+        bulan: bulan
+    },
+    watch: false
 })
 
 watch(jenisRegisData, () => {
-  if (!jenisRegisData.value) {
-    return;
-  }
-  jenisregisgrowthdata.value = {
-    labels: jenisRegisData.value.index,
-    datasets: jenisRegisData.value.columns.map((val, i) => {
-      return {
-        label: val,
-        data: jenisRegisData.value.values[i]
-      }
-    })
-  };
+    if (!jenisRegisData.value) {
+        return;
+    }
+    jenisregisgrowthdata.value = {
+        labels: jenisRegisData.value.index,
+        datasets: jenisRegisData.value.columns.map((val, i) => {
+            return {
+                label: val,
+                data: jenisRegisData.value.values[i]
+            }
+        })
+    };
 });
+
+const chartType = 'bar'; // Tipe chart default untuk jenis registrasi
+const chartData = ref(); // Data untuk chart
+
+onMounted(async () => {
+    try {
+        const usiaData = (await axios.get("http://localhost:5000/api/usia")).data;
+        const jenisRegisData = (await axios.get("http://localhost:5000/api/jenis_registrasi")).data;
+
+        const lineChartData = setLineChartData(usiaData); // Data untuk line chart
+
+        const barChartData = {
+            labels: jenisRegisData.index,
+            datasets: jenisRegisData.columns.map((val, i) => {
+                return {
+                    label: val,
+                    data: jenisRegisData.values[i],
+                };
+            })
+        };
+
+        chartData.value = {
+            labels: lineChartData.labels,
+            datasets: [
+                ...lineChartData.datasets, // Dataset untuk line chart
+                ...barChartData.datasets // Dataset untuk bar chart
+            ]
+        };
+    } catch (error) {
+        console.error('Error fetching data from API:', error);
+    }
+});
+
+const penjaminBarChartData = ref(null);
+
+onMounted(async () => {
+    const response = await axios.get('http://localhost:5000/api/penjamin', {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    });
+    const data = response.data;
+
+    // Proses data untuk format grafik batang
+    penjaminBarChartData.value = {
+        labels: data.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: data.values,
+                borderWidth: 1 // Lebar garis batas
+            }
+        ]
+    };
+});
+
+watch(lastFilter, async () => {
+    const response = await axios.get('http://localhost:5000/api/penjamin', {
+        params: {
+            tahun: tahun.value,
+        }
+    });
+    const data = response.data;
+
+    // Proses data untuk format grafik batang
+    penjaminBarChartData.value = {
+        labels: data.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: data.values,
+                borderWidth: 1 // Lebar garis batas
+            }
+        ]
+    };
+})
+
+const products = ref([
+    { code: '001', name: 'Product A', category: 'Category 1', quantity: 10 },
+    { code: '002', name: 'Product B', category: 'Category 2', quantity: 20 },
+    { code: '003', name: 'Product C', category: 'Category 1', quantity: 15 },
+    // Add more products here if needed
+]);
+
 
 </script>
 
@@ -257,14 +378,18 @@ watch(jenisRegisData, () => {
 .grid-item-chart {
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
 
     &__item3 {
         grid-row: 2/3;
-        grid-column: 1/3;
+        // grid-column: 1/3;
     }
 
     &__item4 {
+        grid-row: 2/3;
+    }
+
+    &__item5 {
         grid-row: 3/4;
         grid-column: 1/3;
     }

@@ -11,9 +11,9 @@
         <template #content>
           <div class="value_column">
             <div class="percentage_value">
-              <b class="percentage_value__count">500</b>
+              <b class="percentage_value__count">{{ getPasienLamaCount }}</b>
               <div class="bar-1">
-                <ProgressBar :value="50" :showValue="true" class="progressbar">50</ProgressBar>
+                <ProgressBar :value="50" :showValue="true" class="progressbar">{{ getPasienLamaPercentage }}</ProgressBar>
               </div>
             </div>
           </div>
@@ -30,9 +30,9 @@
         <template #content>
           <div class="value_column">
             <div class="percentage_value">
-              <b class="percentage_value__count">500</b>
+              <b class="percentage_value__count">{{ getPasienBaruCount }}</b>
               <div class="bar-2">
-                <ProgressBar :value="80" :showValue="true">50</ProgressBar>
+                <ProgressBar :value="80" :showValue="true">{{ getPasienBaruPercentage }}</ProgressBar>
               </div>
             </div>
           </div>
@@ -146,6 +146,8 @@ const {
 
 const maleCount = ref(0);
 const femaleCount = ref(0);
+const pasienLamaCount = ref(0);
+const pasienBaruCount = ref(0)
 
 const getMaleCount = computed(() => new Intl.NumberFormat().format(maleCount.value));
 const getMalePercentage = computed(() => Math.round(maleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
@@ -153,6 +155,11 @@ const male = computed(() => maleCount.value / (maleCount.value + femaleCount.val
 const female = computed(() => femaleCount.value / (maleCount.value + femaleCount.value) * 100);
 const getFemaleCount = computed(() => new Intl.NumberFormat().format(femaleCount.value));
 const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
+const getPasienLamaCount = computed(() => new Intl.NumberFormat().format(pasienLamaCount.value));
+const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienBaruCount.value));
+const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100) + "%");
+const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100) + "%");
+
 
 const BarChartData = ref();
 const kelompokUsiaChartData = ref();
@@ -161,6 +168,18 @@ const pekerjaanChartData = ref();
 const capitalizeEachLetter = (string) => {
   return string.replace(/\b\w/g, match => match.toUpperCase());
 };
+
+onMounted(async () => {
+  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+    params: {
+      kabupaten: kabupaten.value,
+      tahun: tahun.value,
+      bulan: bulan.value
+    }
+  })).data
+  pasienLamaCount.value = data.jumlahPasienBaru;
+  pasienBaruCount.value = data.jumlahPasienLama;
+});
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
