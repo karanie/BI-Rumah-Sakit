@@ -3,7 +3,7 @@
   <template #title>
     <div class="title">
       <span><slot name="title" /></span>
-      <Button v-if="props.forecast" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
+      <Button v-if="props.forecast" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
     </div>
   </template>
   <template #content>
@@ -46,7 +46,7 @@ const { data, pending, refresh } = useFetch(props.src, {
   watch: false,
 });
 
-const { data: forecastData, pending: forecastPending, execute: forecastExecute } = useFetch(props.src, {
+const { data: forecastData, status: forecastStatus, execute: forecastExecute } = useFetch(props.src, {
   server: false,
   lazy: true,
   params: {
