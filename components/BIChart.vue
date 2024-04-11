@@ -7,15 +7,15 @@
     </div>
   </template>
   <template #content>
-    <Skeleton height="8rem" v-if="pending" />
-    <Error v-if="error">
+    <Error v-if="status == 'error'">
       <template #details>
         <ErrorDetails refreshButton @refresh="() => refresh()">
           <template #details><pre>{{ error }}</pre></template>
         </ErrorDetails>
       </template>
     </Error>
-    <template v-if="!pending">
+    <Skeleton height="8rem" v-if="status == 'pending'" />
+    <template v-if="status == 'success'">
       <GeoChart v-if="type == 'geographic'" :data="chartData" />
       <Chart v-if="type != 'geographic'" :type="props.type" :data="chartData" :options="props.chartOpt" />
     </template>
@@ -42,7 +42,7 @@ const {
   lastFilter,
   } = storeToRefs(useDataFilter());
 
-const { data, pending, refresh, error } = useFetch(props.src, {
+const { data, status, refresh, error } = useFetch(props.src, {
   server: false,
   lazy: true,
   params: {
