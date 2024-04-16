@@ -12,36 +12,7 @@
                 </Card>
             </div>
 
-            <div class="grid-item-chart__item3">
-                <!-- <Card style="height: 100%;">
-                    <template #title>Distribusi Kelompok Usia Pasien Setiap Tahun</template>
-                    <template #content>
-                        <Chart type="line" :data="lineChartData" />
-                    </template>
-                </Card> -->
-
-                <Card>
-                    <template #title>Distribusi Jenis Penjamin</template>
-                    <template #content>
-                        <div style="width: 100%; display: flex; justify-content: center;">
-                            <Chart type="doughnut" :data="penjaminBarChartData" />
-                        </div>
-                    </template>
-                </Card>
-
-
-            </div>
-
             <div class="grid-item-chart__item2">
-                <!-- <Card>
-                    <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Registrasi</template>
-                    <template #content>
-                        <Skeleton height="8rem" v-if="jenisRegisDataIsPending" />
-                        <Chart type="line" :data="jenisregisgrowthdata" v-if="!jenisRegisDataIsPending" />
-                    </template>
-                </Card> -->
-
-
                 <Card style="height: 100%;">
                     <template #title>Grafik Distribusi Kelompok Usia dan Pertumbuhan Kunjungan</template>
                     <template #content>
@@ -50,19 +21,35 @@
                 </Card>
             </div>
 
+            <div class="grid-item-chart__item3">
+                <Card>
+                    <template #title>Distribusi Jenis Penjamin</template>
+                    <template #content>
+                        <div style="width: 100%; display: flex; justify-content: center;">
+                            <Chart type="doughnut" :data="penjaminBarChartData" />
+                        </div>
+                    </template>
+                </Card>
+            </div>
+
             <div class="grid-item-chart__item4">
                 <Card style="height:100%">
                     <template #content>
-                        <DataTable :value="products">
-                            <Column field="code" header="Code"></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="category" header="Category"></Column>
-                            <Column field="quantity" header="Quantity"></Column>
+                        <DataTable :value="products" @row-click="onRowClick">
+                            <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
+                                <!-- <template #body="scope">
+                                    {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
+                                </template> -->
+
+                                <template #body="scope">
+                                    <div class="row-clickable" @click="onRowClick(scope.data)">
+                                        {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
+                                    </div>
+                                </template>
+                            </Column>
                         </DataTable>
                     </template>
-
                 </Card>
-
             </div>
 
             <div class="grid-item-chart__item5">
@@ -74,65 +61,91 @@
                                     <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
                                         name="material-symbols:e911-emergency-rounded" />
                                     <span class="font-bold white-space-nowrap">IGD</span>
-                                    <Badge value="3" class="ml-auto mr-2" />
+                                    <Badge :value="igd_count" class="ml-auto mr-2" />
                                 </span>
                             </template>
-                            <p class="m-0">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore
-                                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                                laboris nisi ut
-                                aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-                                eu fugiat
-                                nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                                officia deserunt
-                                mollit anim id est laborum.
-                            </p>
+                            <Card>
+                                <template #title>Top 10 Diagnosis di IGD</template>
+                                <template #content>
+                                    <div class="grid-igd-item">
+                                        <DataTable :value="diagnosis" @row-click="onRowClick">
+                                            <Column v-for="col of kolom" :key="col.field" :field="col.field"
+                                                :header="col.header">
+                                                <template #body="scope">
+                                                    <div class="row-clickable" @click="onRowClick(scope.data)">
+                                                        {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
+                                                    </div>
+                                                </template>
+                                            </Column>
+                                        </DataTable>
+
+                                        <div class="card flex justify-content-center">
+                                            <Knob v-model="value" valueTemplate="{value}%" />
+                                        </div>
+                                    </div>
+                                </template>
+                            </Card>
+
                         </AccordionTab>
+
                         <AccordionTab>
                             <template #header>
                                 <span class="flex align-items-center gap-2 w-full">
                                     <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
                                         name="material-symbols:outpatient-rounded" />
                                     <span class="font-bold white-space-nowrap">Rawat Jalan</span>
-                                    <Badge value="4" class="ml-auto mr-2" />
+                                    <Badge :value="jalan" class="ml-auto mr-2" />
                                 </span>
                             </template>
-                            <p class="m-0">
-                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                                laudantium,
-                                totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
-                                beatae vitae
-                                dicta sunt explicabo. Nemo enim
-                                ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur
-                                magni
-                                dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia
-                                non numquam
-                                eius modi.
-                            </p>
+                            <div class="grid-rajal-item">
+                                <div class="grid-rajal-item__item1">
+                                    <Card>
+                                        <template #title>Distribusi Jenis Penjamin</template>
+                                        <template #content>
+                                            <Chart type="doughnut" :data="penjaminBarChartData" />
+                                        </template>
+                                    </Card>
+                                </div>
+
+                                <div class="grid-rajal-item__item2">
+                                    <Card>
+                                        <template #title>10 Penyakit Terbanyak</template>
+                                        <template #content>
+                                            <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
+                                        </template>
+                                    </Card>
+                                </div>
+                            </div>
                         </AccordionTab>
+
                         <AccordionTab>
                             <template #header>
                                 <span class="flex align-items-center gap-2 w-full">
                                     <Icon style="font-size: 2.5rem;" color="var(--surface-400)"
                                         name="material-symbols:inpatient-rounded" />
                                     <span class="font-bold white-space-nowrap">Rawat Inap</span>
-                                    <Badge value="2" class="ml-auto mr-2" />
+                                    <Badge :value="inap" class="ml-auto mr-2" />
                                 </span>
                             </template>
-                            <p class="m-0">
-                                At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-                                voluptatum
-                                deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-                                cupiditate non
-                                provident, similique sunt in culpa qui
-                                officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum
-                                facilis est
-                                et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque
-                                nihil impedit
-                                quo minus.
-                            </p>
+                            <div class="grid-ranap-item">
+                                <div class="grid-ranap-item__item1">
+                                    <Card>
+                                        <template #title>Distribusi Jenis Penjamin</template>
+                                        <template #content>
+                                            <Chart type="doughnut" :data="penjaminBarChartData" />
+                                        </template>
+                                    </Card>
+                                </div>
+
+                                <div class="grid-ranap-item__item2">
+                                    <Card>
+                                        <template #title>10 Penyakit Terbanyak</template>
+                                        <template #content>
+                                            <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
+                                        </template>
+                                    </Card>
+                                </div>
+                            </div>
                         </AccordionTab>
                     </Accordion>
                 </div>
@@ -151,8 +164,26 @@ definePageMeta({
     layout: "data",
 });
 
+const value = ref(60);
+
 const capitalizeEachLetter = (string) => {
     return string.replace(/\b\w/g, match => match.toUpperCase());
+};
+
+// const onRowClick = (event) => {
+//     // Mendapatkan data yang diklik
+//     const rowData = event.data;
+//     console.log("Data yang diklik:", rowData);
+
+//     // Menentukan indeks baris yang diklik
+//     const rowIndex = products.value.indexOf(rowData);
+//     console.log("Index baris yang diklik:", rowIndex);
+// };
+
+// Fungsi untuk menangani klik pada baris
+const onRowClick = (rowData) => {
+    // Lakukan sesuatu saat baris diklik
+    console.log('Baris yang diklik:', rowData);
 };
 
 const {
@@ -164,6 +195,7 @@ const {
 
 const kunjunganBarChartData = ref();
 const lineChartData = ref();
+const penyakitChartData = ref();
 
 onMounted(async () => {
     try {
@@ -188,7 +220,6 @@ onMounted(async () => {
     //   jumlahKunjungan.value = data.jumlahKunjungan;
     kunjunganBarChartData.value = setKunjunganBarChartData(data)
 });
-
 
 const setKunjunganBarChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.body);
@@ -289,6 +320,30 @@ watch(jenisRegisData, () => {
 const chartType = 'bar'; // Tipe chart default untuk jenis registrasi
 const chartData = ref(); // Data untuk chart
 
+
+const igd_count = ref(0);
+const inap = ref(0);
+const jalan = ref(0);
+
+onMounted(async () => {
+    try {
+        const jenisRegisData = (await axios.get("http://localhost:5000/api/jenis_registrasi")).data;
+
+        // Misalkan jenisRegisData.values[0] adalah array yang ingin Anda hitung jumlahnya
+        const array_values = jenisRegisData.values[0];
+
+        // Menghitung jumlah dari semua angka dalam array menggunakan reduce
+        igd_count.value = array_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        inap.value = jenisRegisData.values[2].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        jalan.value = jenisRegisData.values[3].reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+        console.log("Jumlah total dari semua angka:", igd_count);
+
+    } catch (error) {
+        console.error('Error fetching data from API:', error);
+    }
+});
+
 onMounted(async () => {
     try {
         const usiaData = (await axios.get("http://localhost:5000/api/usia")).data;
@@ -364,13 +419,107 @@ watch(lastFilter, async () => {
     };
 })
 
-const products = ref([
-    { code: '001', name: 'Product A', category: 'Category 1', quantity: 10 },
-    { code: '002', name: 'Product B', category: 'Category 2', quantity: 20 },
-    { code: '003', name: 'Product C', category: 'Category 1', quantity: 15 },
-    // Add more products here if needed
-]);
+// const products = ref([
+//     { code: '001', name: 'Product A', category: 'Category 1', quantity: 10 },
+//     { code: '002', name: 'Product B', category: 'Category 2', quantity: 20 },
+//     { code: '003', name: 'Product C', category: 'Category 1', quantity: 15 },
+//     // Add more products here if needed
+// ]);
 
+const products = ref([]);
+const columns = [
+    { field: 'regis', header: '' },
+    { field: 'Dalam RS', header: 'Dalam RS' },
+    { field: 'Inisiatif Sendiri', header: 'Inisiatif Sendiri' },
+    { field: 'Luar RS', header: 'Luar RS' }
+];
+
+onMounted(async () => {
+    try {
+        const data = (await axios.get("http://localhost:5000/api/regis-byRujukan")).data
+
+        // Reformat data
+        const reformattedData = [];
+        for (const key in data) {
+            const row = { regis: key };
+            data[key].forEach(item => {
+                row[item.rujukan] = item.kunjungan;
+            });
+            reformattedData.push(row);
+        }
+
+        products.value = reformattedData;
+    } catch (error) {
+        console.error('Error fetching data from API:', error);
+    }
+});
+
+const diagnosis = ref([]);
+const kolom = [
+    { field: 'index', header: '' }
+];
+
+onMounted(async () => {
+    try {
+        const data = (await axios.get("http://localhost:5000/api/gejala")).data
+
+        // Reformat data
+        const reformattedData = [];
+        const data_filter = data.index.slice(0,10);
+        console.log("hasil", data_filter);
+        for (const key in data_filter) {
+            const row = { index : data_filter[key] };
+            reformattedData.push(row);
+        }
+
+        diagnosis.value = reformattedData;
+    } catch (error) {
+        console.error('Error fetching data from API:', error);
+    }
+});
+
+onMounted(async () => {
+    const response = await axios.get('http://localhost:5000/api/gejala', {
+        params: {
+            tahun: tahun.value,
+            bulan: bulan.value,
+            kabupaten: kabupaten.value,
+        }
+    });
+    const data = response.data;
+
+    const limitedData = {
+        index: data.index.slice(0, 10),
+        values: data.values.slice(0, 10),
+    };
+
+    // Misalkan limitedData.values berisi nilai-nilai data Anda
+    const dataValues = limitedData.values;
+
+    // Mencari index dari nilai tertinggi
+    const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+    // Membuat array warna, defaultnya semua warna sama
+    const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+    // Mengubah warna untuk bar dengan nilai tertinggi
+    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+    // Proses data untuk format grafik batang
+    penyakitChartData.value = {
+        labels: limitedData.index,
+        datasets: [
+            {
+                label: 'Jumlah',
+                data: dataValues,
+                borderWidth: 1, // Lebar garis batas
+                backgroundColor: backgroundColors
+            }
+        ]
+    };
+
+
+});
 
 </script>
 
@@ -378,7 +527,7 @@ const products = ref([
 .grid-item-chart {
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 3fr;
 
     &__item3 {
         grid-row: 2/3;
@@ -393,5 +542,62 @@ const products = ref([
         grid-row: 3/4;
         grid-column: 1/3;
     }
+}
+
+.grid-igd-item {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+
+    &__item1 {
+        grid-row: 1/2;
+        grid-column: 1/2;
+    }
+
+    &__item2 {
+        grid-row: 2/3;
+        grid-column: 1/3;
+    }
+}
+
+.grid-rajal-item {
+    display: grid;
+    grid-gap: 20px;
+    // grid-template-columns: 1fr 2fr;
+
+    &__item1 {
+        grid-row: 1/2;
+        grid-column: 1/2;
+    }
+
+    &__item2 {
+        grid-row: 2/3;
+        grid-column: 1/3;
+    }
+}
+
+.grid-ranap-item {
+    display: grid;
+    grid-gap: 20px;
+    // grid-template-columns: 1fr 2fr;
+
+    &__item1 {
+        grid-row: 1/2;
+        grid-column: 1/2;
+    }
+
+    &__item2 {
+        grid-row: 2/3;
+        grid-column: 1/3;
+    }
+}
+
+.row-clickable {
+    cursor: pointer;
+}
+
+.row-clickable:active {
+    /* Efek yang ingin diterapkan saat baris diklik */
+    background-color: gray;
 }
 </style>
