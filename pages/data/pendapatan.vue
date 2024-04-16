@@ -16,22 +16,14 @@
     </Card>
   </div>
 
-  <Card>
-    <template #title>Pertumbuhan Pendapatan</template>
-    <template #content>
-      <skeleton height="8rem" v-if="pendapatanDataIsPending"></skeleton>
-      <Chart type="line" :data="pendapatanData" v-if="!pendapatanDataIsPending" :options="setPendapatanChartDataOpt()" />
-    </template>
-  </Card>
+  <BIChart src="/api/pendapatan" timeseries type="line" forecast>
+    <template #title>Jumlah Pendapatan Seiring Waktu</template>
+  </BIChart>
 
-  <Card>
-    <template #title>Pertumbuhan Pendapatan Berdasarkan Jenis Registrasi</template>
-    <template #content>
-      <skeleton height="8rem" v-if="pendapatanJenisRegisDataIsPending"></skeleton>
-      <Chart type="line" :data="jenisRegisPendapatanData" v-if="!pendapatanJenisRegisDataIsPending"
-        :options="setPendapatanChartDataOpt()" />
-    </template>
-  </Card>
+  <BIChart src="/api/pendapatan" timeseries tipeData="jenisregis" type="line">
+    <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
+  </BIChart>
+
 
   <Card>
     <template #title>10 Pendapatan Tertinggi Berdasarkan Penyakit</template>
@@ -125,6 +117,23 @@ const {
   watch: false
 })
 
+// Data Forecast Pertumbuhan Pendapatan
+const {
+  data: forecastPendapatanData,
+  pending: forecastPendapatanDataPending,
+  refresh: forecastPendapatanDataRefresh,
+} = await useFetch("http://localhost:5000/api/pendapatan", {
+  server: false,
+  lazy: true,
+  params: {
+    tipe_data: "forecast",
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  watch: false
+})
+
 // Data Pertumbuhan Pendapatan berdasarkan jenis_regis
 const {
   data: pendapatanJenisRegisData,
@@ -157,17 +166,27 @@ watch(pendapatanJenisRegisData, () => {
   };
 });
 
+watch(forecastPendapatanData, () => {
+  if (!forecastPendapatanData.value && !data.value)
+    return;
+  pendapatanData.value = setData(data.value, forecastPendapatanData.value);
+  console.log(pendapatanData.value);
+});
 
 watch(pendapatanData, () => {
   if (!pendapatanData.value) {
     return;
+  }
+  const mapLabelName = {
+    "total_tagihan": "Pengeluaran",
+    "total_semua_hpp": "Pendapatan"
   }
   console.log(pendapatanData.value)
   pendapatanData.value = {
     labels: pendapatanData.value.index,
     datasets: pendapatanData.value.columns.map((val, i) => {
       return {
-        label: val,
+        label: mapLabelName[val],
         data: pendapatanData.value.values[i]
       }
     })
@@ -461,5 +480,11 @@ watch(lastFilter, async () => {
 .big-number {
   font-weight: bold;
   font-size: 30px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
