@@ -16,7 +16,7 @@
     </Card>
   </div>
 
-  <BIChart src="/api/pendapatan" timeseries type="line" forecast>
+  <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName" :chartOpt="setPendapatanChartDataOpt()">
     <template #title>Jumlah Pendapatan Seiring Waktu</template>
   </BIChart>
 
@@ -42,34 +42,34 @@
     <template #title>10 Pendapatan Tertinggi Berdasarkan Poliklinik</template>
     <template #content>
       <Chart type="bar" :options="{
-        indexAxis: 'y', elements: {
-          bar: {
-            borderWidth: 2,
+          indexAxis: 'y', elements: {
+            bar: {
+              borderWidth: 2,
+            }
+          }, responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+            }
           }
-        }, responsive: true,
-        plugins: {
-          legend: {
-            position: 'right',
-          }
-        }
-      }" :data="penPoliklinikChartData" />
+        }" :data="penPoliklinikChartData" />
     </template>
   </Card>
   <Card>
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Poliklinik</template>
     <template #content>
       <Chart type="bar" :options="{
-        indexAxis: 'y', elements: {
-          bar: {
-            borderWidth: 2,
+          indexAxis: 'y', elements: {
+            bar: {
+              borderWidth: 2,
+            }
+          }, responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+            },
           }
-        }, responsive: true,
-        plugins: {
-          legend: {
-            position: 'right',
-          },
-        }
-      }" :data="pengPoliklinikChartData" />
+        }" :data="pengPoliklinikChartData" />
     </template>
   </Card>
 </template>
@@ -102,31 +102,49 @@ const jumlahPengeluaran = ref();
 const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
 const getJumlahPengeluaran = computed(() => new Intl.NumberFormat().format(jumlahPengeluaran.value));
 
+function setPendapatanName(data, forecastData) {
+  const mapLabelName = {
+    "total_tagihan": "Pengeluaran",
+    "total_semua_hpp": "Pendapatan"
+  }
+  const out = {
+    labels: data.index,
+    datasets: data.columns.map((val, i) => {
+      return {
+        label: mapLabelName[val],
+        data: data.values[i],
+        pointStyle: false,
+      }
+    })
+  }
+  if (!forecastData) {
+    return out;
+  } else {
+    console.log(forecastData);
+    forecastData.forEach((el) => {
+      out.datasets.push(
+        {
+          label: `${mapLabelName[el.columns[0]]} Forecast`,
+          data: el.values[0].map((val, i) => {
+            return { x: el.index[i], y: val }
+          }),
+          pointStyle: false,
+        }
+      );
+    });
+    return out;
+  }
+}
+
+// Data Forecast Pertumbuhan Pendapatan
 const {
   data: pendapatanData,
-  pending: pendapatanDataIsPending,
+  pending: pendapatanDataPending,
   refresh: pendapatanDataRefresh,
 } = await useFetch("http://localhost:5000/api/pendapatan", {
   server: false,
   lazy: true,
   params: {
-    kabupaten: kabupaten,
-    tahun: tahun,
-    bulan: bulan
-  },
-  watch: false
-})
-
-// Data Forecast Pertumbuhan Pendapatan
-const {
-  data: forecastPendapatanData,
-  pending: forecastPendapatanDataPending,
-  refresh: forecastPendapatanDataRefresh,
-} = await useFetch("http://localhost:5000/api/pendapatan", {
-  server: false,
-  lazy: true,
-  params: {
-    tipe_data: "forecast",
     kabupaten: kabupaten,
     tahun: tahun,
     bulan: bulan
@@ -161,33 +179,6 @@ watch(pendapatanJenisRegisData, () => {
       return {
         label: val,
         data: pendapatanJenisRegisData.value.values[i]
-      }
-    })
-  };
-});
-
-watch(forecastPendapatanData, () => {
-  if (!forecastPendapatanData.value && !data.value)
-    return;
-  pendapatanData.value = setData(data.value, forecastPendapatanData.value);
-  console.log(pendapatanData.value);
-});
-
-watch(pendapatanData, () => {
-  if (!pendapatanData.value) {
-    return;
-  }
-  const mapLabelName = {
-    "total_tagihan": "Pengeluaran",
-    "total_semua_hpp": "Pendapatan"
-  }
-  console.log(pendapatanData.value)
-  pendapatanData.value = {
-    labels: pendapatanData.value.index,
-    datasets: pendapatanData.value.columns.map((val, i) => {
-      return {
-        label: mapLabelName[val],
-        data: pendapatanData.value.values[i]
       }
     })
   };
@@ -462,6 +453,7 @@ watch(lastFilter, async () => {
   })).data
   jumlahPendapatan.value = data.pendapatan;
   jumlahPengeluaran.value = data.pengeluaran;
+  console.log("amogus")
 })
 </script>
 
