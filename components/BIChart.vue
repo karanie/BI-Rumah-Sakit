@@ -3,12 +3,19 @@
   <template #title>
     <div class="title">
       <span><slot name="title" /></span>
-      <Button v-if="props.forecast" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
+      <Button v-if="props.forecast" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
     </div>
   </template>
   <template #content>
-    <Skeleton height="8rem" v-if="pending" />
-    <template v-if="!pending">
+    <Error v-if="status == 'error'">
+      <template #details>
+        <ErrorDetails refreshButton @refresh="() => refresh()">
+          <template #details><pre>{{ error }}</pre></template>
+        </ErrorDetails>
+      </template>
+    </Error>
+    <Skeleton height="8rem" v-if="status == 'pending'" />
+    <template v-if="status == 'success'">
       <GeoChart v-if="type == 'geographic'" :data="chartData" />
       <Chart v-if="type != 'geographic'" :type="props.type" :data="chartData" :options="props.chartOpt" />
     </template>
@@ -35,7 +42,7 @@ const {
   lastFilter,
   } = storeToRefs(useDataFilter());
 
-const { data, pending, refresh } = useFetch(props.src, {
+const { data, status, refresh, error } = useFetch(props.src, {
   server: false,
   lazy: true,
   params: {
@@ -46,7 +53,7 @@ const { data, pending, refresh } = useFetch(props.src, {
   watch: false,
 });
 
-const { data: forecastData, pending: forecastPending, execute: forecastExecute } = useFetch(props.src, {
+const { data: forecastData, status: forecastStatus, execute: forecastExecute } = useFetch(props.src, {
   server: false,
   lazy: true,
   params: {

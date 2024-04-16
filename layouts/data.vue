@@ -16,7 +16,7 @@
 
         <div class="numeric-data">
           <Nuxt-link to="/data/pasien" class="no-underline">
-            <Card :class="{ 'active': activeCard === 0 }" class="numeric-data__card" @click="setActiveCard(0)">
+            <Card :class="{ 'active': activeCard === 0 }" class="numeric-data__card">
               <template #title>Total Pasien</template>
               <template #subtitle>Jumlah pasien</template>
               <template #content>
@@ -26,7 +26,7 @@
           </Nuxt-link>
 
           <Nuxt-link to="/data/kunjungan" class="no-underline">
-            <Card :class="{ 'active': activeCard === 1 }" class="numeric-data__card" @click="setActiveCard(1)">
+            <Card :class="{ 'active': activeCard === 1 }" class="numeric-data__card">
               <template #title>Total Kunjungan</template>
               <template #subtitle>Jumlah Kunjungan</template>
               <template #content>
@@ -36,7 +36,7 @@
           </Nuxt-link>
 
           <Nuxt-link to="/data/pendapatan" class="no-underline">
-            <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card" @click="setActiveCard(2)">
+            <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card">
               <template #title>Total Pendapatan</template>
               <template #subtitle>Jumlah Kolom total_tagihan</template>
               <template #content>
@@ -64,6 +64,7 @@ const {
   kabupaten,
   lastFilter,
 } = storeToRefs(useDataFilter());
+const route = useRoute();
 
 const jumlahPasien = ref();
 const jumlahKunjungan = ref();
@@ -71,7 +72,14 @@ const jumlahPendapatan = ref();
 const jumlahPengeluaran = ref();
 
 
-const activeCard = ref(0);
+const activeCard = computed(() => {
+  const pathMap = {
+    "/data/pasien": 0,
+    "/data/kunjungan": 1,
+    "/data/pendapatan": 2,
+  };
+  return pathMap[route.path];
+});
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
@@ -112,11 +120,6 @@ watch(lastFilter, async () => {
 });
 
 console.log(jumlahPendapatan)
-
-const setActiveCard = (index) => {
-  activeCard.value = index
-  console.log('hasil', activeCard.value)
-}
 </script>
 
 <style scoped lang="scss">
