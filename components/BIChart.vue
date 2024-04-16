@@ -16,7 +16,7 @@
     </Error>
     <Skeleton height="8rem" v-if="status == 'pending'" />
     <template v-if="status == 'success'">
-      <GeoChart v-if="type == 'geographic'" :data="chartData" />
+      <GeoChart v-if="type == 'geographic'" :data="chartData" :options="props.chartOpt" />
       <Chart v-if="type != 'geographic'" :type="props.type" :data="chartData" :options="props.chartOpt" />
     </template>
   </template>
@@ -109,7 +109,7 @@ function setData(data: any, forecastData?: any) {
     } else {
       console.log(forecastData);
       forecastData.forEach((el: any) => {
-        out.datasets.push(  
+        out.datasets.push(
           {
             label: `${el.columns[0]} Forecast`,
             data: el.values[0].map((val: number, i: number) => {
