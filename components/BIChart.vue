@@ -23,6 +23,8 @@ const props = defineProps<{
   src: string,
   type: string,
   chartOpt?: any,
+  setChartData?: (data: any, forecastData?: any) => any,
+  tipeData?: string,
   timeseries?: boolean,
   forecast?: boolean,
 }>();
@@ -41,7 +43,7 @@ const { data, pending, refresh } = useFetch(props.src, {
   params: {
     tahun: tahun,
     bulan: bulan,
-    tipe_data: props.timeseries ? "timeseries" : undefined,
+    tipe_data: props.tipeData,
   },
   watch: false,
 });
@@ -81,6 +83,9 @@ function forecast() {
 }
 
 function setData(data: any, forecastData?: any) {
+  if (props.setChartData)
+    return props.setChartData(data, forecastData);
+
   if (props.timeseries) {
     const out = {
       labels: data.index,
@@ -97,7 +102,7 @@ function setData(data: any, forecastData?: any) {
     } else {
       console.log(forecastData);
       forecastData.forEach((el: any) => {
-        out.datasets.push(
+        out.datasets.push(  
           {
             label: `${el.columns[0]} Forecast`,
             data: el.values[0].map((val: number, i: number) => {
