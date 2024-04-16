@@ -52,9 +52,12 @@ const data = computed(() => {
     }
   });
 });
+function formatNum(num) {
+  return new Intl.NumberFormat(navigator.languageval).format(num);
+}
 const getHoveredData = computed(() => {
-  const labelCallback = props?.options?.plugins?.tooltip?.callbacks?.label ?? (val => val);
   const titleCallback = props?.options?.plugins?.tooltip?.callbacks?.title ?? (val => val);
+  const labelCallback = props?.options?.plugins?.tooltip?.callbacks?.label ?? formatNum;
   return {
     name: titleCallback(hoveredData.value.name),
     value: labelCallback(hoveredData.value.value),
@@ -82,9 +85,9 @@ function getColor(n, max=1000) {
 function generateLegends(getColor, max=1000) {
   return [...Array(pallete.length).keys()].map(i => {
     return {
-      label: i == 0 ? `<${Math.round((i+1)/pallete.length * max, 2)}`
-        : i == pallete.length - 1 ? `>${Math.round((i)/pallete.length * max, 2)}`
-        :`${Math.round(i/pallete.length * max, 2)}-${Math.round((i+1)/pallete.length * max, 2)}`,
+      label: i == 0 ? `<${formatNum(Math.round((i+1)/pallete.length * max, 2))}`
+        : i == pallete.length - 1 ? `>${formatNum(Math.round((i)/pallete.length * max, 2))}`
+        :`${formatNum(Math.round(i/pallete.length * max, 2))}-${formatNum(Math.round((i+1)/pallete.length * max, 2))}`,
       color: getColor(i/pallete.length * max, max),
     }
   });
