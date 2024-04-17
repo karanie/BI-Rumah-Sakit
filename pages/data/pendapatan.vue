@@ -16,32 +16,40 @@
     </Card>
   </div>
 
-  <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName" :chartOpt="setPendapatanChartDataOpt()">
+  <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
+    :chartOpt="setPendapatanChartDataOpt()">
     <template #title>Jumlah Pendapatan Seiring Waktu</template>
   </BIChart>
 
-  <BIChart src="/api/pendapatan" timeseries tipeData="jenisregis" type="line">
+  <BIChart src="/api/pendapatan" timeseries tipeData="jenisregis" :chartOpt="setPendapatanChartDataOpt()" type="line">
     <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
   </BIChart>
 
-
-  <Card>
+  <BIChart src="/api/gejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData1" type="bar">
     <template #title>10 Pendapatan Tertinggi Berdasarkan Penyakit</template>
-    <template #content>
-      <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penPenyakitChartData" />
-    </template>
-  </Card>
-  <Card>
-    <template #title>10 Pengeluaran Tertinggi Berdasarkan Penyakit</template>
-    <template #content>
-      <Chart type="bar" :options="{ indexAxis: 'y' }" :data="pengPenyakitChartData" />
-    </template>
-  </Card>
+  </BIChart>
 
-  <Card>
+  <BIChart src="/api/gejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData2" type="bar">
+    <template #title>10 Pengeluaran Tertinggi Berdasarkan Penyakit</template>
+  </BIChart>
+
+
+  <BIChart src="/api/poliklinik" type="bar" :setChartData="setPoliklinikChartData1" :chartOpt="{
+          indexAxis: 'y', elements: {
+            bar: {
+              borderWidth: 2,
+            }
+          }, responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+            }
+          }
+        }">
     <template #title>10 Pendapatan Tertinggi Berdasarkan Poliklinik</template>
-    <template #content>
-      <Chart type="bar" :options="{
+  </BIChart>
+
+  <BIChart src="/api/poliklinik" type="bar" :setChartData="setPoliklinikChartData2" :chartOpt="{
           indexAxis: 'y', elements: {
             bar: {
               borderWidth: 2,
@@ -52,26 +60,10 @@
               position: 'right',
             }
           }
-        }" :data="penPoliklinikChartData" />
-    </template>
-  </Card>
-  <Card>
+        }">
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Poliklinik</template>
-    <template #content>
-      <Chart type="bar" :options="{
-          indexAxis: 'y', elements: {
-            bar: {
-              borderWidth: 2,
-            }
-          }, responsive: true,
-          plugins: {
-            legend: {
-              position: 'right',
-            },
-          }
-        }" :data="pengPoliklinikChartData" />
-    </template>
-  </Card>
+  </BIChart>
+
 </template>
 
 <script setup>
@@ -93,9 +85,6 @@ definePageMeta({
 
 const penPenyakitChartData = ref();
 const pengPenyakitChartData = ref();
-
-const penPoliklinikChartData = ref();
-const pengPoliklinikChartData = ref();
 
 const jumlahPendapatan = ref();
 const jumlahPengeluaran = ref();
@@ -136,59 +125,6 @@ function setPendapatanName(data, forecastData) {
   }
 }
 
-// Data Forecast Pertumbuhan Pendapatan
-const {
-  data: pendapatanData,
-  pending: pendapatanDataPending,
-  refresh: pendapatanDataRefresh,
-} = await useFetch("http://localhost:5000/api/pendapatan", {
-  server: false,
-  lazy: true,
-  params: {
-    kabupaten: kabupaten,
-    tahun: tahun,
-    bulan: bulan
-  },
-  watch: false
-})
-
-// Data Pertumbuhan Pendapatan berdasarkan jenis_regis
-const {
-  data: pendapatanJenisRegisData,
-  pending: pendapatanJenisRegisDataIsPending,
-  refresh: pendapatanJenisRegisDataRefresh,
-} = await useFetch("http://localhost:5000/api/pendapatan", {
-  server: false,
-  lazy: true,
-  params: {
-    tipe_data: "jenisregis",
-    kabupaten: kabupaten,
-    tahun: tahun,
-    bulan: bulan
-  },
-  watch: false
-})
-
-watch(pendapatanJenisRegisData, () => {
-  if (!pendapatanJenisRegisData.value) {
-    return;
-  }
-  jenisRegisPendapatanData.value = {
-    labels: pendapatanJenisRegisData.value.index,
-    datasets: pendapatanJenisRegisData.value.columns.map((val, i) => {
-      return {
-        label: val,
-        data: pendapatanJenisRegisData.value.values[i]
-      }
-    })
-  };
-});
-
-watch(lastFilter, () => {
-  pendapatanJenisRegisDataRefresh()
-  pendapatanDataRefresh()
-});
-
 // Chart Options
 
 const setPendapatanChartDataOpt = () => {
@@ -203,233 +139,94 @@ const setPendapatanChartDataOpt = () => {
   }
 }
 
-onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/gejala', {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  });
-  const data = response.data;
-
-  const limitedData = {
-    index: data.index1.slice(0, 10),
-    index2: data.index2.slice(0, 10),
-    valuesIn: data.pendapatan.slice(0, 10),
-    valuesOut: data.pengeluaran.slice(0, 10),
-
-  };
-
-  // Misalkan limitedData.values berisi nilai-nilai data Anda
-  const dataValues = limitedData.valuesIn;
-
+function setPenyakitChartData1(data){
   // Mencari index dari nilai tertinggi
-  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
-
+  const maxIndex = data.pendapatan.indexOf(Math.max(...data.pendapatan));
   // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+  const backgroundColors = new Array(data.pendapatan.length).fill('rgba(54, 162, 235, 0.5)');
 
   // Mengubah warna untuk bar dengan nilai tertinggi
   backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
-  // Proses data untuk format grafik batang
-
-  penPenyakitChartData.value = {
-    labels: limitedData.index,
+  return {
+    labels: data.index1,
     datasets: [
       {
         label: 'Jumlah',
-        data: limitedData.valuesIn,
+        data: data.pendapatan,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
     ]
   };
-  pengPenyakitChartData.value = {
-    labels: limitedData.index2,
-    datasets: [
-      {
-        label: 'Jumlah',
-        data: limitedData.valuesOut,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: backgroundColors
-      }
-    ]
-  };
-});
 
-watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/gejala', {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  });
-  const data = response.data;
+}
 
-  const limitedData = {
-    index: data.index.slice(0, 10),
-    index2: data.index2.slice(0, 10),
-    valuesIn: data.pendapatan.slice(0, 10),
-    valuesOut: data.pengeluaran.slice(0, 10),
-
-  };
-
-  // Misalkan limitedData.values berisi nilai-nilai data Anda
-  const dataValues = limitedData.valuesIn;
-
+function setPenyakitChartData2(data){
   // Mencari index dari nilai tertinggi
-  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+  const maxIndex = data.pengeluaran.indexOf(Math.max(...data.pengeluaran));
 
   // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+  const backgroundColors = new Array(data.pengeluaran.length).fill('rgba(54, 162, 235, 0.5)');
 
   // Mengubah warna untuk bar dengan nilai tertinggi
   backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
-  // Proses data untuk format grafik batang
-
-  penPenyakitChartData.value = {
-    labels: limitedData.index,
+  return  {
+    labels: data.index2,
     datasets: [
       {
         label: 'Jumlah',
-        data: limitedData.valuesIn,
+        data: data.pengeluaran,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
     ]
   };
-  pengPenyakitChartData.value = {
-    labels: limitedData.index2,
-    datasets: [
-      {
-        label: 'Jumlah',
-        data: limitedData.valuesOut,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: backgroundColors
-      }
-    ]
-  };
-})
+}
 
-onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/poliklinik', {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  });
-  const data = response.data;
 
-  const limitedData = {
-    index: data.index.slice(0, 10),
-    index2: data.index2.slice(0, 10),
-    valuesIn: data.pendapatan.slice(0, 10),
-    valuesOut: data.pengeluaran.slice(0, 10),
-    valuesIn2: data.pendapatan2.slice(0, 10),
-    valuesOut2: data.pengeluaran2.slice(0, 10),
 
-  };
-
-  // Proses data untuk format grafik batang
-
-  penPoliklinikChartData.value = {
-    labels: limitedData.index,
+function setPoliklinikChartData1(data) {
+  console.log(data);
+  return {
+    labels: data.index,
     datasets: [
       {
         label: 'Pendapatan',
-        data: limitedData.valuesIn,
+        data: data.pendapatan,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: 'rgba(95, 255, 132, 0.5)'
       },
       {
         label: 'Pengeluaran',
-        data: limitedData.valuesOut,
+        data: data.pengeluaran,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: 'rgba(255, 10, 7, 0.5)'
       }
     ]
   };
-  pengPoliklinikChartData.value = {
-    labels: limitedData.index2,
+}
+
+function setPoliklinikChartData2(data) {
+  return {
+    labels: data.index2,
     datasets: [
       {
         label: 'Pendapatan',
-        data: limitedData.valuesIn2,
+        data: data.pendapatan2,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: 'rgba(95, 255, 132, 0.5)'
       },
       {
         label: 'Pengeluaran',
-        data: limitedData.valuesOut2,
+        data: data.pengeluaran2,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: 'rgba(255, 10, 7, 0.5)'
       }
     ]
-  };
-});
-
-watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/poliklinik', {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  });
-  const data = response.data;
-
-  const limitedData = {
-    index: data.index.slice(0, 10),
-    index2: data.index2.slice(0, 10),
-    valuesIn: data.pendapatan.slice(0, 10),
-    valuesOut: data.pengeluaran.slice(0, 10),
-    valuesIn2: data.pendapatan2.slice(0, 10),
-    valuesOut2: data.pengeluaran2.slice(0, 10),
-
-  };
-
-  // Proses data untuk format grafik batang
-
-  penPoliklinikChartData.value = {
-    labels: limitedData.index,
-    datasets: [
-      {
-        label: 'Pendapatan',
-        data: limitedData.valuesIn,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(95, 255, 132, 0.5)'
-      },
-      {
-        label: 'Pengeluaran',
-        data: limitedData.valuesOut,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(255, 10, 7, 0.5)'
-      }
-    ]
-  };
-  pengPoliklinikChartData.value = {
-    labels: limitedData.index2,
-    datasets: [
-      {
-        label: 'Pengeluaran',
-        data: limitedData.valuesIn2,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(255, 10, 7, 0.5)'
-      },
-      {
-        label: 'Pendapatan',
-        data: limitedData.valuesOut2,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(95, 255, 132, 0.5)'
-      }
-    ]
-  };
-})
+  }
+}
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
