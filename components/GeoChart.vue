@@ -52,9 +52,12 @@ const data = computed(() => {
     }
   });
 });
+function formatNum(num) {
+  return new Intl.NumberFormat(navigator.languageval).format(num);
+}
 const getHoveredData = computed(() => {
-  const labelCallback = props?.options?.plugins?.tooltip?.callbacks?.label ?? (val => val);
   const titleCallback = props?.options?.plugins?.tooltip?.callbacks?.title ?? (val => val);
+  const labelCallback = props?.options?.plugins?.tooltip?.callbacks?.label ?? formatNum;
   return {
     name: titleCallback(hoveredData.value.name),
     value: labelCallback(hoveredData.value.value),
@@ -65,8 +68,8 @@ const pallete = ['#ece7f2','#a6bddb','#74a9cf','#0570b0','#023858'];
 
 watch(data, () => {
   const max = data.value[0].value;
-  const maxRounded = Math.ceil(max / Math.pow(10, Math.floor(Math.log10(max)))) * Math.pow(10, Math.floor(Math.log10(max)));
-  legends.value = generateLegends(getColor, maxRounded);
+  //const maxRounded = Math.ceil(max / Math.pow(10, Math.floor(Math.log10(max)))) * Math.pow(10, Math.floor(Math.log10(max)));
+  legends.value = generateLegends(getColor, max);
 }, { immediate: true });
 
 function onGeoJsonReady(e) {
@@ -82,9 +85,9 @@ function getColor(n, max=1000) {
 function generateLegends(getColor, max=1000) {
   return [...Array(pallete.length).keys()].map(i => {
     return {
-      label: i == 0 ? `<${Math.round((i+1)/pallete.length * max, 2)}`
-        : i == pallete.length - 1 ? `>${Math.round((i)/pallete.length * max, 2)}`
-        :`${Math.round(i/pallete.length * max, 2)}-${Math.round((i+1)/pallete.length * max, 2)}`,
+      label: i == 0 ? `<${formatNum(Math.round((i+1)/pallete.length * max, 2))}`
+        : i == pallete.length - 1 ? `>${formatNum(Math.round((i)/pallete.length * max, 2))}`
+        :`${formatNum(Math.round(i/pallete.length * max, 2))}-${formatNum(Math.round((i+1)/pallete.length * max, 2))}`,
       color: getColor(i/pallete.length * max, max),
     }
   });

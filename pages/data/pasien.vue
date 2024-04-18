@@ -13,7 +13,7 @@
             <div class="percentage_value">
               <b class="percentage_value__count">{{ getPasienLamaCount }}</b>
               <div class="bar-1">
-                <ProgressBar :value="50" :showValue="true" class="progressbar">{{ getPasienLamaPercentage }}</ProgressBar>
+                <ProgressBar :value="getPasienLamaPercentage" :showValue="true" class="progressbar">{{ getPasienLamaPercentage + "%" }}</ProgressBar>
               </div>
             </div>
           </div>
@@ -32,7 +32,7 @@
             <div class="percentage_value">
               <b class="percentage_value__count">{{ getPasienBaruCount }}</b>
               <div class="bar-2">
-                <ProgressBar :value="80" :showValue="true">{{ getPasienBaruPercentage }}</ProgressBar>
+                <ProgressBar :value="getPasienBaruPercentage" :showValue="true">{{ getPasienBaruPercentage + "%"}}</ProgressBar>
               </div>
             </div>
           </div>
@@ -157,9 +157,8 @@ const getFemaleCount = computed(() => new Intl.NumberFormat().format(femaleCount
 const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
 const getPasienLamaCount = computed(() => new Intl.NumberFormat().format(pasienLamaCount.value));
 const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienBaruCount.value));
-const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100) + "%");
-const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100) + "%");
-
+const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
+const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 
 const BarChartData = ref();
 const kelompokUsiaChartData = ref();

@@ -16,7 +16,7 @@
     </Error>
     <Skeleton height="8rem" v-if="status == 'pending'" />
     <template v-if="status == 'success'">
-      <GeoChart v-if="type == 'geographic'" :data="chartData" />
+      <GeoChart v-if="type == 'geographic'" :data="chartData" :options="props.chartOpt" />
       <Chart v-if="type != 'geographic'" :type="props.type" :data="chartData" :options="props.chartOpt" />
     </template>
   </template>
@@ -30,6 +30,8 @@ const props = defineProps<{
   src: string,
   type: string,
   chartOpt?: any,
+  setChartData?: (data: any, forecastData?: any) => any,
+  tipeData?: string,
   timeseries?: boolean,
   forecast?: boolean,
 }>();
@@ -48,7 +50,7 @@ const { data, status, refresh, error } = useFetch(props.src, {
   params: {
     tahun: tahun,
     bulan: bulan,
-    tipe_data: props.timeseries ? "timeseries" : undefined,
+    tipe_data: props.tipeData,
   },
   watch: false,
 });
@@ -88,6 +90,9 @@ function forecast() {
 }
 
 function setData(data: any, forecastData?: any) {
+  if (props.setChartData)
+    return props.setChartData(data, forecastData);
+
   if (props.timeseries) {
     const out = {
       labels: data.index,

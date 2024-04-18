@@ -7,7 +7,7 @@
     <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota</template>
   </BIChart>
 
-  <BIChart src="/api/demografi" timeseries type="line" forecast>
+  <BIChart src="/api/demografi" timeseries tipeData="timeseries" type="line" forecast>
     <template #title>Jumlah Pasien berdasarkan Kabupaten/Kota Seiring Waktu</template>
   </BIChart>
 </template>
