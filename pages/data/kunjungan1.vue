@@ -2,10 +2,8 @@
     <div class="grid-container">
         <div class="grid-item-chart">
             <div class="grid-item-chart__item1">
-                <Card>
-                    <template #title>Perkembangan Jumlah Kunjungan Setiap Tahun</template>
-                    <template #subtitle>Jumlah Kunjungan baru setiap tahun, hal ini berdasarkan waktu registrasi
-                        pertama.</template>
+                <Card style="height:100%">
+                    <template #title>Jumlah Kunjungan Setiap Tahun</template>
                     <template #content>
                         <Chart type="bar" :data="kunjunganBarChartData" />
                     </template>
@@ -14,9 +12,9 @@
 
             <div class="grid-item-chart__item2">
                 <Card style="height: 100%;">
-                    <template #title>Grafik Distribusi Kelompok Usia dan Pertumbuhan Kunjungan</template>
+                    <template #title>Distribusi Kelompok Usia dan Pertumbuhan Kunjungan</template>
                     <template #content>
-                        <Chart :type="chartType" :data="chartData" />
+                        <Chart  :data="lineChartData"/>
                     </template>
                 </Card>
             </div>
@@ -35,16 +33,10 @@
             <div class="grid-item-chart__item4">
                 <Card style="height:100%">
                     <template #content>
-                        <DataTable :value="products" @row-click="onRowClick">
+                        <DataTable :value="products">
                             <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
-                                <!-- <template #body="scope">
-                                    {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
-                                </template> -->
-
                                 <template #body="scope">
-                                    <div class="row-clickable" @click="onRowClick(scope.data)">
-                                        {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
-                                    </div>
+                                    {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
                                 </template>
                             </Column>
                         </DataTable>
@@ -67,25 +59,67 @@
                             <Card>
                                 <template #title>Top 10 Diagnosis di IGD</template>
                                 <template #content>
-                                    <div class="grid-igd-item">
-                                        <DataTable :value="diagnosis" @row-click="onRowClick">
-                                            <Column v-for="col of kolom" :key="col.field" :field="col.field"
-                                                :header="col.header">
-                                                <template #body="scope">
-                                                    <div class="row-clickable" @click="onRowClick(scope.data)">
-                                                        {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
+                                    <div class="grid-igd">
+                                        <div class="grid-igd__item1">
+                                            <DataTable :value="diagnosis" @row-select="onRowClick"
+                                                selectionMode="single" :selection="selectedRow">
+                                                <Column v-for="col of kolom" :key="col.field" :field="col.field"
+                                                    >
+                                                    <template #body="scope">
+                                                        <div class="row-clickable">
+                                                            {{ scope.data[col.field] ? scope.data[col.field] : '-' }}
+                                                        </div>
+                                                    </template>
+                                                </Column>
+                                            </DataTable>
+                                        </div>
+
+                                        <div class="grid-igd__item2">
+                                            <p class="__1">2024 | Deskripsi</p>
+
+                                            <h2 class="__2">{{ count_di_igd }} kasus</h2>
+
+                                            <Knob class="__3" v-model="value" valueTemplate="{value}%" />
+
+                                            <div class="__4">
+                                                <template v-if="statusDis === 'naik'">
+                                                    <div style="display: flex; align-items: center;">
+                                                        <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--red-400)"
+                                                            name="material-symbols:arrow-upward-rounded" />
+                                                        <p>{{ statusDis }} {{ percentDis }} % dari tahun lalu</p>
                                                     </div>
                                                 </template>
-                                            </Column>
-                                        </DataTable>
+                                                <template v-else-if="statusDis === 'turun'">
+                                                    <div style="display: flex; align-items: center;">
+                                                        <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--green-400)"
+                                                            name="material-symbols:arrow-downward-rounded" />
+                                                        <p>{{ statusDis }} {{ percentDis }} % dari tahun lalu</p>
+                                                    </div>
+                                                </template>
+                                            </div>
 
-                                        <div class="card flex justify-content-center">
-                                            <Knob v-model="value" valueTemplate="{value}%" />
+                                            <div class="__5">
+                                                <div style="display: flex; align-items: center;">
+                                                    <Icon style="font-size: 1.5rem; margin-right: 5px"
+                                                        color="var(--surface-400)"
+                                                        name="material-symbols:info-rounded" />
+                                                    <p>Didominasi kalangan ... (... tahun)</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="__6">
+                                                <div style="display: flex; align-items: center;">
+                                                    <Icon style="font-size: 1.5rem; margin-right: 5px"
+                                                        color="var(--surface-400)"
+                                                        name="material-symbols:show-chart-rounded" />
+                                                    <p>Pertumbuhan Diagnosa Ini Selama 5 Tahun Terakhir :</p>
+                                                </div>
+                                                <Chart type="line" :data="currentLast5years_barChartData" />
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
                             </Card>
-
                         </AccordionTab>
 
                         <AccordionTab>
@@ -97,24 +131,8 @@
                                     <Badge :value="jalan" class="ml-auto mr-2" />
                                 </span>
                             </template>
-                            <div class="grid-rajal-item">
-                                <div class="grid-rajal-item__item1">
-                                    <Card>
-                                        <template #title>Distribusi Jenis Penjamin</template>
-                                        <template #content>
-                                            <Chart type="doughnut" :data="penjaminBarChartData" />
-                                        </template>
-                                    </Card>
-                                </div>
+                            <div class="grid-rajal">
 
-                                <div class="grid-rajal-item__item2">
-                                    <Card>
-                                        <template #title>10 Penyakit Terbanyak</template>
-                                        <template #content>
-                                            <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
-                                        </template>
-                                    </Card>
-                                </div>
                             </div>
                         </AccordionTab>
 
@@ -127,24 +145,8 @@
                                     <Badge :value="inap" class="ml-auto mr-2" />
                                 </span>
                             </template>
-                            <div class="grid-ranap-item">
-                                <div class="grid-ranap-item__item1">
-                                    <Card>
-                                        <template #title>Distribusi Jenis Penjamin</template>
-                                        <template #content>
-                                            <Chart type="doughnut" :data="penjaminBarChartData" />
-                                        </template>
-                                    </Card>
-                                </div>
+                            <div class="grid-ranap">
 
-                                <div class="grid-ranap-item__item2">
-                                    <Card>
-                                        <template #title>10 Penyakit Terbanyak</template>
-                                        <template #content>
-                                            <Chart type="bar" :options="{ indexAxis: 'y' }" :data="penyakitChartData" />
-                                        </template>
-                                    </Card>
-                                </div>
                             </div>
                         </AccordionTab>
                     </Accordion>
@@ -164,28 +166,6 @@ definePageMeta({
     layout: "data",
 });
 
-const value = ref(60);
-
-const capitalizeEachLetter = (string) => {
-    return string.replace(/\b\w/g, match => match.toUpperCase());
-};
-
-// const onRowClick = (event) => {
-//     // Mendapatkan data yang diklik
-//     const rowData = event.data;
-//     console.log("Data yang diklik:", rowData);
-
-//     // Menentukan indeks baris yang diklik
-//     const rowIndex = products.value.indexOf(rowData);
-//     console.log("Index baris yang diklik:", rowIndex);
-// };
-
-// Fungsi untuk menangani klik pada baris
-const onRowClick = (rowData) => {
-    // Lakukan sesuatu saat baris diklik
-    console.log('Baris yang diklik:', rowData);
-};
-
 const {
     bulan,
     tahun,
@@ -193,22 +173,14 @@ const {
     lastFilter,
 } = storeToRefs(useDataFilter());
 
+const capitalizeEachLetter = (string) => {
+    return string.replace(/\b\w/g, match => match.toUpperCase());
+};
+
 const kunjunganBarChartData = ref();
 const lineChartData = ref();
-const penyakitChartData = ref();
 
-onMounted(async () => {
-    try {
-        const data = (await axios.get("http://localhost:5000/api/usia")).data
-
-        // Proses data API untuk digunakan dalam pembuatan Pie Chart
-        lineChartData.value = setLineChartData(data)
-        // console.log("hasil : ",data.jumlah_pasien)
-    } catch (error) {
-        console.error('Error fetching data from API:', error);
-    }
-});
-
+// KUNJUNGAN TAHUNAN BY JENIS REGISTRASI
 onMounted(async () => {
     const data = (await axios.get("http://localhost:5000/api/dashboard", {
         params: {
@@ -246,6 +218,18 @@ const setKunjunganBarChartData = (apiData) => {
     };
 }
 
+// KUNJUNGAN BY KELOMPOK USIA
+onMounted(async () => {
+    try {
+        const data = (await axios.get("http://localhost:5000/api/usia")).data
+
+        lineChartData.value = setLineChartData(data)
+
+    } catch (error) {
+        console.error('Error fetching data from API:', error);
+    }
+});
+
 const setLineChartData = (apiData) => {
     const documentStyle = getComputedStyle(document.documentElement);
 
@@ -281,9 +265,9 @@ const setLineChartData = (apiData) => {
         labels,
         datasets,
     };
-
-
 }
+
+
 
 const jenisregisgrowthdata = ref()
 
@@ -317,10 +301,6 @@ watch(jenisRegisData, () => {
     };
 });
 
-const chartType = 'bar'; // Tipe chart default untuk jenis registrasi
-const chartData = ref(); // Data untuk chart
-
-
 const igd_count = ref(0);
 const inap = ref(0);
 const jalan = ref(0);
@@ -339,35 +319,6 @@ onMounted(async () => {
 
         console.log("Jumlah total dari semua angka:", igd_count);
 
-    } catch (error) {
-        console.error('Error fetching data from API:', error);
-    }
-});
-
-onMounted(async () => {
-    try {
-        const usiaData = (await axios.get("http://localhost:5000/api/usia")).data;
-        const jenisRegisData = (await axios.get("http://localhost:5000/api/jenis_registrasi")).data;
-
-        const lineChartData = setLineChartData(usiaData); // Data untuk line chart
-
-        const barChartData = {
-            labels: jenisRegisData.index,
-            datasets: jenisRegisData.columns.map((val, i) => {
-                return {
-                    label: val,
-                    data: jenisRegisData.values[i],
-                };
-            })
-        };
-
-        chartData.value = {
-            labels: lineChartData.labels,
-            datasets: [
-                ...lineChartData.datasets, // Dataset untuk line chart
-                ...barChartData.datasets // Dataset untuk bar chart
-            ]
-        };
     } catch (error) {
         console.error('Error fetching data from API:', error);
     }
@@ -419,13 +370,6 @@ watch(lastFilter, async () => {
     };
 })
 
-// const products = ref([
-//     { code: '001', name: 'Product A', category: 'Category 1', quantity: 10 },
-//     { code: '002', name: 'Product B', category: 'Category 2', quantity: 20 },
-//     { code: '003', name: 'Product C', category: 'Category 1', quantity: 15 },
-//     // Add more products here if needed
-// ]);
-
 const products = ref([]);
 const columns = [
     { field: 'regis', header: '' },
@@ -454,72 +398,150 @@ onMounted(async () => {
     }
 });
 
+
+// TAB KUNJUNGAN DETAIL BERDASARKAN JENIS REGIS
 const diagnosis = ref([]);
+
+var count_di_igd = ref(0);
+var count_di1_igd = ref(0);
+
+const condition = ref(null);
+
 const kolom = [
-    { field: 'index', header: '' }
+    { field: 'id', header: '' }
 ];
+
+// Data dari respons API
+let responseData = [];
+let resposenDataBefore = ref([]);
+var selectedRow = ref(null);
+
+const total = ref(0);
+let totalCalculated = false;
+
+const selected_dis = ref();
+
+// const value = ref(60);
+const value = computed(() => Math.round(count_di_igd.value / total.value * 100));
+
+const percentDis_selected = computed(() => Math.round((count_di_igd.value - count_di1_igd) / count_di1_igd * 100))
+const statusDis = ref(null);
+const percentDis = ref(0);
+
+const currentLast5years_barChartData = ref();
+
+const onRowClick = async (rowData) => {
+    // Set nilai selected_dis berdasarkan baris yang diklik
+    selected_dis.value = rowData.data.id;
+
+    // Pastikan selected_dis tidak null atau undefined
+    if (selected_dis.value) {
+        try {
+            // Lakukan permintaan API dengan nilai selected_dis sebagai parameter
+            const response = await axios.get('http://localhost:5000/api/diagnosis', {
+                params: {
+                    tahun: 2024,
+                    jenisregistrasi: 'IGD',
+                    diagnosa: selected_dis.value
+                }
+            });
+
+            // Proses respons API
+            resposenDataBefore.value = response.data;
+
+            currentLast5years_barChartData.value = last5y_BarChartData(response.data)
+
+            selectedRow = rowData.data
+
+            // Lakukan tindakan lain berdasarkan data yang diterima
+            console.log('Data yang dipilih:', responseData.values[rowData.index]);
+            console.log('select row id', rowData.data.id);
+            count_di_igd.value = responseData.values[rowData.index];
+            count_di1_igd = resposenDataBefore.value.count_disease_prev_year
+
+            // SSS
+
+            // Lakukan tindakan lain yang diperlukan
+            console.log('hasil hitung diagnosa terpilih', count_di1_igd);
+            console.log('hasil mutlak', Math.abs(percentDis_selected.value))
+            // if <0 pakai abs, dan keterangan turun
+            if (percentDis_selected.value < 0) {
+                statusDis.value = 'turun';
+                percentDis.value = Math.abs(percentDis_selected.value)
+            } else {
+                statusDis.value = 'naik';
+                percentDis.value = Math.abs(percentDis_selected.value)
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    } else {
+        console.warn('Selected diagnosis is not available.');
+    }
+};
+
+// DATA KUNJUNGAN IGD
+
+
 
 onMounted(async () => {
     try {
-        const data = (await axios.get("http://localhost:5000/api/gejala")).data
+        const response = await axios.get('http://localhost:5000/api/diagnosis', {
+            params: {
+                tahun: 2024,
+                bulan: bulan.value,
+                jenisregistrasi: 'IGD',
+            }
+        });
+        // const data = response.data;
+        responseData = response.data;
+
+        count_di_igd.value = responseData.values[0];
+
+        if (!totalCalculated) {
+            // Jika belum dihitung, hitung total
+            for (const item of responseData.values) {
+                total.value += item;
+            }
+            // Set totalCalculated menjadi true agar tidak menghitung lagi
+            totalCalculated = true;
+        }
 
         // Reformat data
         const reformattedData = [];
-        const data_filter = data.index.slice(0,10);
+        const data_filter = responseData.id.slice(0, 10);
         console.log("hasil", data_filter);
         for (const key in data_filter) {
-            const row = { index : data_filter[key] };
+            const row = { id: data_filter[key] };
             reformattedData.push(row);
         }
 
         diagnosis.value = reformattedData;
+
+        selectedRow = diagnosis.value[0]; // Atur baris pertama sebagai baris terpilih secara default
+
     } catch (error) {
         console.error('Error fetching data from API:', error);
     }
 });
 
-onMounted(async () => {
-    const response = await axios.get('http://localhost:5000/api/gejala', {
-        params: {
-            tahun: tahun.value,
-            bulan: bulan.value,
-            kabupaten: kabupaten.value,
-        }
-    });
-    const data = response.data;
 
-    const limitedData = {
-        index: data.index.slice(0, 10),
-        values: data.values.slice(0, 10),
-    };
+const last5y_BarChartData = (apiData) => {
+    const documentStyle = getComputedStyle(document.body);
+    const dataValues = Object.values(apiData.last5years);
 
-    // Misalkan limitedData.values berisi nilai-nilai data Anda
-    const dataValues = limitedData.values;
-
-    // Mencari index dari nilai tertinggi
-    const maxIndex = dataValues.indexOf(Math.max(...dataValues));
-
-    // Membuat array warna, defaultnya semua warna sama
-    const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
-
-    // Mengubah warna untuk bar dengan nilai tertinggi
-    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
-
-    // Proses data untuk format grafik batang
-    penyakitChartData.value = {
-        labels: limitedData.index,
+    return {
+        labels: Object.keys(apiData.last5years),
         datasets: [
             {
-                label: 'Jumlah',
+                label: "Jumlah Kunjungan",
                 data: dataValues,
-                borderWidth: 1, // Lebar garis batas
-                backgroundColor: backgroundColors
-            }
-        ]
+            },
+        ],
     };
+}
 
 
-});
 
 </script>
 
@@ -531,7 +553,6 @@ onMounted(async () => {
 
     &__item3 {
         grid-row: 2/3;
-        // grid-column: 1/3;
     }
 
     &__item4 {
@@ -544,10 +565,10 @@ onMounted(async () => {
     }
 }
 
-.grid-igd-item {
+.grid-igd {
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 3fr;
 
     &__item1 {
         grid-row: 1/2;
@@ -555,12 +576,47 @@ onMounted(async () => {
     }
 
     &__item2 {
-        grid-row: 2/3;
-        grid-column: 1/3;
+        // grid-row: 1/2;
+        // grid-column: 2/3;
+
+        // .count {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-items: center;
+        height: fit-content;
+        // }
+
+        .__1 {
+            grid-row: 1/2;
+            margin: 0;
+        }
+
+        .__2 {
+            grid-row: 2/3;
+        }
+
+        .__3 {
+            grid-row: 2/3;
+        }
+
+        .__4 {
+            grid-row: 4/5;
+            grid-column: 1/3;
+        }
+
+        .__5 {
+            grid-row: 5/6;
+            grid-column: 1/3;
+        }
+
+        .__6 {
+            grid-row: 6/7;
+            grid-column: 1/3;
+        }
     }
 }
 
-.grid-rajal-item {
+.grid-rajal {
     display: grid;
     grid-gap: 20px;
     // grid-template-columns: 1fr 2fr;
@@ -571,12 +627,17 @@ onMounted(async () => {
     }
 
     &__item2 {
-        grid-row: 2/3;
+        grid-row: 1/2;
         grid-column: 1/3;
+    }
+
+    &__item3 {
+        grid-row: 1/2;
+        grid-column: 3/4
     }
 }
 
-.grid-ranap-item {
+.grid-ranap {
     display: grid;
     grid-gap: 20px;
     // grid-template-columns: 1fr 2fr;
@@ -587,17 +648,13 @@ onMounted(async () => {
     }
 
     &__item2 {
-        grid-row: 2/3;
+        grid-row: 1/3;
         grid-column: 1/3;
     }
-}
 
-.row-clickable {
-    cursor: pointer;
-}
-
-.row-clickable:active {
-    /* Efek yang ingin diterapkan saat baris diklik */
-    background-color: gray;
+    &__item3 {
+        grid-row: 1/3;
+        grid-column: 3/4
+    }
 }
 </style>
