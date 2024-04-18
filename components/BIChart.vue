@@ -41,17 +41,26 @@ const chartData = ref();
 const {
   tahun,
   bulan,
+  kabupaten,
   lastFilter,
   } = storeToRefs(useDataFilter());
+
+const params = computed(() => {
+  const p : any = {
+    tahun: tahun.value,
+    bulan: bulan.value,
+    tipe_data: props.tipeData,
+  }
+  if (kabupaten.value !== null){
+    p.kabupaten = kabupaten.value;
+  }
+  return p;
+});
 
 const { data, status, refresh, error } = useFetch(props.src, {
   server: false,
   lazy: true,
-  params: {
-    tahun: tahun,
-    bulan: bulan,
-    tipe_data: props.tipeData,
-  },
+  params: params,
   watch: false,
 });
 
