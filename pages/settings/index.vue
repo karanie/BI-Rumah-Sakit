@@ -15,14 +15,22 @@
 
       <div class="settings__section">
         <div class="section-title">Pengaturan</div>
-        <Listbox :options="settings">
-          <template #option="slotProps">
-            <div class="list-box-item" @click="navigateTo(slotProps.option.url)">
-              <Icon :name="slotProps.option.icon" />
-              {{ slotProps.option.name }}
-            </div>
+        <Menu :model="settings">
+          <template #item="{ item, props }">
+            <NuxtLink :to="item.route" class="list-box-item" v-bind="props.action">
+              <div class="list-box-item__leading">
+                <span :class="props.icon" />
+                <Icon :name="item.nuxtIcon" />
+              </div>
+              <div class="list-box-item__content">
+                {{ item.label }}
+              </div>
+              <div class="list-box-item__trailing">
+                <Icon name="material-symbols:navigate-next" />
+              </div>
+            </NuxtLink>
           </template>
-        </Listbox>
+        </Menu>
       </div>
 
     </div>
@@ -34,14 +42,14 @@ const { status, data, signOut } = useAuth();
 
 const settings = ref([
   {
-    icon: "material-symbols:person-add",
-    name: "Buat akun baru",
-    url: "/register",
+    nuxtIcon: "material-symbols:person-add",
+    label: "Buat akun baru",
+    route: "/register",
   },
   {
-    icon: "material-symbols:password-2",
-    name: "Ganti password",
-    url: "/settings/changepass",
+    nuxtIcon: "material-symbols:password-2",
+    label: "Ganti password",
+    route: "/settings/changepass",
   },
 ]);
 </script>
@@ -93,5 +101,14 @@ const settings = ref([
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+
+  &__trailing {
+    margin: 0 0 0 auto;
+  }
+}
+
+.no-underline {
+  text-decoration: none;
 }
 </style>
