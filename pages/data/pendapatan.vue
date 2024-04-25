@@ -1,19 +1,21 @@
 <template>
   <div class="item-1">
-    <Card class="card">
-      <template #title>Total Pendapatan</template>
-      <template #subtitle>Jumlah total tagihan dari tahun 2020-2024.</template>
-      <template #content>
-        <b class="big-number" style="color: rgb(50,205,50);">Rp{{ getJumlahPendapatan }}</b>
+    <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green">
+      <template #title>
+        Total Pendapatan
       </template>
-    </Card>
-    <Card class="card">
-      <template #title>Total Pengeluaran</template>
-      <template #subtitle>Jumlah modal HPP dari tahun 2020-2024.</template>
-      <template #content>
-        <b class="big-number" style="color: rgb(255, 75, 70);">Rp{{ getJumlahPengeluaran }}</b>
+      <template #subtitle>
+        Jumlah total tagihan pada
       </template>
-    </Card>
+    </BICard>
+    <BICard src="/api/pendapatan" tipeData="totalPengeluaran"  color ="red">
+      <template #title>
+        Total Pengeluaran
+      </template>
+      <template #subtitle>
+        Jumlah total semua hpp pada
+      </template>
+    </BICard>
   </div>
 
   <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
@@ -25,72 +27,29 @@
     <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
   </BIChart>
 
-  <BIChart src="/api/gejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData1" type="bar">
+  <BIChart src="/api/pendapatan" tipeData="pendapatanGejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData" type="bar">
     <template #title>10 Pendapatan Tertinggi Berdasarkan Penyakit</template>
   </BIChart>
 
-  <BIChart src="/api/gejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData2" type="bar">
+  <BIChart src="/api/pendapatan" tipeData="pengeluaranGejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData" type="bar">
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Penyakit</template>
   </BIChart>
 
-
-  <BIChart src="/api/poliklinik" type="bar" :setChartData="setPoliklinikChartData1" :chartOpt="{
-          indexAxis: 'y', elements: {
-            bar: {
-              borderWidth: 2,
-            }
-          }, responsive: true,
-          plugins: {
-            legend: {
-              position: 'right',
-            }
-          }
-        }">
+  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPendapatan" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
     <template #title>10 Pendapatan Tertinggi Berdasarkan Poliklinik</template>
   </BIChart>
 
-  <BIChart src="/api/poliklinik" type="bar" :setChartData="setPoliklinikChartData2" :chartOpt="{
-          indexAxis: 'y', elements: {
-            bar: {
-              borderWidth: 2,
-            }
-          }, responsive: true,
-          plugins: {
-            legend: {
-              position: 'right',
-            }
-          }
-        }">
+  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPengeluaran" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Poliklinik</template>
   </BIChart>
 
 </template>
 
 <script setup>
-import Chart from 'primevue/chart';
-import axios from 'axios';
-
-const jenisRegisPendapatanData = ref();
-
-const {
-  bulan,
-  tahun,
-  kabupaten,
-  lastFilter,
-} = storeToRefs(useDataFilter());
 
 definePageMeta({
   layout: "data"
 })
-
-const penPenyakitChartData = ref();
-const pengPenyakitChartData = ref();
-
-const jumlahPendapatan = ref();
-const jumlahPengeluaran = ref();
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat().format(jumlahPendapatan.value));
-const getJumlahPengeluaran = computed(() => new Intl.NumberFormat().format(jumlahPengeluaran.value));
-
 function setPendapatanName(data, forecastData) {
   const mapLabelName = {
     "total_tagihan": "Pengeluaran",
@@ -125,59 +84,22 @@ function setPendapatanName(data, forecastData) {
   }
 }
 
-// Chart Options
-
-const setPendapatanChartDataOpt = () => {
-  return {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: tooltipLabelCallbackCurrency({ style: 'currency', currency: 'IDR' }),
-        }
-      }
-    }
-  }
-}
-
-function setPenyakitChartData1(data){
+// Set chart data gejala
+function setPenyakitChartData(data) {
   // Mencari index dari nilai tertinggi
-  const maxIndex = data.pendapatan.indexOf(Math.max(...data.pendapatan));
+  const maxIndex = data.values.indexOf(Math.max(...data.values));
   // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(data.pendapatan.length).fill('rgba(54, 162, 235, 0.5)');
+  const backgroundColors = new Array(data.values.length).fill('rgba(54, 162, 235, 0.5)');
 
   // Mengubah warna untuk bar dengan nilai tertinggi
   backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
   return {
-    labels: data.index1,
+    labels: data.index,
     datasets: [
       {
         label: 'Jumlah',
-        data: data.pendapatan,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: backgroundColors
-      }
-    ]
-  };
-
-}
-
-function setPenyakitChartData2(data){
-  // Mencari index dari nilai tertinggi
-  const maxIndex = data.pengeluaran.indexOf(Math.max(...data.pengeluaran));
-
-  // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(data.pengeluaran.length).fill('rgba(54, 162, 235, 0.5)');
-
-  // Mengubah warna untuk bar dengan nilai tertinggi
-  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
-
-  return  {
-    labels: data.index2,
-    datasets: [
-      {
-        label: 'Jumlah',
-        data: data.pengeluaran,
+        data: data.values,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
@@ -185,9 +107,9 @@ function setPenyakitChartData2(data){
   };
 }
 
+// set chart data poliklinik
 
-
-function setPoliklinikChartData1(data) {
+function setPoliklinikChartData(data) {
   console.log(data);
   return {
     labels: data.index,
@@ -208,50 +130,33 @@ function setPoliklinikChartData1(data) {
   };
 }
 
-function setPoliklinikChartData2(data) {
+// Chart Options
+const setPendapatanChartDataOpt = () => {
   return {
-    labels: data.index2,
-    datasets: [
-      {
-        label: 'Pendapatan',
-        data: data.pendapatan2,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(95, 255, 132, 0.5)'
-      },
-      {
-        label: 'Pengeluaran',
-        data: data.pengeluaran2,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(255, 10, 7, 0.5)'
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: tooltipLabelCallbackCurrency({ style: 'currency', currency: 'IDR' }),
+        }
       }
-    ]
+    }
   }
 }
 
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
+const setPoliklinikChartDataOpt = () => {
+  return {
+    indexAxis: 'y', elements: {
+      bar: {
+        borderWidth: 2,
+      }
+    }, responsive: true,
+    plugins: {
+      legend: {
+        position: 'right',
+      }
     }
-  })).data
-  jumlahPendapatan.value = data.pendapatan;
-  jumlahPengeluaran.value = data.pengeluaran;
-});
-
-watch(lastFilter, async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  })).data
-  jumlahPendapatan.value = data.pendapatan;
-  jumlahPengeluaran.value = data.pengeluaran;
-  console.log("amogus")
-})
+  }
+}
 </script>
 
 <style>
