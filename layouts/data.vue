@@ -99,7 +99,7 @@ onMounted(async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  console.log(data);
+  // console.log(data);
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
   jumlahPendapatan.value = data.pendapatan;
@@ -119,7 +119,7 @@ watch(lastFilter, async () => {
   jumlahPendapatan.value = data.pendapatan;
 });
 
-console.log(jumlahPendapatan)
+// console.log(jumlahPendapatan)
 </script>
 
 <style scoped lang="scss">
