@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 const route = useRoute();
-const pageName = computed(() => route.name == "login" ? "Login" : "Register");
+const pageName = computed(() => route.name == "login" ? "Login" : route.name == "register" ? "Register" : "Ganti Password");
 </script>
 
 <style scoped lang="scss">

@@ -53,8 +53,8 @@ const { status, data, signOut } = useAuth();
 const profileOverlayLayout = ref();
 const profileMenu = [
   {
-    label: "Profile",
-    command: profileMenuClickWrapper(() => navigateTo("/profile")),
+    label: "Pengaturan",
+    command: profileMenuClickWrapper(() => navigateTo("/settings")),
   },
   {
     label: "Logout",
