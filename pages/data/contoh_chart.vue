@@ -1,40 +1,49 @@
 <template>
   <div class="peningkatan-penurunan">
     <Card>
-    <template #title>Peningkatan</template>
-    <template #content>
-      <b class="peningkatan-penurunan__peningkatan">+80 Item</b>
-    </template>
+      <template #title>Peningkatan</template>
+      <template #content>
+        <b class="peningkatan-penurunan__peningkatan">+80 Item</b>
+      </template>
     </Card>
 
     <Card>
-    <template #title>Penurunan</template>
-    <template #content>
-      <b class="peningkatan-penurunan__penurunan">-15 Item</b>
-    </template>
+      <template #title>Penurunan</template>
+      <template #content>
+        <b class="peningkatan-penurunan__penurunan">-15 Item</b>
+      </template>
     </Card>
   </div>
 
 
   <Card>
-  <template #title>Bar Chart</template>
-  <template #content>
-    <Chart type="bar" :data="barChartData" />
-  </template>
+    <template #title>Bar Chart</template>
+    <template #content>
+      <Chart type="bubble" :data="barChartData" :options="{
+        scales: {
+          x: {
+            display: false // Menyembunyikan sumbu x
+          },
+          y: {
+            display: false // Menyembunyikan sumbu y
+          }
+        }
+      }" />
+    </template>
   </Card>
 
   <Card>
-  <template #title>Pie Chart</template>
-  <template #content>
-    <Chart type="doughnut" :data="pieChartData" />
-  </template>
+    <template #title>Pie Chart</template>
+    <template #content>
+      <Chart type="doughnut" :data="pieChartData" />
+    </template>
   </Card>
 
   <Card>
-  <template #title>Line Chart</template>
-  <template #content>
-    <Chart type="line" :data="lineChartData" />
-  </template>
+    <template #title>Line Chart</template>
+    <template #content>
+      <Chart type="line" :data="lineChartData" />
+    </template>
   </Card>
 </template>
 
@@ -71,7 +80,11 @@ const setBarChartData = () => {
     datasets: [
       {
         label: 'foobar',
-        data: data.map(row => row.count)
+        data: data.map(row => ({
+          x: row.year,
+          y: row.count,
+          r: row.count * 2 // Menetapkan radius dengan mengalikan jumlah data dengan faktor tertentu untuk visualisasi yang lebih baik
+        }))
       }
     ]
   }

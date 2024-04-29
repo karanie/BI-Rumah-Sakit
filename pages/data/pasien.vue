@@ -360,19 +360,19 @@ onMounted(async () => {
   }
 }
 
-.bar-1::v-deep .p-progressbar .p-progressbar-value {
-  background: #7B99FA;
+.bar-1:deep() .p-progressbar .p-progressbar-value {
+    background: #7B99FA;
 }
 
-.bar-2::v-deep .p-progressbar .p-progressbar-value {
-  background: #96EAB7;
+.bar-2:deep() .p-progressbar .p-progressbar-value {
+    background: #96EAB7;
 }
 
-.bar-3::v-deep .p-progressbar .p-progressbar-value {
-  background: #53CDD8;
+.bar-3:deep() .p-progressbar .p-progressbar-value {
+    background: #53CDD8;
 }
 
-.bar-4::v-deep .p-progressbar .p-progressbar-value {
-  background: #E07F7F;
+.bar-4:deep() .p-progressbar .p-progressbar-value {
+    background: #E07F7F;
 }
 </style>
