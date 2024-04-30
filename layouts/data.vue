@@ -83,9 +83,13 @@ const activeCard = computed(() => {
 
 const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
 const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value));
+
+const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
+
+// const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value));
 const getJumlahPengeluaran = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPengeluaran.value));
 const getJumlahTotal = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value - jumlahPengeluaran.value));
+
 
 onMounted(async () => {
   const data = (await axios.get("http://localhost:5000/api/dashboard", {
@@ -95,7 +99,7 @@ onMounted(async () => {
       kabupaten: kabupaten.value,
     }
   })).data
-  console.log(data);
+  // console.log(data);
   jumlahPasien.value = data.jumlahPasien;
   jumlahKunjungan.value = data.jumlahKunjungan;
   jumlahPendapatan.value = data.pendapatan;
@@ -115,7 +119,7 @@ watch(lastFilter, async () => {
   jumlahPendapatan.value = data.pendapatan;
 });
 
-console.log(jumlahPendapatan)
+// console.log(jumlahPendapatan)
 </script>
 
 <style scoped lang="scss">
@@ -156,7 +160,7 @@ console.log(jumlahPendapatan)
 
     &.active {
       background-color: var(--cyan-100);
-      color: var(--surface-800);
+      color : var(--surface-800);
       // color: white; /* Jika ingin teks menjadi putih */
     }
 
