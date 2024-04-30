@@ -1,5 +1,5 @@
 <template>
-  <DataTable v-if="status == 'success'" :value="data?.rows">
+  <DataTable v-if="status == 'success'" :value="data?.rows" paginator :rows="10" :virtualScrollerOptions="{ itemSize: 59 }">
     <template #header>
       <div class="table__header">
         <div class="table__header__heading">
