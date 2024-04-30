@@ -1,11 +1,17 @@
 <template>
-  <DataTable v-if="status == 'success'" :value="data?.rows" paginator :rows="10" :virtualScrollerOptions="{ itemSize: 59 }">
+  <DataTable v-if="status == 'success'" :value="data?.rows" paginator :rows="10" :virtualScrollerOptions="{ itemSize: 59 }" v-model:filters="filters" :globalFilterFields="['user_id', 'username', 'nama_lengkap', 'role']">
     <template #header>
       <div class="table__header">
         <div class="table__header__heading">
           <Button icon="pi pi-plus" @click="() => navigateTo('/settings/users/create')" label="User Baru" />
         </div>
         <div class="table__header__trailing">
+          <InputGroup>
+            <InputGroupAddon>
+              <Icon name="material-symbols:search" />
+            </InputGroupAddon>
+            <InputText placeholder="Cari" v-model="filters.global.value" />
+          </InputGroup>
           <Button icon="pi" rounded plain text @click="() => refresh()"><Icon name="material-symbols:refresh" /></Button>
         </div>
       </div>
@@ -40,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { FilterMatchMode } from 'primevue/api';
+
 definePageMeta({
   layout: "settings",
 });
@@ -50,6 +58,10 @@ const { data, status, refresh, error } = useFetch("/api/users", {
   server: false,
   lazy: true,
   watch: false,
+});
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 async function deleteUser(id: number) {
@@ -66,6 +78,9 @@ watch(() => route.path, () => route.path == "/settings/users" && refresh());
     display: flex;
 
     &__trailing {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin: 0 0 0 auto;
     }
   }
