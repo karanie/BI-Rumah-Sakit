@@ -29,7 +29,7 @@ const { status, data, signOut } = useAuth();
 const settings = ref([
   {
     nuxtIcon: "material-symbols:person-add",
-    label: "Buat akun baru",
+    label: "User Management",
     route: "/settings/users",
   },
   {
