@@ -64,9 +64,6 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
-
 const route = useRoute();
 const dialogIsVisible = ref(true);
 
