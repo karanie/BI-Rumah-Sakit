@@ -159,7 +159,7 @@ const paramsDetail = computed(() => {
     // Menentukan params berdasarkan nilai rawatJalan
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param detail", p);
+    // console.log("param detail", p);
     return p;
 });
 
@@ -199,7 +199,7 @@ const paramsPrevData = computed(() => {
     }
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param prev data", p);
+    // console.log("param prev data", p);
     return p;
 });
 
@@ -292,7 +292,7 @@ function setDetailData(detailDataSelected: any) {
     valueData_selected.value = detailDataSelected.values.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0);
     percentageData_selected.value = Math.round(valueData_selected.value / total.value * 100);
 
-    console.log("detail data selected", detailDataSelected)
+    // console.log("detail data selected", detailDataSelected)
 
     dominantAge_cat.value = detailDataSelected.dominant_age_category_summary;
     dominantAge_scale.value = ageScale(dominantAge_cat.value);
