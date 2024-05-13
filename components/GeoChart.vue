@@ -53,7 +53,7 @@ const data = computed(() => {
   });
 });
 function formatNum(num) {
-  return new Intl.NumberFormat(navigator.languageval).format(num);
+  return new Intl.NumberFormat(navigator.language).format(num);
 }
 const getHoveredData = computed(() => {
   const titleCallback = props?.options?.plugins?.tooltip?.callbacks?.title ?? (val => val);

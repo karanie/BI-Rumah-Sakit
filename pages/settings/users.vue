@@ -1,5 +1,5 @@
 <template>
-  <DataTable v-if="status == 'success'" :value="data?.rows" paginator :rows="10" :virtualScrollerOptions="{ itemSize: 59 }" v-model:filters="filters" :globalFilterFields="['user_id', 'username', 'nama_lengkap', 'role']">
+  <DataTable v-if="status == 'success'" :value="data?.rows" paginator :rows="10" :virtualScrollerOptions="{ itemSize: 59 }" v-model:filters="filters" :globalFilterFields="['user_id', 'username', 'nama_lengkap', 'role']" rowHover @rowClick="(e: any) => navigateTo(`/settings/users/${data?.rows[e.index].user_id}`)">
     <template #header>
       <div class="table__header">
         <div class="table__header__heading">
