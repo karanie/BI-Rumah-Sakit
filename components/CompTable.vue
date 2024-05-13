@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  srcs: { name: string, value: string }[],
+  srcs: { name: string, value: string, params?: any }[],
   defaultSrc?: number,
 }>();
 
@@ -141,9 +141,12 @@ const srcParams1 = ref(generateParams(period1.value));
 const srcParams2 = ref(generateParams(period2.value));
 
 function generateParams(periods: any) {
-  const params: any = { tipe_data: 'timeseries' };
+  let params: any = { tipe_data: 'timeseries' };
   if (!periods)
     return params;
+
+  if (src.value.params)
+    params = src.value.params
 
   if (interval.value.value == "tahun") {
     params.tahun = periods.value.tahun;
