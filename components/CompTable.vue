@@ -43,7 +43,7 @@
       </div>
     </Panel>
     <Panel header="Compare" class="comp-table__content">
-      <DataTable v-if="status1 == 'success' && status2 =='success'" :value="data">
+      <DataTable v-if="status1 == 'success' && status2 =='success'" :value="data" scrollable>
         <ColumnGroup type="header">
           <Row>
             <Column header="" field="property" :rowspan="2" />
@@ -324,6 +324,9 @@ function formatNum(num: number) {
   margin: 8px;
 
   &__option-panel {
+    max-height: calc(100vh - 55px - 16px - 2px - 52px - 1.125rem);
+    overflow: auto;
+
     & > div {
       margin-top: 8px;
     }
@@ -335,6 +338,7 @@ function formatNum(num: number) {
 
   &__content {
     width: 100%;
+    min-width: 0;
   }
 }
 
