@@ -42,7 +42,7 @@
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
                             <h2>{{ valueData_selected }} <span style="font-size: 16px">kunjungan</span></h2>
-                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" />
+                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" :readonly="true"/>
                         </div>
 
                         <div style="display: flex; align-items: center;">
