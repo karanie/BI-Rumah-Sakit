@@ -98,7 +98,6 @@ onMounted(async () => {
   kabupaten.value = filterOptions.kabupaten;
   tahun.value = filterOptions.tahun;
 });
-
 // Filtering secara default : waktu regis terakhir
 // selectedTahun.value = lastRegisDate.getFullYear();
 // // selectedTahun.value = 2020;
