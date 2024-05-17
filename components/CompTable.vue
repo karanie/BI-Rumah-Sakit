@@ -10,6 +10,10 @@
           <label for="interval">Interval</label>
           <Dropdown id="interval" v-model="interval" placeholder="Interval" :options="intervalOptions" optionLabel="name" />
         </div>
+        <div class="form-input">
+          <label for="interval">Resample</label>
+          <Dropdown id="interval" v-model="resample" placeholder="Resample" :options="resampleOptions" optionLabel="name" />
+        </div>
 
         <Panel header="Data 1">
           <div class="comp-table__option-panel">
@@ -39,7 +43,7 @@
       </div>
     </Panel>
     <Panel header="Compare" class="comp-table__content">
-      <DataTable v-if="status1 == 'success' && status2 =='success'" :value="data">
+      <DataTable v-if="status1 == 'success' && status2 =='success'" :value="data" scrollable>
         <ColumnGroup type="header">
           <Row>
             <Column header="" field="property" :rowspan="2" />
@@ -106,10 +110,19 @@ const src = ref(props.srcs[props.defaultSrc || 0]);
 const category1 = ref();
 const category2 = ref();
 const interval = ref({ name: "Tahun", value: "tahun" });
+const resample = ref({ name: "1 Bulan", value: "M" });
 
 const intervalOptions = [
   { name: "Tahun", value: "tahun" },
   { name: "Bulan", value: "bulan" },
+];
+const resampleOptions = [
+  { name: "1 Tahun", value: "Y" },
+  { name: "4 Bulan", value: "3M" },
+  { name: "3 Bulan", value: "3M" },
+  { name: "1 Bulan", value: "M" },
+  { name: "1 Minggu", value: "W" },
+  { name: "1 Hari", value: "D" },
 ];
 const catOptions = computed(() => {
   if (!data1.value)
@@ -141,7 +154,11 @@ const srcParams1 = ref(generateParams(period1.value));
 const srcParams2 = ref(generateParams(period2.value));
 
 function generateParams(periods: any) {
-  let params: any = { tipe_data: 'timeseries' };
+  let params: any = {
+    timeseries: true,
+    resample: resample.value?.value,
+  };
+
   if (!periods)
     return params;
 
@@ -182,7 +199,7 @@ const {
   watch: false,
 });
 
-watch([src, period1, period2], () => {
+watch([src, period1, period2, resample], () => {
   srcParams1.value = generateParams(period1.value);
   srcParams2.value = generateParams(period2.value);
   refresh1();
@@ -307,6 +324,9 @@ function formatNum(num: number) {
   margin: 8px;
 
   &__option-panel {
+    max-height: calc(100vh - 55px - 16px - 2px - 52px - 1.125rem);
+    overflow: auto;
+
     & > div {
       margin-top: 8px;
     }
@@ -318,6 +338,7 @@ function formatNum(num: number) {
 
   &__content {
     width: 100%;
+    min-width: 0;
   }
 }
 
