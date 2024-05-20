@@ -1,6 +1,6 @@
 <template>
   <div class="item-1">
-    <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green">
+    <BICard src="/api/pendapatan" tipeData="totalPendapatanBulanIni" color="green">
       <template #title>
         Total Pendapatan
       </template>
@@ -8,7 +8,7 @@
         Jumlah total tagihan pada
       </template>
     </BICard>
-    <BICard src="/api/pendapatan" tipeData="totalPengeluaran"  color ="red">
+    <BICard src="/api/pendapatan" tipeData="totalPengeluaranBulanIni"  color ="red">
       <template #title>
         Total Pengeluaran
       </template>
@@ -18,12 +18,12 @@
     </BICard>
   </div>
 
-  <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
-    :chartOpt="setPendapatanChartDataOpt()">
+  <BIChart src="/api/pendapatan" timeseries forecast type="line" :setChartData="setPendapatanName"
+    :chartOpt="setPendapatanCurrencyChartDataOpt()">
     <template #title>Jumlah Pendapatan Seiring Waktu</template>
   </BIChart>
 
-  <BIChart src="/api/pendapatan" timeseries tipeData="jenisregis" :chartOpt="setPendapatanChartDataOpt()" type="line">
+  <BIChart src="/api/pendapatan" timeseries forecast tipeData="jenis_registrasi"type="line">
     <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
   </BIChart>
 
@@ -35,13 +35,18 @@
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Penyakit</template>
   </BIChart>
 
-  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPendapatan" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
+  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPendapatan" type="bar" :setChartData="setDoubleBarChartData" :chartOpt="setDoubleBarChartDataOpt()">
     <template #title>10 Pendapatan Tertinggi Berdasarkan Poliklinik</template>
   </BIChart>
 
-  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPengeluaran" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
+  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPengeluaran" type="bar" :setChartData="setDoubleBarChartData" :chartOpt="setDoubleBarChartDataOpt()">
     <template #title>10 Pengeluaran Tertinggi Berdasarkan Poliklinik</template>
   </BIChart>
+
+  <BIChart src="/api/pendapatan" tipeData="penjamin" type="bar" :setChartData="setDoubleBarChartData">
+    <template #title>Distribusi Pendapatan Pengeluaran Berdasarkan Penjamin</template>
+  </BIChart>
+
 
 </template>
 
@@ -50,39 +55,39 @@
 definePageMeta({
   layout: "data"
 })
-function setPendapatanName(data, forecastData) {
-  const mapLabelName = {
-    "total_tagihan": "Pengeluaran",
-    "total_semua_hpp": "Pendapatan"
-  }
-  const out = {
-    labels: data.index,
-    datasets: data.columns.map((val, i) => {
-      return {
-        label: mapLabelName[val],
-        data: data.values[i],
-        pointStyle: false,
-      }
-    })
-  }
-  if (!forecastData) {
-    return out;
-  } else {
-    console.log(forecastData);
-    forecastData.forEach((el) => {
-      out.datasets.push(
-        {
-          label: `${mapLabelName[el.columns[0]]} Forecast`,
-          data: el.values[0].map((val, i) => {
-            return { x: el.index[i], y: val }
-          }),
+  function setPendapatanName(data, forecastData) {
+    const mapLabelName = {
+      "total_tagihan": "Pendapatan",
+      "total_semua_hpp": "Pengeluaran"
+    }
+    const out = {
+      labels: data.index,
+      datasets: data.columns.map((val, i) => {
+        return {
+          label: mapLabelName[val],
+          data: data.values[i],
           pointStyle: false,
         }
-      );
-    });
-    return out;
+      })
+    }
+    if (!forecastData) {
+      return out;
+    } else {
+      console.log(forecastData);
+      forecastData.forEach((el) => {
+        out.datasets.push(
+          {
+            label: `${mapLabelName[el.columns[0]]} Forecast`,
+            data: el.values[0].map((val, i) => {
+              return { x: el.index[i], y: val }
+            }),
+            pointStyle: false,
+          }
+        );
+      });
+      return out;
+    }
   }
-}
 
 // Set chart data gejala
 function setPenyakitChartData(data) {
@@ -109,7 +114,7 @@ function setPenyakitChartData(data) {
 
 // set chart data poliklinik
 
-function setPoliklinikChartData(data) {
+function setDoubleBarChartData(data) {
   console.log(data);
   return {
     labels: data.index,
@@ -131,7 +136,7 @@ function setPoliklinikChartData(data) {
 }
 
 // Chart Options
-const setPendapatanChartDataOpt = () => {
+const setPendapatanCurrencyChartDataOpt = () => {
   return {
     plugins: {
       tooltip: {
@@ -143,13 +148,14 @@ const setPendapatanChartDataOpt = () => {
   }
 }
 
-const setPoliklinikChartDataOpt = () => {
+const setDoubleBarChartDataOpt = () => {
   return {
     indexAxis: 'y', elements: {
       bar: {
         borderWidth: 2,
       }
-    }, responsive: true,
+    },
+     responsive: true,
     plugins: {
       legend: {
         position: 'right',
@@ -159,7 +165,7 @@ const setPoliklinikChartDataOpt = () => {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .item-1 {
   display: grid;
   gap: 20px;
@@ -180,5 +186,16 @@ const setPoliklinikChartDataOpt = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  height: 20%;
+
+  &__chart{
+    width: 100%;
+  }
 }
 </style>
