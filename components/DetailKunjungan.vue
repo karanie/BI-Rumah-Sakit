@@ -14,7 +14,7 @@
                 <div class="grid__item1">
                     <DataTable v-model:filters="filters" :value="dataTable" selectionMode="single"
                         v-model:selection="selectedRow" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect" scrollable
-                        scrollHeight="420px" :virtualScrollerOptions="{ itemSize: 46 }">
+                        :scrollHeight="dataTableHeight" :virtualScrollerOptions="{ itemSize: 46 }">
 
                         <template #header>
                             <div class="flex justify-content-end">
@@ -27,7 +27,7 @@
                             </div>
                         </template>
 
-                        <Column v-for="col of kolom" :key="col.field" :field="col.field"></Column>
+                        <Column v-for="col of kolom" :key="col.field" :field="col.field"/>
 
                     </DataTable>
                 </div>
@@ -37,7 +37,7 @@
                         <Skeleton height="18rem" />
                     </div>
 
-                    <div v-if="detailStatus == 'success'">
+                    <div v-if="detailStatus == 'success'" ref="dtContainer">
                         <p>{{ getTahun }} | Deskripsi</p>
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
@@ -171,7 +171,8 @@ const { data: detailData, status: detailStatus, execute: detailExecute, refresh:
     immediate: false,
 });
 
-const getTahun = computed(() => {
+const getTahun = ref();
+const setTahun = () => {
     if (tahun.value)
         return tahun.value;
     if (!detailData.value)
@@ -179,7 +180,7 @@ const getTahun = computed(() => {
     const tahunAwal = (new Date((detailData.value as any).index[0])).getFullYear();
     const tahunAkhir = (new Date((detailData.value as any).index[(detailData.value as any).index.length - 1])).getFullYear();
     return `${tahunAwal}-${tahunAkhir}`;
-});
+};
 
 watch(detailData, () => {
     if (!detailData.value)
@@ -187,6 +188,8 @@ watch(detailData, () => {
 
     setDetailData(detailData.value);
     chartData.value = setData_chart(detailData.value);
+
+    getTahun.value = setTahun();
 });
 
 const paramsPrevData = computed(() => {
@@ -356,6 +359,16 @@ function setDataDiagnosa_RawatJalan_chart(data: any) {
         ]
     };
 };
+
+//dynamic scroll height for datatable
+const dtContainer = ref();
+const dataTableHeight = computed(() => {
+    if (dtContainer.value) {
+        const containerHeight = dtContainer.value.clientHeight;
+        return `${containerHeight}px`;
+    }
+    return "420px"
+})
 
 </script>
 

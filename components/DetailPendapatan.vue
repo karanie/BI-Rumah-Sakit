@@ -14,7 +14,7 @@
                 <div class="grid__item1">
                     <DataTable v-model:filters="filters" :value="dataTable" selectionMode="single"
                         v-model:selection="selectedRow" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect" scrollable
-                        scrollHeight="420px" :virtualScrollerOptions="{ itemSize: 46 }">
+                        :scrollHeight="dataTableHeight" :virtualScrollerOptions="{ itemSize: 46 }">
 
                         <template #header>
                             <Icon name="material-symbols:sort-rounded" size="24px" style="margin-right: 8px" />
@@ -39,8 +39,8 @@
                         <Skeleton height="18rem" />
                     </div>
 
-                    <div v-if="detailStatus == 'success' && prevStatus == 'success'">
-                        <p><b>{{ tahun }} | Deskripsi</b></p>
+                    <div v-if="detailStatus == 'success' && prevStatus == 'success'" ref="dtContainer">
+                        <p><b>{{ getTahun }} | Deskripsi</b></p>
                         <DataTable :value="compareDataTable">
                             <Column field="periode" header="Periode" />
                             <Column field="hpp" header="HPP">
@@ -90,7 +90,7 @@
 
                         <div v-if="props.jenisRegis == 'Rawat Inap'">
                             <p><b>Distribusi Kelas</b></p>
-                            <p>Rata-rata lama inap : {{lamaInap}} hari</p>
+                            <p>Rata-rata lama inap : {{ lamaInap }} hari</p>
                             <Chart type="bar" :data="chartListData" :options="{ indexAxis: 'y' }" />
                         </div>
                     </div>
@@ -134,6 +134,8 @@ const chartData = ref();
 const chartListData = ref();
 
 const lamaInap = ref();
+
+const getTahun = ref();
 
 const params = computed(() => {
     let p: any = {
@@ -245,7 +247,9 @@ watch(dataDetail, () => {
         return;
     compareDataTable.value = setCompareDataTable(data.value, prevData.value);
     chartData.value = setData_chart(dataDetail.value);
-    chartListData.value = setListData_chart(dataDetail.value)
+    chartListData.value = setListData_chart(dataDetail.value);
+
+    getTahun.value = setTahun();
 });
 
 const kolom = [
@@ -331,21 +335,28 @@ function setData_chart(data: any) {
 
 // Untuk rawat jalan & rawat inap
 function setListData_chart(data: any) {
-    lamaInap.value = props.jenisRegis == 'Rawat Inap'? data.avgLosRawatan : 0;
+    lamaInap.value = props.jenisRegis == 'Rawat Inap' ? data.avgLosRawatan : 0;
     return {
-        labels: props.jenisRegis == 'Rawat Jalan'? data.diagnosa.slice(0, 5) : data.kelas_hak,
+        labels: props.jenisRegis == 'Rawat Jalan' ? data.diagnosa.slice(0, 5) : data.kelas_hak,
         datasets: [
             {
                 label: 'Pendapatan (Rp)',
-                data: props.jenisRegis == 'Rawat Jalan'? data.pendapatanDiagnosa : data.pendapatanKelas
+                data: props.jenisRegis == 'Rawat Jalan' ? data.pendapatanDiagnosa : data.pendapatanKelas
             },
             {
                 label: 'Pengeluaran (Rp)',
-                data: props.jenisRegis == 'Rawat Jalan'? data.pengeluaranDiagnosa : data.pengeluaranKelas
+                data: props.jenisRegis == 'Rawat Jalan' ? data.pengeluaranDiagnosa : data.pengeluaranKelas
             }
         ],
     };
 };
+
+function setTahun(){
+    let date = tahun.value && bulan.value
+            ? `${new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2000, bulan.value - 1, 1))} ${tahun.value}`
+            : (tahun.value ? tahun.value : `All`)
+    return date;
+}
 
 const getColorHpp = computed(() => {
     let color = valueHpp.value < 0 ? "var(--red-400)" : "var(--green-400)";
@@ -353,9 +364,19 @@ const getColorHpp = computed(() => {
 });
 
 const getColorTagihan = computed(() => {
-    let color =valueTagihan.value < 0  ? "var(--red-400)" : "var(--green-400)";
+    let color = valueTagihan.value < 0 ? "var(--red-400)" : "var(--green-400)";
     return color;
 });
+
+const dtContainer = ref();
+const dataTableHeight = computed(() => {
+    if (dtContainer.value) {
+        const containerHeight = dtContainer.value.clientHeight;
+        return `${containerHeight}px`;
+    }
+    return "420px"
+})
+
 </script>
 
 <style scoped lang="scss">
