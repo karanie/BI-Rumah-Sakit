@@ -42,17 +42,17 @@
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
                             <h2>{{ valueData_selected }} <span style="font-size: 16px">kunjungan</span></h2>
-                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" />
+                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" readonly />
                         </div>
 
-                        <div style="display: flex; align-items: center;">
+                        <div v-if="tahun" style="display: flex; align-items: center;">
                             <div style="display: flex; align-items: center;">
                                 <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--green-400)"
                                     name="material-symbols:arrow-upward-rounded" v-if="status_comparePrev === 'Naik'" />
                                 <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--red-400)"
                                     name="material-symbols:arrow-downward-rounded"
                                     v-else-if="status_comparePrev === 'Turun'" />
-                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari tahun lalu</p>
+                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari {{ getBulanOrTahun() }} lalu</p>
                             </div>
                         </div>
 
@@ -102,6 +102,8 @@ const props = defineProps<{
     src: string,
     rawatJalan?: boolean,
     jenisRegis: string,
+    timeseries?: boolean,
+    tipeData?: string,
 }>();
 
 const {
@@ -116,6 +118,7 @@ const params = computed(() => {
         jenisregistrasi: props.jenisRegis,
         tahun: tahun.value,
         bulan: bulan.value,
+        tipe_data: props.tipeData,
     }
 
     if (kabupaten.value !== null) {
@@ -123,6 +126,15 @@ const params = computed(() => {
     }
     return p;
 });
+
+function getBulanOrTahun(){
+  if(!bulan.value) {
+    return "tahun";
+  } else {
+    return "tahun"
+    // return "bulan"
+  }
+}
 
 const { data, status, refresh, error } = useFetch(props.src, {
     server: false,
@@ -153,7 +165,11 @@ const paramsDetail = computed(() => {
         bulan: bulan.value,
         jenisregistrasi: props.jenisRegis,
         // diagnosa: selectedRow.value.index,
-        tipe_data: "timeseries",
+        timeseries: true,
+        tipe_data: props.tipeData,
+    }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
     }
 
     // Menentukan params berdasarkan nilai rawatJalan
@@ -197,6 +213,9 @@ const paramsPrevData = computed(() => {
         jenisregistrasi: props.jenisRegis,
         // diagnosa: selectedRow.value.index,
     }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
+    }
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
     console.log("param prev data", p);
@@ -224,6 +243,9 @@ const paramsDiagnosaRawatJalan = computed(() => {
         bulan: bulan.value,
         jenisregistrasi: props.jenisRegis,
         departemen: selectedRow.value.index,
+    }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
     }
     return p;
 });
@@ -332,13 +354,14 @@ function setPrevData(prevData: any) {
     }
 };
 
-//Chart 
+//Chart
 function setData_chart(data: any) {
     // console.log(data)
     return {
         labels: data.index,
         datasets: [
             {
+                label: data.columns,
                 data: data.values,
             }
         ]
@@ -351,6 +374,7 @@ function setDataDiagnosa_RawatJalan_chart(data: any) {
         labels: data.indexDiagnosa.slice(0, 5),
         datasets: [
             {
+                label: data.columns,
                 data: data.valuesDiagnosa,
             }
         ]
