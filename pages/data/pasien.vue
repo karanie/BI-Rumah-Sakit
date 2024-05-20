@@ -80,50 +80,26 @@
 
     <div class="grid-item-chart">
       <div class="grid-item-chart__item1">
-        <Card style="height:100%">
-          <template #title>Perkembangan Jumlah Pasien Setiap Tahun</template>
-          <template #subtitle>berdasarkan waktu registrasi pertama</template>
-          <template #content>
-            <Chart type="bar" :data="BarChartData" />
-          </template>
-        </Card>
+        <BIChart src="/api/pasien" tipeData="jumlahPasienPertahun" type="bar" :setChartData="setTop10Color">
+          <template #title>Perkembangan Pasien Pertahun</template>
+        </BIChart>
       </div>
 
       <div class="grid-item-chart__item2">
-        <Card>
-          <template #title>
-            Distribusi Pasien Berdasarkan Kelompok Usia
-          </template>
-          <template #content>
-            <Chart type="pie" style="width: 100%; display:flex;" :data="kelompokUsiaChartData" />
-          </template>
-        </Card>
-      </div>
-
-      <div class="grid-item-chart__item3">
-        <Card>
-          <template #title>Top 10 Pekerjaan Pasien</template>
-          <template #content>
-            <Chart type="bar" :options="{ indexAxis: 'y' }" :data="pekerjaanChartData" />
-          </template>
-        </Card>
+        <BIChart src="/api/pasien" tipeData="usia" type="pie" :chartOpt="generateChartOption('percent')" :setChartData="processChartData">
+          <template #title>Distribusi Usia</template>
+        </BIChart>
       </div>
 
       <div class="grid-item-chart__item4">
-        <Card>
-          <template #title>Distribusi Jumlah Pasien Berdasarkan Wilayah</template>
-          <template #content>
-            <div class="value_column">
-              <Icon style="font-size: 3.5rem;" color="var(--blue-400)"
-                name="material-symbols:man-3-rounded" />
-              <div class="percentage_value">
-                <b class="percentage_value__count">500</b>
-                <ProgressBar :value="50" :showValue="true">50</ProgressBar>
-              </div>
-            </div>
-          </template>
-        </Card>
+        <BIChart src="/api/demografi" type="geographic">
+          <template #title>Demografi Riau</template>
+        </BIChart>
       </div>
+
+      <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y' }" :setChartData="setTop10Color">
+        <template #title>Top 10 Pekerjaan Pasien</template>
+      </BIChart>
 
     </div>
   </div>
@@ -131,7 +107,6 @@
 
 <script setup>
 import axios from 'axios';
-import Chart from 'primevue/chart';
 
 definePageMeta({
   layout: "data"
@@ -162,15 +137,11 @@ const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value 
 
 const BarChartData = ref();
 const kelompokUsiaChartData = ref();
-const pekerjaanChartData = ref();
-
-const capitalizeEachLetter = (string) => {
-  return string.replace(/\b\w/g, match => match.toUpperCase());
-};
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+  const data = (await axios.get("http://localhost:5000/api/pasien", {
     params: {
+      tipe_data: "pasienLamaBaru",
       kabupaten: kabupaten.value,
       tahun: tahun.value,
       bulan: bulan.value
@@ -181,8 +152,9 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
+  const data = (await axios.get("http://localhost:5000/api/pasien", {
     params: {
+      tipe_data: "jumlahJenisKelamin",
       kabupaten: kabupaten.value,
       tahun: tahun.value,
       bulan: bulan.value
@@ -193,15 +165,45 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  try {
-    const data = (await axios.get("http://localhost:5000/api/usia")).data
+  const data = (await axios.get("http://localhost:5000/api/pasien", {
+    params: {
+      tipe_data: "usia"
+    }
+  })).data
 
-    kelompokUsiaChartData.value = processChartData(data);
-    BarChartData.value = setBarChartData(data)
-  } catch (error) {
-    console.error('Error fetching data from API:', error);
-  }
+  kelompokUsiaChartData.value = processChartData(data);
+  BarChartData.value = setBarChartData(data)
 });
+
+const processChartData = data => {
+  const documentStyle = getComputedStyle(document.body);
+
+  const mapLabelName = {
+    "bayi & balita": "Bayi & Balita",
+    "anak-anak": "Anak-Anak",
+    "remaja": "Remaja",
+    "dewasa": "Dewasa",
+    "lansia": "Lansia",
+    "unknown": "Tidak Diketahui"
+  }
+
+  const out = {
+    labels: data.index.map(i => mapLabelName[i]),
+    datasets: [
+      {
+        data: data.values,
+        backgroundColor: [documentStyle.getPropertyValue('--cyan-500'),
+          documentStyle.getPropertyValue('--orange-500'),
+          documentStyle.getPropertyValue('--gray-500'),
+          documentStyle.getPropertyValue('--indigo-500'),
+          documentStyle.getPropertyValue('--teal-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--pink-400')]
+      }
+    ]
+  }
+  return out
+};
+
 
 const setBarChartData = (apiData) => {
   const documentStyle = getComputedStyle(document.body);
@@ -229,78 +231,30 @@ const setBarChartData = (apiData) => {
   };
 }
 
-const processChartData = (apiData) => {
-  const documentStyle = getComputedStyle(document.body);
-  // console.log('hasil', Object.keys(apiData));
-
-  // Tentukan urutan yang diinginkan untuk label
-  const desiredOrder = ["bayi & balita", "anak-anak", "remaja", "dewasa", "lansia"];
-
-  const labels = desiredOrder.map(category => capitalizeEachLetter(category));
-  const values = desiredOrder.map(category => apiData.kategori[category]);
-
-  return {
-    labels: labels,
-    datasets: [
-      {
-        // data: Object.values(apiData.kategori),
-        data: values,
-        backgroundColor: [
-          documentStyle.getPropertyValue('--cyan-500'),
-          documentStyle.getPropertyValue('--orange-500'),
-          documentStyle.getPropertyValue('--gray-500'),
-          documentStyle.getPropertyValue('--indigo-500'),
-          documentStyle.getPropertyValue('--teal-500'),
-        ],
-        tooltip: {
-          callbacks: {
-            label: tooltipLabelCallback,
-          }
-        }
-      },
-    ],
-  };
-};
-
-onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/pekerjaan', {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
-    }
-  });
-  const data = response.data;
-
-  const limitedData = {
-    index: data.index.slice(0, 10),
-    values: data.values.slice(0, 10)
-  };
-
-  const dataValues = limitedData.values;
-
+function setTop10Color(data) {
+  console.log(data.index)
   // Mencari index dari nilai tertinggi
-  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+  const maxIndex = data.values.indexOf(Math.max(...data.values));
 
   // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+  const backgroundColors = new Array(data.values.length).fill('rgba(54, 162, 235, 0.5)');
 
   // Mengubah warna untuk bar dengan nilai tertinggi
   backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
   // Proses data untuk format grafik batang
-  pekerjaanChartData.value = {
-    labels: limitedData.index,
+  return {
+    labels: data.index,
     datasets: [
       {
         label: 'Jumlah',
-        data: dataValues,
+        data: data.values,
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
     ]
   };
-});
+}
 
 </script>
 
