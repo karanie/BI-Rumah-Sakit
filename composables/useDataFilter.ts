@@ -5,9 +5,9 @@ export const useDataFilter = defineStore('dataFilter', () => {
   const lastFilter = ref();
 
   const isFiltering = computed(() => Boolean(lastFilter.value));
-  const kabupaten = computed(() => selectedKabupaten.value);
-  const tahun = computed(() => selectedTahun.value);
-  const bulan = computed(() => selectedBulan.value?.value);
+  const kabupaten = ref();
+  const tahun = ref();
+  const bulan = ref();
 
   const filterOptionAvailable = computed(() => {
     return [selectedKabupaten.value, selectedTahun.value, selectedBulan.value].some((el: any) => el);
@@ -15,6 +15,9 @@ export const useDataFilter = defineStore('dataFilter', () => {
 
   function filter() {
     lastFilter.value = Date.now();
+    kabupaten.value = selectedKabupaten.value;
+    tahun.value = selectedTahun.value;
+    bulan.value = selectedBulan.value.value;
     console.log(isFiltering.value);
   }
 
@@ -28,6 +31,9 @@ export const useDataFilter = defineStore('dataFilter', () => {
     }
     if (!filterOptionAvailable.value) {
       lastFilter.value = null;
+      kabupaten.value = selectedKabupaten.value;
+      tahun.value = selectedTahun.value;
+      bulan.value = selectedBulan.value.value;
     }
   }
 
@@ -36,6 +42,10 @@ export const useDataFilter = defineStore('dataFilter', () => {
     selectedTahun.value = null;
     selectedBulan.value = null;
     lastFilter.value = null;
+
+    kabupaten.value = selectedKabupaten.value;
+    tahun.value = selectedTahun.value;
+    bulan.value = selectedBulan.value.value;
   }
 
   return {
