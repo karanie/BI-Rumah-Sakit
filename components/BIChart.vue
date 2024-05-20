@@ -3,7 +3,10 @@
   <template #title>
     <div class="title">
       <span><slot name="title" /></span>
-      <Button v-if="props.forecast" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
+      <template v-if="props.forecast">
+        <Button v-if="tahun" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" disabled />
+        <Button v-else :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
+      </template>
     </div>
   </template>
   <template #content>
@@ -16,8 +19,10 @@
     </Error>
     <Skeleton height="8rem" v-if="status == 'pending'" />
     <template v-if="status == 'success'">
-      <GeoChart v-if="type == 'geographic'" :data="chartData" :options="props.chartOpt" />
-      <Chart v-if="type != 'geographic'" :type="props.type" :data="chartData" :options="props.chartOpt" />
+      <div class="content">
+        <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData" :options="props.chartOpt" />
+        <Chart v-if="type != 'geographic'" :style="{ width: props.chartWidth }"  :type="props.type" :data="chartData" :options="props.chartOpt" />
+      </div>
     </template>
   </template>
   </Card>
@@ -30,6 +35,7 @@ const props = defineProps<{
   src: string,
   type: string,
   chartOpt?: any,
+  chartWidth?: string,
   setChartData?: (data: any, forecastData?: any) => any,
   tipeData?: string,
   timeseries?: boolean,
@@ -61,7 +67,8 @@ const paramsForecast = computed(() => {
   const p : any = {
     tahun: tahun.value,
     bulan: bulan.value,
-    tipe_data: props.forecast ? "forecast" : undefined,
+    tipe_data: props.tipeData,
+    forecast: props.forecast
   }
   if (kabupaten.value !== null){
     p.kabupaten = kabupaten.value;
@@ -73,7 +80,6 @@ const { data, status, refresh, error } = useFetch(props.src, {
   server: false,
   lazy: true,
   params: params,
-  watch: false,
 });
 
 const { data: forecastData, status: forecastStatus, execute: forecastExecute } = useFetch(props.src, {
@@ -96,10 +102,6 @@ watch(forecastData, () => {
     return;
   chartData.value = setData(data.value, forecastData.value);
   console.log(chartData.value);
-});
-
-watch(lastFilter, () => {
-  refresh();
 });
 
 function forecast() {
