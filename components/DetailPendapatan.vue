@@ -243,7 +243,7 @@ const { data: dataDetail, status: detailStatus, execute: detailExecute } = useFe
 });
 
 watch(dataDetail, () => {
-    if (!dataDetail.value)
+    if (!dataDetail.value && prevData.value)
         return;
     compareDataTable.value = setCompareDataTable(data.value, prevData.value);
     chartData.value = setData_chart(dataDetail.value);
