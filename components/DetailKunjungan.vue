@@ -14,7 +14,7 @@
                 <div class="grid__item1">
                     <DataTable v-model:filters="filters" :value="dataTable" selectionMode="single"
                         v-model:selection="selectedRow" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect" scrollable
-                        scrollHeight="420px" :virtualScrollerOptions="{ itemSize: 46 }">
+                        :scrollHeight="dataTableHeight" :virtualScrollerOptions="{ itemSize: 46 }">
 
                         <template #header>
                             <div class="flex justify-content-end">
@@ -27,7 +27,7 @@
                             </div>
                         </template>
 
-                        <Column v-for="col of kolom" :key="col.field" :field="col.field"></Column>
+                        <Column v-for="col of kolom" :key="col.field" :field="col.field"/>
 
                     </DataTable>
                 </div>
@@ -37,12 +37,12 @@
                         <Skeleton height="18rem" />
                     </div>
 
-                    <div v-if="detailStatus == 'success'">
+                    <div v-if="detailStatus == 'success'" ref="dtContainer">
                         <p>{{ getTahun }} | Deskripsi</p>
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
                             <h2>{{ valueData_selected }} <span style="font-size: 16px">kunjungan</span></h2>
-                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" readonly />
+                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" :readonly="true"/>
                         </div>
 
                         <div v-if="tahun" style="display: flex; align-items: center;">
@@ -175,7 +175,7 @@ const paramsDetail = computed(() => {
     // Menentukan params berdasarkan nilai rawatJalan
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param detail", p);
+    // console.log("param detail", p);
     return p;
 });
 
@@ -187,7 +187,8 @@ const { data: detailData, status: detailStatus, execute: detailExecute, refresh:
     immediate: false,
 });
 
-const getTahun = computed(() => {
+const getTahun = ref();
+const setTahun = () => {
     if (tahun.value)
         return tahun.value;
     if (!detailData.value)
@@ -195,7 +196,7 @@ const getTahun = computed(() => {
     const tahunAwal = (new Date((detailData.value as any).index[0])).getFullYear();
     const tahunAkhir = (new Date((detailData.value as any).index[(detailData.value as any).index.length - 1])).getFullYear();
     return `${tahunAwal}-${tahunAkhir}`;
-});
+};
 
 watch(detailData, () => {
     if (!detailData.value)
@@ -203,6 +204,8 @@ watch(detailData, () => {
 
     setDetailData(detailData.value);
     chartData.value = setData_chart(detailData.value);
+
+    getTahun.value = setTahun();
 });
 
 const paramsPrevData = computed(() => {
@@ -218,7 +221,7 @@ const paramsPrevData = computed(() => {
     }
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param prev data", p);
+    // console.log("param prev data", p);
     return p;
 });
 
@@ -314,7 +317,7 @@ function setDetailData(detailDataSelected: any) {
     valueData_selected.value = detailDataSelected.values.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0);
     percentageData_selected.value = Math.round(valueData_selected.value / total.value * 100);
 
-    console.log("detail data selected", detailDataSelected)
+    // console.log("detail data selected", detailDataSelected)
 
     dominantAge_cat.value = detailDataSelected.dominant_age_category_summary;
     dominantAge_scale.value = ageScale(dominantAge_cat.value);
@@ -380,6 +383,16 @@ function setDataDiagnosa_RawatJalan_chart(data: any) {
         ]
     };
 };
+
+//dynamic scroll height for datatable
+const dtContainer = ref();
+const dataTableHeight = computed(() => {
+    if (dtContainer.value) {
+        const containerHeight = dtContainer.value.clientHeight;
+        return `${containerHeight}px`;
+    }
+    return "420px"
+})
 
 </script>
 

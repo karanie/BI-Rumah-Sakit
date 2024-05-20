@@ -54,6 +54,9 @@ const {
   filterOptionAvailable,
 } = storeToRefs(useDataFilter());
 
+const { data } = useFetch("http://localhost:5000/api/last-update");
+const lastRegisDate = new Date((data.value as any)?.waktuRegistrasiTerakhir);
+
 const {
   filter,
   clearOption,
@@ -95,6 +98,12 @@ onMounted(async () => {
   kabupaten.value = filterOptions.kabupaten;
   tahun.value = filterOptions.tahun;
 });
+// Filtering secara default : waktu regis terakhir
+// selectedTahun.value = lastRegisDate.getFullYear();
+// // selectedTahun.value = 2020;
+// let b = lastRegisDate.getMonth() + 1;
+// let a = bulan.value.find((element) => element.value === b)?.name
+// selectedBulan.value = { name: a, value: b };
 </script>
 
 <style scoped lang="scss">

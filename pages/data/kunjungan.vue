@@ -282,8 +282,8 @@ const {
     grid-template-columns: 1fr 3fr;
 
     .item-2 {
-      gap: 8px;
-      width: 100%;
+        gap: 8px;
+        width: 100%;
     }
 
     &__item3 {
