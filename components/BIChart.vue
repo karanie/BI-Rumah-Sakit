@@ -56,6 +56,7 @@ const params = computed(() => {
     tahun: tahun.value,
     bulan: bulan.value,
     tipe_data: props.tipeData,
+    timeseries: props.timeseries,
   }
   if (kabupaten.value !== null){
     p.kabupaten = kabupaten.value;
