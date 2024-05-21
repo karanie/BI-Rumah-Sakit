@@ -95,14 +95,12 @@ watch(data, () => {
   if (!data.value)
     return;
   chartData.value = setData(data.value);
-  console.log(chartData.value);
 });
 
 watch(forecastData, () => {
   if (!forecastData.value && !data.value)
     return;
   chartData.value = setData(data.value, forecastData.value);
-  console.log(chartData.value);
 });
 
 function forecast() {
@@ -127,7 +125,6 @@ function setData(data: any, forecastData?: any) {
     if (!forecastData) {
       return out;
     } else {
-      console.log(forecastData);
       forecastData.forEach((el: any) => {
         out.datasets.push(
           {
