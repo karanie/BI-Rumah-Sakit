@@ -242,8 +242,9 @@ const { data: dataDetail, status: detailStatus, execute: detailExecute } = useFe
     immediate: false,
 });
 
-watch(dataDetail, () => {
-    if (!dataDetail.value)
+watch(dataDetail, async () => {
+    await prevDataExecute();
+    if (!dataDetail.value || !prevData.value)
         return;
     compareDataTable.value = setCompareDataTable(data.value, prevData.value);
     chartData.value = setData_chart(dataDetail.value);
@@ -281,9 +282,9 @@ const onRowUnselect = (row: any) => {
     selectedRow.value = row.data;
 };
 
-const onRowSelect = (dataSelected: any) => {
-    detailExecute();
-    prevDataExecute();
+const onRowSelect = async (dataSelected: any) => {
+    await detailExecute();
+    await prevDataExecute();
 };
 
 function setCompareDataTable(data: any, prevData: any) {
