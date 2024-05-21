@@ -134,7 +134,6 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 
 definePageMeta({
   layout: "data"
@@ -162,9 +161,6 @@ const getPasienLamaCount = computed(() => new Intl.NumberFormat().format(pasienL
 const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienBaruCount.value));
 const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
-
-const BarChartData = ref();
-const kelompokUsiaChartData = ref();
 
 // Data Jumlah Pasien Baru/Lama
 const {
@@ -202,17 +198,6 @@ const {
     femaleCount.value = response._data.values[1]
   }
 })
-
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/pasien", {
-    params: {
-      tipe_data: "usia"
-    }
-  })).data
-
-  kelompokUsiaChartData.value = processChartData(data);
-  BarChartData.value = setBarChartData(data)
-});
 
 const processChartData = data => {
   const documentStyle = getComputedStyle(document.body);
