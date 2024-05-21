@@ -3,77 +3,103 @@
     <div class="grid-item-number">
       <Card>
         <template #title>
-          <div class="header_numberCard">
-            <div class="title_numberCard">Pasien Baru</div>
-            <Icon style="font-size: 3.5rem;" color="#7B99FA" name="material-symbols:patient-list-rounded" />
-          </div>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="4.5rem"></Skeleton>
+          <template v-else>
+            <div class="header_numberCard">
+              <div class="title_numberCard">Pasien Baru</div>
+              <Icon style="font-size: 3.5rem;" color="#7B99FA" name="material-symbols:patient-list-rounded" />
+            </div>
+          </template>
         </template>
         <template #content>
-          <div class="value_column">
-            <div class="percentage_value">
-              <b class="percentage_value__count">{{ getPasienLamaCount }}</b>
-              <div class="bar-1">
-                <ProgressBar :value="getPasienLamaPercentage" :showValue="true" class="progressbar">{{ getPasienLamaPercentage + "%" }}</ProgressBar>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="3rem"></Skeleton>
+          <template v-else>
+            <div class="value_column">
+              <div class="percentage_value">
+                <b class="percentage_value__count">{{ getPasienBaruCount }}</b>
+                <div class="bar-1">
+                  <ProgressBar :value="getPasienBaruPercentage" :showValue="true" class="progressbar">{{
+            getPasienBaruPercentage + "%" }}</ProgressBar>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </template>
       </Card>
 
       <Card>
         <template #title>
-          <div class="header_numberCard">
-            <div class="title_numberCard">Pasien Lama</div>
-            <Icon style="font-size: 3.5rem;" color="#96EAB7" name="material-symbols:patient-list-rounded" />
-          </div>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="4.5rem"></Skeleton>
+          <template v-else>
+            <div class="header_numberCard">
+              <div class="title_numberCard">Pasien Lama</div>
+              <Icon style="font-size: 3.5rem;" color="#96EAB7" name="material-symbols:patient-list-rounded" />
+            </div>
+          </template>
         </template>
         <template #content>
-          <div class="value_column">
-            <div class="percentage_value">
-              <b class="percentage_value__count">{{ getPasienBaruCount }}</b>
-              <div class="bar-2">
-                <ProgressBar :value="getPasienBaruPercentage" :showValue="true">{{ getPasienBaruPercentage + "%"}}</ProgressBar>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="3rem"></Skeleton>
+          <template v-else>
+            <div class="value_column">
+              <div class="percentage_value">
+                <b class="percentage_value__count">{{ getPasienLamaCount }}</b>
+                <div class="bar-2">
+                  <ProgressBar :value="getPasienLamaPercentage" :showValue="true">{{ getPasienLamaPercentage + "%" }}
+                  </ProgressBar>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </template>
       </Card>
 
       <Card>
         <template #title>
-          <div class="header_numberCard">
-            <div class="title_numberCard">Pasien Laki-Laki</div>
-            <Icon style="font-size: 3.5rem;" color="#53CDD8" name="material-symbols:man-3-rounded" />
-          </div>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="4.5rem"></Skeleton>
+          <template v-else>
+            <div class="header_numberCard">
+              <div class="title_numberCard">Pasien Laki-Laki</div>
+              <Icon style="font-size: 3.5rem;" color="#53CDD8" name="material-symbols:man-3-rounded" />
+            </div>
+          </template>
         </template>
         <template #content>
-          <div class="value_column">
-            <div class="percentage_value">
-              <b class="percentage_value__count">{{ getMaleCount }}</b>
-              <div class="bar-3">
-                <ProgressBar :value="male" :showValue="true">{{ getMalePercentage }}</ProgressBar>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="3rem"></Skeleton>
+          <template v-else>
+            <div class="value_column">
+              <div class="percentage_value">
+                <b class="percentage_value__count">{{ getMaleCount }}</b>
+                <div class="bar-3">
+                  <ProgressBar :value="male" :showValue="true">{{ getMalePercentage }}</ProgressBar>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </template>
       </Card>
 
       <Card>
         <template #title>
-          <div class="header_numberCard">
-            <div class="title_numberCard">Pasien Perempuan</div>
-            <Icon style="font-size: 3.5rem;" color="#E07F7F" name="material-symbols:woman-2-rounded" />
-          </div>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="4.5rem"></Skeleton>
+          <template v-else>
+            <div class="header_numberCard">
+              <div class="title_numberCard">Pasien Perempuan</div>
+              <Icon style="font-size: 3.5rem;" color="#E07F7F" name="material-symbols:woman-2-rounded" />
+            </div>
+          </template>
         </template>
         <template #content>
-          <div class="value_column">
-            <div class="percentage_value">
-              <b class="percentage_value__count">{{ getFemaleCount }}</b>
-              <div class="bar-4">
-                <ProgressBar :value="female" :showValue="true">{{ getFemalePercentage }}</ProgressBar>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="3rem"></Skeleton>
+          <template v-else>
+            <div class="value_column">
+              <div class="percentage_value">
+                <b class="percentage_value__count">{{ getFemaleCount }}</b>
+                <div class="bar-4">
+                  <ProgressBar :value="female" :showValue="true">{{ getFemalePercentage }}</ProgressBar>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </template>
       </Card>
     </div>
@@ -86,7 +112,8 @@
       </div>
 
       <div class="grid-item-chart__item2">
-        <BIChart src="/api/pasien" tipeData="usia" type="pie" :chartOpt="generateChartOption('percent')" :setChartData="processChartData">
+        <BIChart src="/api/pasien" tipeData="usia" type="pie" :chartOpt="generateChartOption('percent')"
+          :setChartData="processChartData">
           <template #title>Distribusi Usia</template>
         </BIChart>
       </div>
@@ -97,7 +124,8 @@
         </BIChart>
       </div>
 
-      <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y' }" :setChartData="setTop10Color">
+      <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y' }"
+        :setChartData="setTop10Color">
         <template #title>Top 10 Pekerjaan Pasien</template>
       </BIChart>
 
@@ -106,7 +134,6 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 
 definePageMeta({
   layout: "data"
@@ -135,45 +162,42 @@ const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienB
 const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 
-const BarChartData = ref();
-const kelompokUsiaChartData = ref();
+// Data Jumlah Pasien Baru/Lama
+const {
+  pending: pasienBaruLamaDataIsPending,
+} = await useFetch("http://localhost:5000/api/pasien", {
+  server: false,
+  lazy: true,
+  params: {
+    tipe_data: "pasienLamaBaru",
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  onResponse({ response }) {
+    console.log(response)
+    pasienLamaCount.value = response._data.jumlahPasienLama
+    pasienBaruCount.value = response._data.jumlahPasienBaru
+  }
+})
 
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/pasien", {
-    params: {
-      tipe_data: "pasienLamaBaru",
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  pasienLamaCount.value = data.jumlahPasienBaru;
-  pasienBaruCount.value = data.jumlahPasienLama;
-});
-
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/pasien", {
-    params: {
-      tipe_data: "jumlahJenisKelamin",
-      kabupaten: kabupaten.value,
-      tahun: tahun.value,
-      bulan: bulan.value
-    }
-  })).data
-  maleCount.value = data.values[0];
-  femaleCount.value = data.values[1];
-});
-
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/pasien", {
-    params: {
-      tipe_data: "usia"
-    }
-  })).data
-
-  kelompokUsiaChartData.value = processChartData(data);
-  BarChartData.value = setBarChartData(data)
-});
+const {
+  pending: jumlahJenisKelaminDataPending,
+} = await useFetch("http://localhost:5000/api/pasien", {
+  server: false,
+  lazy: true,
+  params: {
+    tipe_data: "jumlahJenisKelamin",
+    kabupaten: kabupaten,
+    tahun: tahun,
+    bulan: bulan
+  },
+  onResponse({ response }) {
+    console.log(response)
+    maleCount.value = response._data.values[0]
+    femaleCount.value = response._data.values[1]
+  }
+})
 
 const processChartData = data => {
   const documentStyle = getComputedStyle(document.body);
@@ -193,10 +217,10 @@ const processChartData = data => {
       {
         data: data.values,
         backgroundColor: [documentStyle.getPropertyValue('--cyan-500'),
-          documentStyle.getPropertyValue('--orange-500'),
-          documentStyle.getPropertyValue('--gray-500'),
-          documentStyle.getPropertyValue('--indigo-500'),
-          documentStyle.getPropertyValue('--teal-500')],
+        documentStyle.getPropertyValue('--orange-500'),
+        documentStyle.getPropertyValue('--gray-500'),
+        documentStyle.getPropertyValue('--indigo-500'),
+        documentStyle.getPropertyValue('--teal-500')],
         hoverBackgroundColor: [documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--pink-400')]
       }
     ]
@@ -315,18 +339,18 @@ function setTop10Color(data) {
 }
 
 .bar-1:deep() .p-progressbar .p-progressbar-value {
-    background: #7B99FA;
+  background: #7B99FA;
 }
 
 .bar-2:deep() .p-progressbar .p-progressbar-value {
-    background: #96EAB7;
+  background: #96EAB7;
 }
 
 .bar-3:deep() .p-progressbar .p-progressbar-value {
-    background: #53CDD8;
+  background: #53CDD8;
 }
 
 .bar-4:deep() .p-progressbar .p-progressbar-value {
-    background: #E07F7F;
+  background: #E07F7F;
 }
 </style>
