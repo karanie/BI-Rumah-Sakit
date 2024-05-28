@@ -115,7 +115,7 @@ const {
 
 const params = computed(() => {
     const p: any = {
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         tahun: tahun.value,
         bulan: bulan.value,
         tipe_data: props.tipeData,
@@ -163,7 +163,7 @@ const paramsDetail = computed(() => {
     var p: any = {
         tahun: tahun.value,
         bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         // diagnosa: selectedRow.value.index,
         timeseries: true,
         tipe_data: props.tipeData,
@@ -213,7 +213,8 @@ const paramsPrevData = computed(() => {
     var p: any = {
         tahun: tahun.value - 1,
         bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
+        tipe_data: props.tipeData,
         // diagnosa: selectedRow.value.index,
     }
     if (kabupaten.value !== null) {
@@ -244,7 +245,7 @@ const paramsDiagnosaRawatJalan = computed(() => {
     const p: any = {
         tahun: tahun.value,
         bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         departemen: selectedRow.value.index,
     }
     if (kabupaten.value !== null) {
