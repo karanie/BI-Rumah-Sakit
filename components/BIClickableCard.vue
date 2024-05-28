@@ -61,7 +61,7 @@ const { data, status, refresh, error } = useFetch(props.src, {
 
 const getData = computed(() => {
   if (props.currency) {
-    return new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format((data.value as any)?.value);
+    return new Intl.NumberFormat(document.documentElement.lang, { style: 'currency', currency: 'IDR' }).format((data.value as any)?.value);
   }
   return new Intl.NumberFormat().format((data.value as any)?.value);
 });
