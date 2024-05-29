@@ -89,7 +89,7 @@
                                   <Badge v-else :value="rawatJalan_count" class="ml-auto mr-2" />
                               </span>
                           </template>
-                          <DetailKunjungan src="/api/departemen" jenisRegis="Rawat Jalan" rawatJalan>
+                          <DetailKunjungan src="/api/departemen" tipeData="diagnosa" jenisRegis="Rawat Jalan" rawatJalan>
                               <template #title>Poliklinik Rawat Jalan</template>
                           </DetailKunjungan>
                       </AccordionTab>
@@ -121,6 +121,8 @@
 
 <script setup>
 
+import axios from 'axios';
+
 definePageMeta({
     layout: "data",
 });
@@ -130,6 +132,7 @@ const {
   bulan,
   lastFilter,
   kabupaten,
+  selectedBulan
 } = storeToRefs(useDataFilter())
 
 
@@ -268,11 +271,50 @@ const {
             });
             reformattedData.push(row);
         }
+
         products.value = reformattedData;
-  },
+    }
+});
+
+watch(lastFilter, async () => {
+  const response = await axios.get('http://localhost:5000/api/instansi', {
+    params: {
+      tahun: tahun.value,
+      bulan: bulan.value,
+      kabupaten: kabupaten.value,
+    }
+  });
+  const data = response.data;
+
+  const limitedData = {
+    index: data.index.slice(0, 5),
+    values: data.values.slice(0, 5)
+  };
+
+  const dataValues = limitedData.values;
+
+  // Mencari index dari nilai tertinggi
+  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
+
+  // Membuat array warna, defaultnya semua warna sama
+  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
+
+  // Mengubah warna untuk bar dengan nilai tertinggi
+  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
+
+  // Proses data untuk format grafik batang
+  instansiChartData.value = {
+    labels: limitedData.index,
+    datasets: [
+      {
+        label: 'Jumlah',
+        data: limitedData.values,
+        borderWidth: 1, // Lebar garis batas
+        backgroundColor: backgroundColors
+      }
+    ]
+  };
 })
-
-
 </script>
 
 <style scoped lang="scss">
