@@ -52,6 +52,9 @@ const data = computed(() => {
     }
   });
 });
+const max = computed(() => {
+  return data.value.reduce((a, b) => Math.max(a, b.value), -Infinity);
+})
 function formatNum(num) {
   return new Intl.NumberFormat(navigator.language).format(num);
 }
@@ -67,9 +70,8 @@ const getHoveredData = computed(() => {
 const pallete = ['#ece7f2','#a6bddb','#74a9cf','#0570b0','#023858'];
 
 watch(data, () => {
-  const max = data.value[0].value;
   //const maxRounded = Math.ceil(max / Math.pow(10, Math.floor(Math.log10(max)))) * Math.pow(10, Math.floor(Math.log10(max)));
-  legends.value = generateLegends(getColor, max);
+  legends.value = generateLegends(getColor, max.value);
 }, { immediate: true });
 
 function onGeoJsonReady(e) {
@@ -102,7 +104,7 @@ function findCityInData(arr, city) {
 
 function setGeoStyle(feature) {
   return {
-    fillColor: getColor(findCityInData(data.value, feature.properties.tags.official_name)?.value, data.value[0].value),
+    fillColor: getColor(findCityInData(data.value, feature.properties.tags.official_name)?.value, max.value),
     weight: 2,
     opacity: 1,
     color: 'gray',
