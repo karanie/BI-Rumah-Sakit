@@ -27,7 +27,7 @@
                             </div>
                         </template>
 
-                        <Column v-for="col of kolom" :key="col.field" :field="col.field"/>
+                        <Column v-for="col of kolom" :key="col.field" :field="col.field" />
 
                     </DataTable>
                 </div>
@@ -42,7 +42,7 @@
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
                             <h2>{{ valueData_selected }} <span style="font-size: 16px">kunjungan</span></h2>
-                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" :readonly="true"/>
+                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" :readonly="true" />
                         </div>
 
                         <div v-if="tahun" style="display: flex; align-items: center;">
@@ -52,7 +52,8 @@
                                 <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--red-400)"
                                     name="material-symbols:arrow-downward-rounded"
                                     v-else-if="status_comparePrev === 'Turun'" />
-                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari {{ getBulanOrTahun() }} lalu</p>
+                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari {{ getBulanOrTahun() }}
+                                    lalu</p>
                             </div>
                         </div>
 
@@ -111,6 +112,7 @@ const {
     bulan,
     kabupaten,
     lastFilter,
+    selectedBulan
 } = storeToRefs(useDataFilter());
 
 const params = computed(() => {
@@ -127,13 +129,13 @@ const params = computed(() => {
     return p;
 });
 
-function getBulanOrTahun(){
-  if(!bulan.value) {
-    return "tahun";
-  } else {
-    return "tahun"
-    // return "bulan"
-  }
+function getBulanOrTahun() {
+    if (!bulan.value) {
+        return "tahun";
+    } else {
+        return "tahun"
+        // return "bulan"
+    }
 }
 
 const { data, status, refresh, error } = useFetch(props.src, {
@@ -189,8 +191,11 @@ const { data: detailData, status: detailStatus, execute: detailExecute, refresh:
 
 const getTahun = ref();
 const setTahun = () => {
-    if (tahun.value)
-        return tahun.value;
+    if (tahun.value) {
+        let date = tahun.value && bulan.value ? `${selectedBulan.value.name} ${tahun.value}` : tahun.value;
+        return date;
+    }
+
     if (!detailData.value)
         return "";
     const tahunAwal = (new Date((detailData.value as any).index[0])).getFullYear();

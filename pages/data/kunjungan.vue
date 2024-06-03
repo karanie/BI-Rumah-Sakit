@@ -35,8 +35,7 @@
       </div>
 
       <div class="grid-item-chart__item5">
-        <BIChart src="/api/kunjungan" tipeData="jenis_registrasi" timeseries type="line" forecast
-          :setChartData="setPendapatanName">
+        <BIChart src="/api/kunjungan" tipeData="jenis_registrasi" timeseries type="line" forecast>
           <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Registrasi</template>
         </BIChart>
       </div>
@@ -304,7 +303,7 @@ function getBulanOrTahun() {
       return tahun.value;
     }
     else {
-      return tahun.value + " " + selectedBulan.value.name
+      return selectedBulan.value.name + " " + tahun.value 
     }
   }
 }
