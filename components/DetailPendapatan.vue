@@ -302,7 +302,7 @@ function setCompareDataTable(data: any, prevData: any) {
     const row2 = {
         periode: tahun.value && bulan.value
             ? `${new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2000, bulan.value - 1, 1))} ${tahun.value}`
-            : (tahun.value ? tahun.value : `All`),
+            : (tahun.value ? tahun.value : `Semua Periode`),
         hpp: `Rp ${new Intl.NumberFormat().format(data.pengeluaran[index].toFixed(0))}`,
         tagihan: `Rp ${new Intl.NumberFormat().format(data.pendapatan[index].toFixed(0))}`
     };
@@ -310,7 +310,7 @@ function setCompareDataTable(data: any, prevData: any) {
     const row1 = {
         periode: tahun.value && bulan.value
             ? "Bulan lalu"
-            : (tahun.value ? "Tahun lalu" : `All`),
+            : (tahun.value ? "Tahun lalu" : `Semua Periode`),
         hpp: prevIndex === -1 ? "Rp 0" : `Rp ${new Intl.NumberFormat().format(prevData.pengeluaran[prevIndex].toFixed(0))}`,
         tagihan: prevIndex === -1 ? "Rp 0" : `Rp ${new Intl.NumberFormat().format(prevData.pendapatan[prevIndex].toFixed(0))}`
     };
@@ -355,7 +355,7 @@ function setListData_chart(data: any) {
 function setTahun(){
     let date = tahun.value && bulan.value
             ? `${new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(new Date(2000, bulan.value - 1, 1))} ${tahun.value}`
-            : (tahun.value ? tahun.value : `All`)
+            : (tahun.value ? tahun.value : `Semua Periode`)
     return date;
 }
 

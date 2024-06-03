@@ -1,30 +1,45 @@
 <template>
   <Card>
-  <template #title>
-    <div class="title">
-      <span><slot name="title" /></span>
-      <template v-if="props.forecast">
-        <Button v-if="tahun" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" disabled />
-        <Button v-else :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast" icon="pi pi-chart-line" />
-      </template>
-    </div>
-  </template>
-  <template #content>
-    <Error v-if="status == 'error'">
-      <template #details>
-        <ErrorDetails refreshButton @refresh="() => refresh()">
-          <template #details><pre>{{ error }}</pre></template>
-        </ErrorDetails>
-      </template>
-    </Error>
-    <Skeleton height="8rem" v-if="status == 'pending'" />
-    <template v-if="status == 'success'">
-      <div class="content">
-        <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData" :options="props.chartOpt" />
-        <Chart v-if="type != 'geographic'" :style="{ width: props.chartWidth }"  :type="props.type" :data="chartData" :options="props.chartOpt" />
+    <template #title>
+      <div class="title">
+        <span>
+          <slot name="title" />
+        </span>
+        <template v-if="props.forecast">
+          <Button v-if="tahun" :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast"
+            icon="pi pi-chart-line" disabled />
+          <Button v-else :loading="forecastStatus == 'pending'" @click="forecast" label="Forecast"
+            icon="pi pi-chart-line" />
+        </template>
       </div>
     </template>
-  </template>
+    <template #subtitle>
+      <div class="subtitle">
+        <span>
+          <slot name="subtitle" />
+        </span>
+      </div>
+    </template>
+    <template #content>
+      <Error v-if="status == 'error'">
+        <template #details>
+          <ErrorDetails refreshButton @refresh="() => refresh()">
+            <template #details>
+              <pre>{{ error }}</pre>
+            </template>
+          </ErrorDetails>
+        </template>
+      </Error>
+      <Skeleton height="8rem" v-if="status == 'pending'" />
+      <template v-if="status == 'success'">
+        <div class="content">
+          <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData"
+            :options="props.chartOpt" />
+          <Chart v-if="type != 'geographic'" :style="{ width: props.chartWidth }" :type="props.type" :data="chartData"
+            :options="props.chartOpt" />
+        </div>
+      </template>
+    </template>
   </Card>
 </template>
 
@@ -49,29 +64,29 @@ const {
   bulan,
   kabupaten,
   lastFilter,
-  } = storeToRefs(useDataFilter());
+} = storeToRefs(useDataFilter());
 
 const params = computed(() => {
-  const p : any = {
+  const p: any = {
     tahun: tahun.value,
     bulan: bulan.value,
     tipe_data: props.tipeData,
     timeseries: props.timeseries,
   }
-  if (kabupaten.value !== null){
+  if (kabupaten.value !== null) {
     p.kabupaten = kabupaten.value;
   }
   return p;
 });
 
 const paramsForecast = computed(() => {
-  const p : any = {
+  const p: any = {
     tahun: tahun.value,
     bulan: bulan.value,
     tipe_data: props.tipeData,
     forecast: props.forecast
   }
-  if (kabupaten.value !== null){
+  if (kabupaten.value !== null) {
     p.kabupaten = kabupaten.value;
   }
   return p;
