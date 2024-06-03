@@ -2,24 +2,19 @@
   <div class="grid-container">
     <div class="grid-item-number">
       <Card>
-        <template #title>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="4.5rem"></Skeleton>
+        <template #content>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Baru</div>
               <Icon style="font-size: 3.5rem;" color="#7B99FA" name="material-symbols:patient-list-rounded" />
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
             </div>
-          </template>
-        </template>
-        <template #content>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="3rem"></Skeleton>
-          <template v-else>
             <div class="value_column">
               <div class="percentage_value">
                 <b class="percentage_value__count">{{ getPasienBaruCount }}</b>
                 <div class="bar-1">
-                  <ProgressBar :value="getPasienBaruPercentage" :showValue="true" class="progressbar">{{
-            getPasienBaruPercentage + "%" }}</ProgressBar>
+                  <ProgressBar :value="getPasienBaruPercentage" :showValue="true" class="progressbar"></ProgressBar>
                 </div>
               </div>
             </div>
@@ -28,18 +23,14 @@
       </Card>
 
       <Card>
-        <template #title>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="4.5rem"></Skeleton>
+        <template #content>
+          <Skeleton v-if="pasienBaruLamaDataIsPending" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Lama</div>
               <Icon style="font-size: 3.5rem;" color="#96EAB7" name="material-symbols:patient-list-rounded" />
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
             </div>
-          </template>
-        </template>
-        <template #content>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="3rem"></Skeleton>
-          <template v-else>
             <div class="value_column">
               <div class="percentage_value">
                 <b class="percentage_value__count">{{ getPasienLamaCount }}</b>
@@ -54,18 +45,14 @@
       </Card>
 
       <Card>
-        <template #title>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="4.5rem"></Skeleton>
+        <template #content>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Laki-Laki</div>
               <Icon style="font-size: 3.5rem;" color="#53CDD8" name="material-symbols:man-3-rounded" />
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
             </div>
-          </template>
-        </template>
-        <template #content>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="3rem"></Skeleton>
-          <template v-else>
             <div class="value_column">
               <div class="percentage_value">
                 <b class="percentage_value__count">{{ getMaleCount }}</b>
@@ -79,18 +66,14 @@
       </Card>
 
       <Card>
-        <template #title>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="4.5rem"></Skeleton>
+        <template #content>
+          <Skeleton v-if="jumlahJenisKelaminDataPending" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Perempuan</div>
               <Icon style="font-size: 3.5rem;" color="#E07F7F" name="material-symbols:woman-2-rounded" />
+              <div class="subtitle_numberCard"> Pada {{ getBulanOrTahun() }} </div>
             </div>
-          </template>
-        </template>
-        <template #content>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="3rem"></Skeleton>
-          <template v-else>
             <div class="value_column">
               <div class="percentage_value">
                 <b class="percentage_value__count">{{ getFemaleCount }}</b>
@@ -103,6 +86,7 @@
         </template>
       </Card>
     </div>
+
 
     <div class="grid-item-chart">
       <div class="grid-item-chart__item1">
@@ -143,6 +127,7 @@ const {
   bulan,
   tahun,
   kabupaten,
+  selectedBulan,
   lastFilter,
 } = storeToRefs(useDataFilter());
 
@@ -162,6 +147,19 @@ const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienB
 const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 
+function getBulanOrTahun(){
+  if (!tahun.value){
+    return "Bulan Ini"
+  } else {
+    if (!bulan.value) {
+      return tahun.value;
+    }
+    else {
+      return tahun.value + " " + selectedBulan.value.name
+    }
+  }
+}
+
 // Data Jumlah Pasien Baru/Lama
 const {
   pending: pasienBaruLamaDataIsPending,
@@ -176,8 +174,10 @@ const {
   },
   onResponse({ response }) {
     console.log(response)
-    pasienLamaCount.value = response._data.jumlahPasienLama
-    pasienBaruCount.value = response._data.jumlahPasienBaru
+    const pasienLamaIdx = response._data.index.findIndex(s => s === "Pasien Lama");
+    const pasienBaruIdx = response._data.index.findIndex(s => s === "Pasien Baru");
+    pasienLamaCount.value = response._data.values[pasienLamaIdx];
+    pasienBaruCount.value = response._data.values[pasienBaruIdx];
   }
 })
 
@@ -193,9 +193,10 @@ const {
     bulan: bulan
   },
   onResponse({ response }) {
-    console.log(response)
-    maleCount.value = response._data.values[0]
-    femaleCount.value = response._data.values[1]
+    const maleCountIdx = response._data.index.findIndex(s => s === "Laki-laki");
+    const femaleCountIdx = response._data.index.findIndex(s => s === "Perempuan");
+    maleCount.value = response._data.values[maleCountIdx];
+    femaleCount.value = response._data.values[femaleCountIdx];
   }
 })
 
@@ -227,33 +228,6 @@ const processChartData = data => {
   }
   return out
 };
-
-
-const setBarChartData = (apiData) => {
-  const documentStyle = getComputedStyle(document.body);
-
-  const dataValues = Object.values(apiData.jumlah_pasien_tahunan);
-
-  // Mencari index dari nilai tertinggi
-  const maxIndex = dataValues.indexOf(Math.max(...dataValues));
-
-  // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
-
-  // Mengubah warna untuk bar dengan nilai tertinggi
-  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
-
-  return {
-    labels: Object.keys(apiData.jumlah_pasien_tahunan),
-    datasets: [
-      {
-        label: "Jumlah Pasien",
-        data: dataValues,
-        backgroundColor: backgroundColors
-      },
-    ],
-  };
-}
 
 function setTop10Color(data) {
   console.log(data.index)
@@ -319,14 +293,28 @@ function setTop10Color(data) {
   }
 }
 
+.container{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  justify-content: center;
+
+}
+
 .title_numberCard {
   font-size: medium;
+  font-weight: bold;
 }
 
 .header_numberCard {
   display: grid;
   grid-template-columns: 2fr 1fr;
   align-items: center;
+}
+
+.subtitle_numberCard {
+  font-size: medium;
+  padding-bottom: 1rem
 }
 
 .percentage_value {
@@ -338,7 +326,11 @@ function setTop10Color(data) {
   }
 }
 
-.bar-1:deep() .p-progressbar .p-progressbar-value {
+.p-progressbar {
+  margin-top: 10px;
+}
+
+.bar-1:deep() .p-progressbar-value {
   background: #7B99FA;
 }
 
