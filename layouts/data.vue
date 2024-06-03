@@ -21,19 +21,19 @@
       <div class="container__card">
         <BIClickableCard link="/data/pasien" src="/api/pasien" tipeData="jumlahPasien">
           <template #title>Total Pasien</template>
-          <template #subtitle>Jumlah Pasien pada {{ getBulanOrTahun() }}</template>
+          <template #subtitle>{{ getBulanOrTahun() }}</template>
         </BIClickableCard>
       </div>
       <div class="container__card">
         <BIClickableCard link="/data/kunjungan" src="/api/kunjungan" tipeData="jumlahKunjungan">
           <template #title>Total Kunjungan</template>
-          <template #subtitle>Jumlah Kunjungan pada {{ getBulanOrTahun() }}</template>
+          <template #subtitle>{{ getBulanOrTahun() }}</template>
         </BIClickableCard>
       </div>
       <div class="container__card">
         <BIClickableCard link="/data/pendapatan" src="/api/pendapatan" tipeData="profit" currency>
           <template #title>Total Profit</template>
-          <template #subtitle>Jumlah Profit pada {{ getBulanOrTahun() }} </template>
+          <template #subtitle>{{ getBulanOrTahun() }} </template>
         </BIClickableCard>
       </div>
     </div>
@@ -59,7 +59,7 @@ const {
 
 function getBulanOrTahun(){
   if (!tahun.value){
-    return "Bulan Ini"
+    return "Bulan waktu registrasi terakhir data di-update"
   } else {
     if (!bulan.value) {
       return tahun.value;
