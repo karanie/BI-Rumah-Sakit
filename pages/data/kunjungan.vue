@@ -94,7 +94,7 @@
                   <Badge v-else :value="rawatJalan_count" class="ml-auto mr-2" />
                 </span>
               </template>
-              <DetailKunjungan src="/api/departemen" tipeData="diagnosa" jenisRegis="Rawat Jalan" rawatJalan>
+              <DetailKunjungan src="/api/kunjungan" tipeData="departemen" jenisRegis="Rawat Jalan" rawatJalan>
                 <template #title>Poliklinik Rawat Jalan</template>
               </DetailKunjungan>
             </AccordionTab>
@@ -303,7 +303,7 @@ function getBulanOrTahun() {
       return tahun.value;
     }
     else {
-      return selectedBulan.value.name + " " + tahun.value 
+      return selectedBulan.value.name + " " + tahun.value
     }
   }
 }
