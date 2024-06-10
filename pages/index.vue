@@ -9,6 +9,10 @@
   </div>
 </template>
 
+<script setup lang="ts">
+navigateTo("/data/pasien");
+</script>
+
 <style scoped lang="scss">
 .home {
   padding: 8px;
