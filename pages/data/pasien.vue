@@ -8,7 +8,7 @@
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Baru</div>
               <Icon style="font-size: 3.5rem;" color="#7B99FA" name="material-symbols:patient-list-rounded" />
-              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun(true)}} </div>
             </div>
             <div class="value_column">
               <div class="percentage_value">
@@ -29,7 +29,7 @@
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Lama</div>
               <Icon style="font-size: 3.5rem;" color="#96EAB7" name="material-symbols:patient-list-rounded" />
-              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun(true)}} </div>
             </div>
             <div class="value_column">
               <div class="percentage_value">
@@ -51,7 +51,7 @@
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Laki-Laki</div>
               <Icon style="font-size: 3.5rem;" color="#53CDD8" name="material-symbols:man-3-rounded" />
-              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun()}} </div>
+              <div class="subtitle_numberCard"> Pada {{getBulanOrTahun(true)}} </div>
             </div>
             <div class="value_column">
               <div class="percentage_value">
@@ -72,7 +72,7 @@
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Perempuan</div>
               <Icon style="font-size: 3.5rem;" color="#E07F7F" name="material-symbols:woman-2-rounded" />
-              <div class="subtitle_numberCard"> Pada {{ getBulanOrTahun() }} </div>
+              <div class="subtitle_numberCard"> Pada {{ getBulanOrTahun(true) }} </div>
             </div>
             <div class="value_column">
               <div class="percentage_value">
@@ -99,18 +99,36 @@
         <BIChart src="/api/pasien" tipeData="usia" type="pie" :chartOpt="generateChartOption('percent')"
           :setChartData="processChartData">
           <template #title>Distribusi Usia</template>
+          <template #subtitle>
+            <div style="display: flex; align-items: center;">
+              <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
+              {{ getBulanOrTahun(false) }}
+            </div>
+          </template> 
         </BIChart>
       </div>
 
       <div class="grid-item-chart__item4">
         <BIChart src="/api/demografi" type="geographic">
           <template #title>Demografi Riau</template>
+          <template #subtitle>
+            <div style="display: flex; align-items: center;">
+              <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
+              {{ getBulanOrTahun(false) }}
+            </div>
+          </template> 
         </BIChart>
       </div>
 
       <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y' }"
         :setChartData="setTop10Color">
         <template #title>Top 10 Pekerjaan Pasien</template>
+        <template #subtitle>
+            <div style="display: flex; align-items: center;">
+              <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
+              {{ getBulanOrTahun(false) }}
+            </div>
+          </template> 
       </BIChart>
 
     </div>
@@ -147,9 +165,9 @@ const getPasienBaruCount = computed(() => new Intl.NumberFormat().format(pasienB
 const getPasienBaruPercentage = computed(() => Math.round(pasienBaruCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 const getPasienLamaPercentage = computed(() => Math.round(pasienLamaCount.value / (pasienLamaCount.value + pasienBaruCount.value) * 100));
 
-function getBulanOrTahun(){
+function getBulanOrTahun(now){
   if (!tahun.value){
-    return "Bulan Ini"
+    return now? "Bulan Ini" : "Semua Periode"
   } else {
     if (!bulan.value) {
       return tahun.value;

@@ -316,6 +316,10 @@ function setCompareDataTable(data: any, prevData: any) {
     };
 
     reformattedData.push(row1, row2);
+    if(row2.periode == "Semua Periode"){
+        reformattedData.pop();
+    }
+
     compareDataTable.value = reformattedData;
 
     return compareDataTable.value;
