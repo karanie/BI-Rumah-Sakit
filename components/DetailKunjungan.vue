@@ -133,8 +133,8 @@ function getBulanOrTahun() {
     if (!bulan.value) {
         return "tahun";
     } else {
-        return "tahun"
-        // return "bulan"
+        // return "tahun"
+        return "bulan"
     }
 }
 
@@ -216,8 +216,8 @@ watch(detailData, () => {
 const paramsPrevData = computed(() => {
     if (!selectedRow.value) return null;
     var p: any = {
-        tahun: tahun.value - 1,
-        bulan: bulan.value,
+        // tahun: tahun.value - 1,
+        // bulan: bulan.value,
         jenis_registrasi: props.jenisRegis,
         tipe_data: props.tipeData,
         // diagnosa: selectedRow.value.index,
@@ -226,6 +226,12 @@ const paramsPrevData = computed(() => {
         p.kabupaten = kabupaten.value;
     }
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
+
+    p = tahun.value && bulan.value
+        ? (bulan.value === 1 ?
+            { ...p, tahun: tahun.value - 1, bulan: 12 } :
+            { ...p, tahun: tahun.value, bulan: bulan.value - 1 })
+        : { ...p, tahun: tahun.value - 1 }
 
     // console.log("param prev data", p);
     return p;
@@ -252,6 +258,7 @@ const paramsDiagnosaRawatJalan = computed(() => {
         bulan: bulan.value,
         jenis_registrasi: props.jenisRegis,
         departemen: selectedRow.value.index,
+        tipe_data: props.tipeData
     }
     if (kabupaten.value !== null) {
         p.kabupaten = kabupaten.value;
