@@ -90,8 +90,8 @@ definePageMeta({
 
 function setPendapatanName(data, forecastData) {
   const mapLabelName = {
-    "total_tagihan": "Pengeluaran",
-    "total_semua_hpp": "Pendapatan"
+    "total_tagihan": "Pendapatan",
+    "total_semua_hpp": "Pengeluaran"
   }
   const out = {
     labels: data.index,
