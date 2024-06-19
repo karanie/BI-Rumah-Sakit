@@ -11,6 +11,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     BIApiBase: process.env.BI_API_BASE ? process.env.BI_API_BASE : "http://localhost:5000",
     BIDatabaseAddr: process.env.BI_DATABASE_ADDR ? process.env.BI_DATABASE_ADDR : "localhost",
+    BIDatabaseName: process.env.BI_DATABASE_NAME ? process.env.BI_DATABASE_NAME : "birumahsakit",
+    BIDatabaseUser: process.env.BI_DATABASE_USER ? process.env.BI_DATABASE_USER : "birumahsakit",
+    BIDatabasePassword: process.env.BI_DATABASE_PASSWORD ? process.env.BI_DATABASE_PASSWORD : "birumahsakit",
     saltRounds: 11,
     tokenSecret: "VVVVT09PR0hIIENVTk5ZWS4uLi4hISEgOnNvYjo=",
   },
