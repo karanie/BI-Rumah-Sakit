@@ -243,7 +243,7 @@ const {
     data: jenisRegisData,
     pending: jenisRegisDataIsPending,
     refresh: jenisRegisDataRefresh,
-} = await useFetch("http://localhost:5000/api/jenis_registrasi", {
+} = await useFetch("/api/jenis_registrasi", {
     server: false,
     lazy: true,
     params: {
@@ -255,7 +255,7 @@ const {
 })
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/penjamin', {
+  const response = await axios.get('/api/penjamin', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -285,7 +285,7 @@ const jalan = ref(0);
 
 onMounted(async () => {
     try {
-        const jenisRegisData = (await axios.get("http://localhost:5000/api/jenis_registrasi")).data;
+        const jenisRegisData = (await axios.get("/api/jenis_registrasi")).data;
 
         // Misalkan jenisRegisData.values[0] adalah array yang ingin Anda hitung jumlahnya
         const array_values = jenisRegisData.values[0];
@@ -312,7 +312,7 @@ const columns = [
 
 onMounted(async () => {
     try {
-        const data = (await axios.get("http://localhost:5000/api/regis-byRujukan")).data
+        const data = (await axios.get("/api/regis-byRujukan")).data
 
         // Reformat data
         const reformattedData = [];
@@ -331,7 +331,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi', {
+  const response = await axios.get('/api/instansi', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -371,7 +371,7 @@ onMounted(async () => {
 });
 
 watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi', {
+  const response = await axios.get('/api/instansi', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,

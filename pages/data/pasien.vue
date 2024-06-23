@@ -104,7 +104,7 @@
               <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
               {{ getBulanOrTahun(false) }}
             </div>
-          </template> 
+          </template>
         </BIChart>
       </div>
 
@@ -116,7 +116,7 @@
               <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
               {{ getBulanOrTahun(false) }}
             </div>
-          </template> 
+          </template>
         </BIChart>
       </div>
 
@@ -128,7 +128,7 @@
               <Icon style="font-size: 1.5rem;" color="var(--surface-400)" name="material-symbols:filter-alt-outline" />
               {{ getBulanOrTahun(false) }}
             </div>
-          </template> 
+          </template>
       </BIChart>
 
     </div>
@@ -181,7 +181,7 @@ function getBulanOrTahun(now){
 // Data Jumlah Pasien Baru/Lama
 const {
   pending: pasienBaruLamaDataIsPending,
-} = await useFetch("http://localhost:5000/api/pasien", {
+} = await useFetch("/api/pasien", {
   server: false,
   lazy: true,
   params: {
@@ -201,7 +201,7 @@ const {
 
 const {
   pending: jumlahJenisKelaminDataPending,
-} = await useFetch("http://localhost:5000/api/pasien", {
+} = await useFetch("/api/pasien", {
   server: false,
   lazy: true,
   params: {

@@ -45,7 +45,7 @@
 
 <script setup>
 // TODO: format datetime based on browser locale
-const { data } = useFetch("http://localhost:5000/api/last-update");
+const { data } = useFetch("/api/last-update");
 
 const {
     tahun,

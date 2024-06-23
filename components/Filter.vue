@@ -54,7 +54,7 @@ const {
   filterOptionAvailable,
 } = storeToRefs(useDataFilter());
 
-const { data } = useFetch("http://localhost:5000/api/last-update");
+const { data } = useFetch("/api/last-update");
 const lastRegisDate = new Date((data.value as any)?.waktuRegistrasiTerakhir);
 
 const {
@@ -94,7 +94,7 @@ const bulan = ref([
 ]);
 
 onMounted(async () => {
-  const filterOptions = (await axios.get("http://localhost:5000/api/filter-options")).data
+  const filterOptions = (await axios.get("/api/filter-options")).data
   kabupaten.value = filterOptions.kabupaten;
   tahun.value = filterOptions.tahun;
 });

@@ -93,7 +93,7 @@ const getFemaleCount = computed(() => new Intl.NumberFormat().format(femaleCount
 const getFemalePercentage = computed(() => Math.round(femaleCount.value / (maleCount.value + femaleCount.value) * 100) + "%");
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+  const data = (await axios.get("/api/dashboard", {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -107,7 +107,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
+  const data = (await axios.get("/api/jeniskelamin", {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,
@@ -119,7 +119,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/usia", {
+  const data = (await axios.get("/api/usia", {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,
@@ -130,7 +130,7 @@ onMounted(async () => {
 });
 
 watch(lastFilter, async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
+  const data = (await axios.get("/api/dashboard", {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -142,7 +142,7 @@ watch(lastFilter, async () => {
 });
 
 watch(lastFilter, async () => {
-  const data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
+  const data = (await axios.get("/api/jeniskelamin", {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,
@@ -154,7 +154,7 @@ watch(lastFilter, async () => {
 });
 
 watch(lastFilter, async () => {
-  const data = (await axios.get("http://localhost:5000/api/usia"), {
+  const data = (await axios.get("/api/usia"), {
     params: {
       kabupaten: kabupaten.value,
       tahun: tahun.value,

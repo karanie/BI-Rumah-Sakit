@@ -205,7 +205,7 @@ const rawatJalan_count = ref();
 
 const {
   pending: jenisRegisDataPending,
-} = await useFetch("http://localhost:5000/api/kunjungan", {
+} = await useFetch("/api/kunjungan", {
   server: false,
   lazy: true,
   params: {
@@ -231,7 +231,7 @@ const columns = [
 
 const {
   pending: tableDataIsPending,
-} = await useFetch("http://localhost:5000/api/kunjungan", {
+} = await useFetch("/api/kunjungan", {
   server: false,
   lazy: true,
   params: {
@@ -256,7 +256,7 @@ const {
 });
 
 watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi', {
+  const response = await axios.get('/api/instansi', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
