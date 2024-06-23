@@ -28,6 +28,7 @@ export default defineNuxtConfig({
     /* option */
   },
   auth: {
+    globalAppMiddleware: true,
     provider: {
       type: 'local',
       sessionDataType: {
@@ -36,7 +37,10 @@ export default defineNuxtConfig({
         nama_lengkap: 'string',
         jabatan: 'string',
         role: 'admin | non_admin',
-      }
+      },
+      token: {
+        maxAgeInSeconds: 60 * 60 * 6,
+      },
     }
   },
   css: [
