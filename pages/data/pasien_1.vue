@@ -117,7 +117,7 @@ const {
 } = storeToRefs(useDataFilter());
 
 onMounted(async () => {
-    const data = (await axios.get("http://localhost:5000/api/jeniskelamin", {
+    const data = (await axios.get("/api/jeniskelamin", {
         params: {
             kabupaten: kabupaten.value,
             tahun: tahun.value,
@@ -129,7 +129,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-    const response = await axios.get('http://localhost:5000/api/pekerjaan', {
+    const response = await axios.get('/api/pekerjaan', {
         params: {
             tahun: tahun.value,
             bulan: bulan.value,
@@ -176,7 +176,7 @@ definePageMeta({
 
 onMounted(async () => {
     try {
-        const data = (await axios.get("http://localhost:5000/api/usia")).data
+        const data = (await axios.get("/api/usia")).data
 
         // Proses data API untuk digunakan dalam pembuatan Pie Chart
         kelompokUsiaChartData.value = processChartData(data);
@@ -204,7 +204,7 @@ const setBarChartData = (apiData) => {
     const backgroundColors = new Array(dataValues.length).fill('rgba(54, 162, 235, 0.5)');
 
     // Mengubah warna untuk bar dengan nilai tertinggi
-    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti    
+    backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
 
     return {
         labels: Object.keys(apiData.jumlah_pasien_tahunan),

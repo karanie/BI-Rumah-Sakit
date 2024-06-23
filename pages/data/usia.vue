@@ -60,7 +60,7 @@ const jumlah_pasien = ref();
 
 onMounted(async () => {
   try {
-    const data = (await axios.get("http://localhost:5000/api/usia")).data
+    const data = (await axios.get("/api/usia")).data
 
     // Proses data API untuk digunakan dalam pembuatan Pie Chart
     kelompokUsiaChartData.value = processChartData(data);

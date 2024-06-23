@@ -7,8 +7,8 @@ export function tooltipLabelCallback(ctx: any) {
 
 export function tooltipLabelCallbackCurrency(options: any) {
   return (ctx: any) => {
-    const currentValue = ctx.dataset.data[ctx.dataIndex];
-    return new Intl.NumberFormat(navigator.language, options).format(currentValue);
+    const currentValue = ctx.dataset.data[ctx.dataIndex].y || ctx.dataset.data[ctx.dataIndex];
+    return new Intl.NumberFormat(document.documentElement.lang, options).format(currentValue);
   }
 }
 

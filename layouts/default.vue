@@ -12,8 +12,8 @@
           <NuxtLink to="/data/pasien">
             <Button label="Dashboard" text plain />
           </NuxtLink>
-          <NuxtLink to="/about">
-            <Button label="Registrasi Akun" text plain />
+          <NuxtLink to="/compare">
+            <Button label="Compare" text plain />
           </NuxtLink>
           <NuxtLink v-if="status == 'unauthenticated'" to="/login">
             <Button text plain>

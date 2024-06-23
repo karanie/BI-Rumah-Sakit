@@ -54,6 +54,9 @@ const {
   filterOptionAvailable,
 } = storeToRefs(useDataFilter());
 
+const { data } = useFetch("/api/last-update");
+const lastRegisDate = new Date((data.value as any)?.waktuRegistrasiTerakhir);
+
 const {
   filter,
   clearOption,
@@ -91,10 +94,16 @@ const bulan = ref([
 ]);
 
 onMounted(async () => {
-  const filterOptions = (await axios.get("http://localhost:5000/api/filter-options")).data
+  const filterOptions = (await axios.get("/api/filter-options")).data
   kabupaten.value = filterOptions.kabupaten;
   tahun.value = filterOptions.tahun;
 });
+// Filtering secara default : waktu regis terakhir
+// selectedTahun.value = lastRegisDate.getFullYear();
+// // selectedTahun.value = 2020;
+// let b = lastRegisDate.getMonth() + 1;
+// let a = bulan.value.find((element) => element.value === b)?.name
+// selectedBulan.value = { name: a, value: b };
 </script>
 
 <style scoped lang="scss">

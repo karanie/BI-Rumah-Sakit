@@ -1,9 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      htmlAttrs: {
+        lang: 'id-ID'
+      }
+    }
+  },
   devtools: { enabled: true },
   runtimeConfig: {
-    BIApiBase: process.env.BI_API_BASE ? process.env.BI_API_BASE : "http://localhost:5000",
-    BIDatabaseAddr: process.env.BI_DATABASE_ADDR ? process.env.BI_DATABASE_ADDR : "localhost",
+    biApiBase: "http://localhost:5000",
+    biDatabaseAddr: "localhost",
+    biDatabaseName: "birumahsakit",
+    biDatabaseUser: "birumahsakit",
+    biDatabasePassword: "birumahsakit",
     saltRounds: 11,
     tokenSecret: "VVVVT09PR0hIIENVTk5ZWS4uLi4hISEgOnNvYjo=",
   },

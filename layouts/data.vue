@@ -4,6 +4,8 @@
       <div class="bi__sidemenu">
         <Filter />
       </div>
+
+      <!-- Last Update Notice -->
       <div class="bi__content">
         <Message class="message" :closable="false">
           Data terakhir di-update pada
@@ -14,38 +16,27 @@
           <b>{{ data?.waktuRegistrasiTerakhir }}</b>
         </Message>
 
-        <div class="numeric-data">
-          <Nuxt-link to="/data/pasien" class="no-underline">
-            <Card :class="{ 'active': activeCard === 0 }" class="numeric-data__card">
-              <template #title>Total Pasien</template>
-              <template #subtitle>Jumlah pasien</template>
-              <template #content>
-                <div class="big-number">{{ getJumlahPasien }}</div>
-              </template>
-            </Card>
-          </Nuxt-link>
-
-          <Nuxt-link to="/data/kunjungan" class="no-underline">
-            <Card :class="{ 'active': activeCard === 1 }" class="numeric-data__card">
-              <template #title>Total Kunjungan</template>
-              <template #subtitle>Jumlah Kunjungan</template>
-              <template #content>
-                <div class="big-number">{{ getJumlahKunjungan }}</div>
-              </template>
-            </Card>
-          </Nuxt-link>
-
-          <Nuxt-link to="/data/pendapatan" class="no-underline">
-            <Card :class="{ 'active': activeCard === 2 }" class="numeric-data__card">
-              <template #title>Total Pendapatan</template>
-              <template #subtitle>Jumlah Kolom total_tagihan</template>
-              <template #content>
-                <div class="big-number">{{ getJumlahTotal }}</div>
-              </template>
-            </Card>
-          </Nuxt-link>
-        </div>
-
+        <!-- Card -->
+        <div class="container">
+      <div class="container__card">
+        <BIClickableCard link="/data/pasien" src="/api/pasien" tipeData="jumlahPasien">
+          <template #title>Total Pasien</template>
+          <template #subtitle>{{ getBulanOrTahun() }}</template>
+        </BIClickableCard>
+      </div>
+      <div class="container__card">
+        <BIClickableCard link="/data/kunjungan" src="/api/kunjungan" tipeData="jumlahKunjungan">
+          <template #title>Total Kunjungan</template>
+          <template #subtitle>{{ getBulanOrTahun() }}</template>
+        </BIClickableCard>
+      </div>
+      <div class="container__card">
+        <BIClickableCard link="/data/pendapatan" src="/api/pendapatan" tipeData="profit" currency>
+          <template #title>Total Profit</template>
+          <template #subtitle>{{ getBulanOrTahun() }} </template>
+        </BIClickableCard>
+      </div>
+    </div>
         <slot />
       </div>
     </div>
@@ -54,72 +45,31 @@
 
 <script setup>
 // TODO: format datetime based on browser locale
-const { data } = useFetch("http://localhost:5000/api/last-update");
-
-import axios from 'axios';
+const { data } = useFetch("/api/last-update");
 
 const {
-  bulan,
-  tahun,
-  kabupaten,
-  lastFilter,
+    tahun,
+    bulan,
+    kabupaten,
+    selectedBulan,
+    lastFilter,
 } = storeToRefs(useDataFilter());
-const route = useRoute();
-
-const jumlahPasien = ref();
-const jumlahKunjungan = ref();
-const jumlahPendapatan = ref();
-const jumlahPengeluaran = ref();
 
 
-const activeCard = computed(() => {
-  const pathMap = {
-    "/data/pasien": 0,
-    "/data/kunjungan": 1,
-    "/data/pendapatan": 2,
-  };
-  return pathMap[route.path];
-});
 
-const getJumlahPasien = computed(() => new Intl.NumberFormat().format(jumlahPasien.value));
-const getJumlahKunjungan = computed(() => new Intl.NumberFormat().format(jumlahKunjungan.value));
-
-const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR'}).format(jumlahPendapatan.value));
-
-// const getJumlahPendapatan = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value));
-const getJumlahPengeluaran = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPengeluaran.value));
-const getJumlahTotal = computed(() => new Intl.NumberFormat("en-US", { style: 'currency', currency: 'IDR' }).format(jumlahPendapatan.value - jumlahPengeluaran.value));
-
-
-onMounted(async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
+function getBulanOrTahun(){
+  if (!tahun.value){
+    return "Bulan waktu registrasi terakhir data di-update"
+  } else {
+    if (!bulan.value) {
+      return tahun.value;
     }
-  })).data
-  // console.log(data);
-  jumlahPasien.value = data.jumlahPasien;
-  jumlahKunjungan.value = data.jumlahKunjungan;
-  jumlahPendapatan.value = data.pendapatan;
-  jumlahPengeluaran.value = data.pengeluaran;
-});
-
-watch(lastFilter, async () => {
-  const data = (await axios.get("http://localhost:5000/api/dashboard", {
-    params: {
-      tahun: tahun.value,
-      bulan: bulan.value,
-      kabupaten: kabupaten.value,
+    else {
+      return tahun.value + " " + selectedBulan.value.name
     }
-  })).data
-  jumlahPasien.value = data.jumlahPasien;
-  jumlahKunjungan.value = data.jumlahKunjungan;
-  jumlahPendapatan.value = data.pendapatan;
-});
+  }
+}
 
-// console.log(jumlahPendapatan)
 </script>
 
 <style scoped lang="scss">
@@ -189,4 +139,16 @@ watch(lastFilter, async () => {
 .message {
   margin: 0;
 }
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+
+  &__card{
+    width: 100%;
+  }
+}
+
 </style>

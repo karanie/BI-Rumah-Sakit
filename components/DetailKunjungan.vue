@@ -14,7 +14,7 @@
                 <div class="grid__item1">
                     <DataTable v-model:filters="filters" :value="dataTable" selectionMode="single"
                         v-model:selection="selectedRow" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect" scrollable
-                        scrollHeight="420px" :virtualScrollerOptions="{ itemSize: 46 }">
+                        :scrollHeight="dataTableHeight" :virtualScrollerOptions="{ itemSize: 46 }">
 
                         <template #header>
                             <div class="flex justify-content-end">
@@ -27,7 +27,7 @@
                             </div>
                         </template>
 
-                        <Column v-for="col of kolom" :key="col.field" :field="col.field"></Column>
+                        <Column v-for="col of kolom" :key="col.field" :field="col.field" />
 
                     </DataTable>
                 </div>
@@ -37,22 +37,23 @@
                         <Skeleton height="18rem" />
                     </div>
 
-                    <div v-if="detailStatus == 'success'">
+                    <div v-if="detailStatus == 'success'" ref="dtContainer">
                         <p>{{ getTahun }} | Deskripsi</p>
 
                         <div style="display: grid; grid-template-columns:repeat(2, 1fr)">
                             <h2>{{ valueData_selected }} <span style="font-size: 16px">kunjungan</span></h2>
-                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" />
+                            <Knob v-model="percentageData_selected" valueTemplate="{value}%" :readonly="true" />
                         </div>
 
-                        <div style="display: flex; align-items: center;">
+                        <div v-if="tahun" style="display: flex; align-items: center;">
                             <div style="display: flex; align-items: center;">
                                 <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--green-400)"
                                     name="material-symbols:arrow-upward-rounded" v-if="status_comparePrev === 'Naik'" />
                                 <Icon style="font-size: 1.5rem; margin-right: 5px" color="var(--red-400)"
                                     name="material-symbols:arrow-downward-rounded"
                                     v-else-if="status_comparePrev === 'Turun'" />
-                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari tahun lalu</p>
+                                <p>{{ status_comparePrev }} {{ percentage_comparePrev }}% dari {{ getBulanOrTahun() }}
+                                    lalu</p>
                             </div>
                         </div>
 
@@ -102,6 +103,8 @@ const props = defineProps<{
     src: string,
     rawatJalan?: boolean,
     jenisRegis: string,
+    timeseries?: boolean,
+    tipeData?: string,
 }>();
 
 const {
@@ -109,13 +112,15 @@ const {
     bulan,
     kabupaten,
     lastFilter,
+    selectedBulan
 } = storeToRefs(useDataFilter());
 
 const params = computed(() => {
     const p: any = {
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         tahun: tahun.value,
         bulan: bulan.value,
+        tipe_data: props.tipeData,
     }
 
     if (kabupaten.value !== null) {
@@ -123,6 +128,15 @@ const params = computed(() => {
     }
     return p;
 });
+
+function getBulanOrTahun() {
+    if (!bulan.value) {
+        return "tahun";
+    } else {
+        // return "tahun"
+        return "bulan"
+    }
+}
 
 const { data, status, refresh, error } = useFetch(props.src, {
     server: false,
@@ -151,15 +165,19 @@ const paramsDetail = computed(() => {
     var p: any = {
         tahun: tahun.value,
         bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         // diagnosa: selectedRow.value.index,
-        tipe_data: "timeseries",
+        timeseries: true,
+        tipe_data: props.tipeData,
+    }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
     }
 
     // Menentukan params berdasarkan nilai rawatJalan
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param detail", p);
+    // console.log("param detail", p);
     return p;
 });
 
@@ -171,15 +189,19 @@ const { data: detailData, status: detailStatus, execute: detailExecute, refresh:
     immediate: false,
 });
 
-const getTahun = computed(() => {
-    if (tahun.value)
-        return tahun.value;
+const getTahun = ref();
+const setTahun = () => {
+    if (tahun.value) {
+        let date = tahun.value && bulan.value ? `${selectedBulan.value.name} ${tahun.value}` : tahun.value;
+        return date;
+    }
+
     if (!detailData.value)
         return "";
     const tahunAwal = (new Date((detailData.value as any).index[0])).getFullYear();
     const tahunAkhir = (new Date((detailData.value as any).index[(detailData.value as any).index.length - 1])).getFullYear();
     return `${tahunAwal}-${tahunAkhir}`;
-});
+};
 
 watch(detailData, () => {
     if (!detailData.value)
@@ -187,19 +209,31 @@ watch(detailData, () => {
 
     setDetailData(detailData.value);
     chartData.value = setData_chart(detailData.value);
+
+    getTahun.value = setTahun();
 });
 
 const paramsPrevData = computed(() => {
     if (!selectedRow.value) return null;
     var p: any = {
-        tahun: tahun.value - 1,
-        bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        // tahun: tahun.value - 1,
+        // bulan: bulan.value,
+        jenis_registrasi: props.jenisRegis,
+        tipe_data: props.tipeData,
         // diagnosa: selectedRow.value.index,
+    }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
     }
     p = props.rawatJalan ? { ...p, departemen: selectedRow.value.index } : { ...p, diagnosa: selectedRow.value.index };
 
-    console.log("param prev data", p);
+    p = tahun.value && bulan.value
+        ? (bulan.value === 1 ?
+            { ...p, tahun: tahun.value - 1, bulan: 12 } :
+            { ...p, tahun: tahun.value, bulan: bulan.value - 1 })
+        : { ...p, tahun: tahun.value - 1 }
+
+    // console.log("param prev data", p);
     return p;
 });
 
@@ -222,8 +256,12 @@ const paramsDiagnosaRawatJalan = computed(() => {
     const p: any = {
         tahun: tahun.value,
         bulan: bulan.value,
-        jenisregistrasi: props.jenisRegis,
+        jenis_registrasi: props.jenisRegis,
         departemen: selectedRow.value.index,
+        tipe_data: props.tipeData
+    }
+    if (kabupaten.value !== null) {
+        p.kabupaten = kabupaten.value;
     }
     return p;
 });
@@ -292,7 +330,7 @@ function setDetailData(detailDataSelected: any) {
     valueData_selected.value = detailDataSelected.values.reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0);
     percentageData_selected.value = Math.round(valueData_selected.value / total.value * 100);
 
-    console.log("detail data selected", detailDataSelected)
+    // console.log("detail data selected", detailDataSelected)
 
     dominantAge_cat.value = detailDataSelected.dominant_age_category_summary;
     dominantAge_scale.value = ageScale(dominantAge_cat.value);
@@ -332,13 +370,14 @@ function setPrevData(prevData: any) {
     }
 };
 
-//Chart 
+//Chart
 function setData_chart(data: any) {
     // console.log(data)
     return {
         labels: data.index,
         datasets: [
             {
+                label: data.columns,
                 data: data.values,
             }
         ]
@@ -351,11 +390,22 @@ function setDataDiagnosa_RawatJalan_chart(data: any) {
         labels: data.indexDiagnosa.slice(0, 5),
         datasets: [
             {
+                label: data.columns,
                 data: data.valuesDiagnosa,
             }
         ]
     };
 };
+
+//dynamic scroll height for datatable
+const dtContainer = ref();
+const dataTableHeight = computed(() => {
+    if (dtContainer.value) {
+        const containerHeight = dtContainer.value.clientHeight;
+        return `${containerHeight}px`;
+    }
+    return "420px"
+})
 
 </script>
 

@@ -1,48 +1,85 @@
 <template>
-  <div class="item-1">
-    <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green">
-      <template #title>
-        Total Pendapatan
-      </template>
-      <template #subtitle>
-        Jumlah total tagihan pada
-      </template>
-    </BICard>
-    <BICard src="/api/pendapatan" tipeData="totalPengeluaran"  color ="red">
-      <template #title>
-        Total Pengeluaran
-      </template>
-      <template #subtitle>
-        Jumlah total semua hpp pada
-      </template>
-    </BICard>
+  <div class="grid">
+    <div class="grid-row1">
+      <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green">
+        <template #title>
+          Total Pendapatan
+        </template>
+        <template #subtitle>
+          Jumlah total tagihan pada
+        </template>
+      </BICard>
+      <BICard src="/api/pendapatan" tipeData="totalPengeluaran" color="red">
+        <template #title>
+          Total Pengeluaran
+        </template>
+        <template #subtitle>
+          Jumlah total semua hpp pada
+        </template>
+      </BICard>
+    </div>
+
+    <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
+      :chartOpt="setPendapatanCurrencyChartDataOpt()">
+      <template #title>Jumlah Pendapatan Seiring Waktu</template>
+    </BIChart>
+
+    <BIChart src="/api/pendapatan" timeseries tipeData="jenis_registrasi" forecast :chartOpt="setPendapatanCurrencyChartDataOpt()" type="line">
+      <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
+    </BIChart>
+
+    <Accordion expandIcon="pi pi-plus" collapseIcon="pi pi-minus" :lazy="true">
+      <AccordionTab>
+        <template #header>
+          <span>
+            <Icon style="font-size: 2.5rem; margin-right: 10px" color="var(--surface-400)"
+              name="material-symbols:e911-emergency-rounded" />
+            <span class="font-bold white-space-nowrap" style="margin-right: 10px;">IGD</span>
+          </span>
+        </template>
+        <DetailPendapatan src="/api/pendapatan" jenisRegis="IGD">
+          <template #title>Diagnosa Penyakit di IGD</template>
+        </DetailPendapatan>
+      </AccordionTab>
+
+      <AccordionTab>
+        <template #header>
+          <span>
+            <Icon style="font-size: 2.5rem; margin-right: 10px;" color="var(--surface-400)"
+              name="material-symbols:outpatient-rounded" />
+            <span class="font-bold white-space-nowrap" style="margin-right: 10px;">Rawat Jalan</span>
+          </span>
+        </template>
+        <DetailPendapatan src="/api/pendapatan" jenisRegis="Rawat Jalan">
+          <template #title>Poliklinik di Rawat Jalan</template>
+        </DetailPendapatan>
+      </AccordionTab>
+
+      <AccordionTab>
+        <template #header>
+          <span>
+            <Icon style="font-size: 2.5rem; margin-right: 10px;" color="var(--surface-400)"
+              name="material-symbols:inpatient-rounded" />
+            <span style="margin-right: 10px;">Rawat Inap</span>
+          </span>
+        </template>
+        <DetailPendapatan src="/api/pendapatan" jenisRegis="Rawat Inap">
+          <template #title>Diagnosa Penyakit di Rawat Inap</template>
+        </DetailPendapatan>
+      </AccordionTab>
+
+      <AccordionTab>
+        <template #header>
+          <span>
+            <Icon style="font-size: 2.5rem; margin-right: 10px;" color="var(--surface-400)"
+              name="material-symbols:local-pharmacy-rounded" />
+            <span style="margin-right: 10px;">OTC</span>
+          </span>
+        </template>
+        <DetailPendapatan src="/api/pendapatan" jenisRegis="OTC" />
+      </AccordionTab>
+    </Accordion>
   </div>
-
-  <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
-    :chartOpt="setPendapatanChartDataOpt()">
-    <template #title>Jumlah Pendapatan Seiring Waktu</template>
-  </BIChart>
-
-  <BIChart src="/api/pendapatan" timeseries tipeData="jenisregis" :chartOpt="setPendapatanChartDataOpt()" type="line">
-    <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
-  </BIChart>
-
-  <BIChart src="/api/pendapatan" tipeData="pendapatanGejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData" type="bar">
-    <template #title>10 Pendapatan Tertinggi Berdasarkan Penyakit</template>
-  </BIChart>
-
-  <BIChart src="/api/pendapatan" tipeData="pengeluaranGejala" :chartOpt="{ indexAxis: 'y' }" :setChartData="setPenyakitChartData" type="bar">
-    <template #title>10 Pengeluaran Tertinggi Berdasarkan Penyakit</template>
-  </BIChart>
-
-  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPendapatan" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
-    <template #title>10 Pendapatan Tertinggi Berdasarkan Poliklinik</template>
-  </BIChart>
-
-  <BIChart src="/api/pendapatan" tipeData="poliklinikSortByPengeluaran" type="bar" :setChartData="setPoliklinikChartData" :chartOpt="setPoliklinikChartDataOpt()">
-    <template #title>10 Pengeluaran Tertinggi Berdasarkan Poliklinik</template>
-  </BIChart>
-
 </template>
 
 <script setup>
@@ -50,10 +87,11 @@
 definePageMeta({
   layout: "data"
 })
+
 function setPendapatanName(data, forecastData) {
   const mapLabelName = {
-    "total_tagihan": "Pengeluaran",
-    "total_semua_hpp": "Pendapatan"
+    "total_tagihan": "Pendapatan",
+    "total_semua_hpp": "Pengeluaran"
   }
   const out = {
     labels: data.index,
@@ -84,54 +122,8 @@ function setPendapatanName(data, forecastData) {
   }
 }
 
-// Set chart data gejala
-function setPenyakitChartData(data) {
-  // Mencari index dari nilai tertinggi
-  const maxIndex = data.values.indexOf(Math.max(...data.values));
-  // Membuat array warna, defaultnya semua warna sama
-  const backgroundColors = new Array(data.values.length).fill('rgba(54, 162, 235, 0.5)');
-
-  // Mengubah warna untuk bar dengan nilai tertinggi
-  backgroundColors[maxIndex] = 'rgba(95, 255, 132, 0.5)'; // Warna merah untuk menyoroti
-
-  return {
-    labels: data.index,
-    datasets: [
-      {
-        label: 'Jumlah',
-        data: data.values,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: backgroundColors
-      }
-    ]
-  };
-}
-
-// set chart data poliklinik
-
-function setPoliklinikChartData(data) {
-  console.log(data);
-  return {
-    labels: data.index,
-    datasets: [
-      {
-        label: 'Pendapatan',
-        data: data.pendapatan,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(95, 255, 132, 0.5)'
-      },
-      {
-        label: 'Pengeluaran',
-        data: data.pengeluaran,
-        borderWidth: 1, // Lebar garis batas
-        backgroundColor: 'rgba(255, 10, 7, 0.5)'
-      }
-    ]
-  };
-}
-
 // Chart Options
-const setPendapatanChartDataOpt = () => {
+const setPendapatanCurrencyChartDataOpt = () => {
   return {
     plugins: {
       tooltip: {
@@ -143,13 +135,14 @@ const setPendapatanChartDataOpt = () => {
   }
 }
 
-const setPoliklinikChartDataOpt = () => {
+const setDoubleBarChartDataOpt = () => {
   return {
     indexAxis: 'y', elements: {
       bar: {
         borderWidth: 2,
       }
-    }, responsive: true,
+    },
+     responsive: true,
     plugins: {
       legend: {
         position: 'right',
@@ -159,26 +152,26 @@ const setPoliklinikChartDataOpt = () => {
 }
 </script>
 
-<style>
-.item-1 {
+<style scoped lang="scss">
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-row1 {
   display: grid;
   gap: 20px;
   grid-template-columns: repeat(2, 1fr);
-
-  &__card {
-    width: 100%;
-    text-decoration: none;
-  }
 }
 
-.big-number {
-  font-weight: bold;
-  font-size: 30px;
-}
-
-.title {
+.container {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: row;
+  gap: 20px;
+  height: 20%;
+
+  &__chart{
+    width: 100%;
+  }
 }
 </style>

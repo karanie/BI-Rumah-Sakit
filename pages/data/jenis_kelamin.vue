@@ -117,7 +117,7 @@ const {
   data: genderData,
   pending: genderDataIsPending,
   refresh: genderDataRefresh,
-} = await useFetch("http://localhost:5000/api/jeniskelamin",{
+} = await useFetch("/api/jeniskelamin",{
   server: false,
   lazy: true,
   params: {
@@ -133,7 +133,7 @@ const {
   data: genderTimeSeriesData,
   pending: genderTimeSeriesDataIsPending,
   refresh: genderTimeSeriesDataRefresh,
-} = await useFetch("http://localhost:5000/api/jeniskelamin", {
+} = await useFetch("/api/jeniskelamin", {
   server: false,
   lazy: true,
   params: {
@@ -150,7 +150,7 @@ const {
   data: kunjunganData,
   pending: kunjunganDataIsPending,
   refresh: kunjunganDataRefresh,
-} = await useFetch("http://localhost:5000/api/kunjungan", {
+} = await useFetch("/api/kunjungan", {
   server: false,
   lazy: true,
   params: {
@@ -166,7 +166,7 @@ const {
   data: jenisRegisData,
   pending: jenisRegisDataIsPending,
   refresh: jenisRegisDataRefresh,
-} = await useFetch("http://localhost:5000/api/jenis_registrasi", {
+} = await useFetch("/api/jenis_registrasi", {
   server: false,
   lazy: true,
   params: {
@@ -182,7 +182,7 @@ const {
   data: RujukanData,
   pending: RujukanDataIsPending,
   refresh: RujukanDataRefresh,
-} = await useFetch("http://localhost:5000/api/rujukan", {
+} = await useFetch("/api/rujukan", {
   server: false,
   lazy: true,
   params: {

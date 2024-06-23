@@ -35,7 +35,7 @@ const barChartData = ref(null);
 const instansiChartData = ref(null);
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/penjamin', {
+  const response = await axios.get('/api/penjamin', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -58,7 +58,7 @@ onMounted(async () => {
 });
 
 onMounted(async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi', {
+  const response = await axios.get('/api/instansi', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
@@ -86,7 +86,7 @@ onMounted(async () => {
 });
 
 watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/penjamin', {
+  const response = await axios.get('/api/penjamin', {
     params: {
       tahun: tahun.value,
     }
@@ -107,7 +107,7 @@ watch(lastFilter, async () => {
 })
 
 watch(lastFilter, async () => {
-  const response = await axios.get('http://localhost:5000/api/instansi', {
+  const response = await axios.get('/api/instansi', {
     params: {
       tahun: tahun.value,
       bulan: bulan.value,
