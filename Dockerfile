@@ -1,8 +1,14 @@
-FROM alpine
+FROM alpine as build
 WORKDIR /code
-COPY . .
 RUN apk add npm
 ENV NUXT_TELEMETRY_DISABLED=1
+COPY package.json package-lock.json .
+RUN npm install
+COPY . .
 RUN npm run build
+
+FROM node:alpine
+WORKDIR /code
+COPY --from=build /code/.output .
 EXPOSE 3000
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "server/index.mjs"]
