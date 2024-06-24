@@ -14,9 +14,6 @@
       </FloatLabel>
       <span class="wrong-username-password-feedback" v-if="wrongUsernameOrPassword">Username atau password salah</span>
       <div class="form-button">
-        <NuxtLink to="/register">
-          <Button class="form-button__button" label="Register" outlined />
-        </NuxtLink>
         <Button :disabled="!(username && password)" type="submit" class="form-button__button" label="Login" />
       </div>
     </form>
