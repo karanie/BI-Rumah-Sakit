@@ -1,6 +1,6 @@
 <template>
   <div class="settings__section">
-    <Menu :model="settings">
+    <Menu :model="getSettings">
       <template #item="{ item, props }">
         <NuxtLink :to="item.route" class="list-box-item" v-bind="props.action">
           <div class="list-box-item__leading">
@@ -30,14 +30,19 @@ const settings = ref([
   {
     nuxtIcon: "material-symbols:person-add",
     label: "User Management",
+    roles: ["admin"],
     route: "/settings/users",
   },
   {
     nuxtIcon: "material-symbols:password-2",
     label: "Ganti password",
+    roles: ["admin", "non_admin"],
     route: "/settings/changepass",
   },
 ]);
+const getSettings = computed(() => {
+  return settings.value.filter((i: any) => i.roles.some((role: string) => role == data.value?.role));
+});
 </script>
 
 <style lang="scss" scoped>
