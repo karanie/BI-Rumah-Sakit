@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 const config = useRuntimeConfig();
 
 export default defineEventHandler({
-  onRequest: [auth],
+  onRequest: [auth("admin")],
   handler: async (event) => {
     const body = await readBody(event);
     const password = bcrypt.hashSync(body.password, config.saltRounds);

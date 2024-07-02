@@ -1,7 +1,7 @@
 import pgclient from "@/utils/db.server";
 
 export default defineEventHandler({
-  onRequest: [auth],
+  onRequest: [auth("admin")],
   handler: async (event) => {
     try {
       const res = await pgclient.query(
