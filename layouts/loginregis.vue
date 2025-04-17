@@ -11,7 +11,17 @@
 
 <script setup lang="ts">
 const route = useRoute();
-const pageName = computed(() => route.name == "login" ? "Login" : route.name == "register" ? "Register" : "Ganti Password");
+// set the title card name
+const pageName = computed(() => {
+  if (!route.name)
+    return "";
+  if (route.name == "login")
+    return "Login";
+  else if (route.name == "register")
+    return "Register";
+  else
+    return "Ganti Password";
+});
 </script>
 
 <style scoped lang="scss">
