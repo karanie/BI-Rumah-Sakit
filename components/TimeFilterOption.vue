@@ -60,7 +60,7 @@
 const selectedTahun = defineModel('selectedTahun');
 const selectedBulan = defineModel('selectedBulan');
 const selectedRelative = defineModel('selectedRelative');
-const selectedDateRange = defineModel<string[]>('selectedDateRange');
+const selectedDateRange = defineModel<Date[]>('selectedDateRange');
 const selectedTimeFilterMode = defineModel('selectedTimeFilterMode');
 
 const emit = defineEmits<{

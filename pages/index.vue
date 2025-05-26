@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-navigateTo("/data/pasien");
+// navigateTo("/data/pasien");
 </script>
 
 <style scoped lang="scss">

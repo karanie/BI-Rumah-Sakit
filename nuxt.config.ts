@@ -31,12 +31,14 @@ export default defineNuxtConfig({
     globalAppMiddleware: true,
     provider: {
       type: 'local',
-      sessionDataType: {
-        user_id: 'number',
-        username: 'string',
-        nama_lengkap: 'string',
-        jabatan: 'string',
-        role: 'admin | non_admin',
+      session: {
+        dataType: {
+          user_id: 'number',
+          username: 'string',
+          nama_lengkap: 'string',
+          jabatan: 'string',
+          role: 'admin | non_admin',
+        }
       },
       token: {
         maxAgeInSeconds: 60 * 60 * 6,
@@ -50,5 +52,10 @@ export default defineNuxtConfig({
   ],
   typescript: {
     typeCheck: true
+  },
+  nitro: {
+    experimental: {
+      websocket: true,
+    },
   }
 })
