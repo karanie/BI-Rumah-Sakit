@@ -62,4 +62,6 @@ export default defineNuxtPlugin(async () => {
     console.log("Initializing Database...");
     initBIDB(pgclient);
   });
+
+  await pgclient.end();
 });
