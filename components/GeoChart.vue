@@ -144,6 +144,7 @@ function onEachFeature(feature, layer) {
 
 const geoOptions = {
   onEachFeature: onEachFeature,
+  useGlobalLeaflet: false,
 }
 </script>
 
