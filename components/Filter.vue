@@ -44,8 +44,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
-
 const {
   selectedKabupaten,
   selectedTahun,
@@ -94,9 +92,8 @@ const bulan = ref([
 ]);
 
 onMounted(async () => {
-  const filterOptions = (await axios.get("/api/filter-options")).data
-  kabupaten.value = filterOptions.kabupaten;
-  tahun.value = filterOptions.tahun;
+  kabupaten.value = data.value.kabupaten;
+  tahun.value = data.value.tahun;
 });
 // Filtering secara default : waktu regis terakhir
 // selectedTahun.value = lastRegisDate.getFullYear();
