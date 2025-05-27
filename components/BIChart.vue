@@ -31,7 +31,12 @@
         </template>
       </Error>
       <Skeleton height="8rem" v-if="status == 'pending' && !chartData" />
-      <template v-if="status == 'success' || (status != 'error' && chartData)">
+      <template v-if="!chartData && status == 'success'">
+        <div class="content">
+          Data Tidak Ditemukan
+        </div>
+      </template>
+      <template v-else-if="status == 'success' || (status != 'error' && chartData)">
         <div class="content">
           <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData"
             :options="props.chartOpt" />
@@ -134,6 +139,9 @@ function forecast() {
 function setData(data: any, forecastData?: any) {
   if (props.setChartData)
     return props.setChartData(data, forecastData);
+
+  if (!data.values || data.values.length == 0)
+    return false
 
   if (props.timeseries) {
     const out = {
