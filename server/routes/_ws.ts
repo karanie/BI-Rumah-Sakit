@@ -16,8 +16,9 @@ export default defineWebSocketHandler({
 
       subscriber.notifications.on("new_data_channel", payload => {
         console.log(`Received from PG notifications`)
-        peer.publish("new_data_notification", payload)
-        peer.send(payload)
+        const currentTime = Date.now()
+        peer.publish("new_data_notification", currentTime)
+        peer.send(currentTime)
       });
       subscriber.events.on("error", (error) => {
         console.error("Fatal database connection error:", error)
