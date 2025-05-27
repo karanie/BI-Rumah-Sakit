@@ -1,5 +1,5 @@
 <template>
-  <Card>
+  <Card class="bi-chart">
     <template #title>
       <div class="title">
         <span>
@@ -31,17 +31,17 @@
         </template>
       </Error>
       <Skeleton height="8rem" v-if="status == 'pending' && !chartData" />
-      <template v-if="!chartData && status == 'success'">
-        <div class="content">
-          Data Tidak Ditemukan
-        </div>
-      </template>
-      <template v-else-if="status == 'success' || (status != 'error' && chartData)">
+      <template v-if="displayChart">
         <div class="content">
           <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData"
             :options="props.chartOpt" />
           <Chart v-if="type != 'geographic'" :style="{ width: props.chartWidth }" :type="props.type" :data="chartData"
             :options="props.chartOpt" />
+        </div>
+      </template>
+      <template v-else-if="status == 'success' && !chartData">
+        <div class="content">
+          Data Tidak Ditemukan
         </div>
       </template>
     </template>
@@ -112,6 +112,8 @@ const { data: forecastData, status: forecastStatus, execute: forecastExecute } =
   watch: false,
   immediate: false,
 });
+
+const displayChart = computed(() => status.value == 'success' || (status.value != 'error' && chartData.value))
 
 watch(data, () => {
   if (!data.value)
@@ -187,5 +189,9 @@ function setData(data: any, forecastData?: any) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.bi-chart {
+  // height: 400px;
 }
 </style>
