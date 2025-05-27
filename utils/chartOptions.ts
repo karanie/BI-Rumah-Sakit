@@ -22,9 +22,12 @@ export function generateChartOption(style: string) {
               label: tooltipLabelCallback,
             }
           }
-        }
+        },
+        animation: false,
       };
     default:
-      return {};
+      return {
+        animation: false,
+      };
   }
 }
