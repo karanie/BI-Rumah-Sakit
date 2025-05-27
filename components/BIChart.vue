@@ -30,8 +30,8 @@
           </ErrorDetails>
         </template>
       </Error>
-      <Skeleton height="8rem" v-if="status == 'pending'" />
-      <template v-if="status == 'success'">
+      <Skeleton height="8rem" v-if="status == 'pending' && !chartData" />
+      <template v-if="status == 'success' || (status != 'error' && chartData)">
         <div class="content">
           <GeoChart v-if="type == 'geographic'" :style="{ width: props.chartWidth }" :data="chartData"
             :options="props.chartOpt" />
@@ -55,6 +55,7 @@ const props = defineProps<{
   tipeData?: string,
   timeseries?: boolean,
   forecast?: boolean,
+  listenUpdate?: boolean,
 }>();
 
 const chartData = ref();
@@ -93,6 +94,7 @@ const paramsForecast = computed(() => {
 });
 
 const { data, status, refresh, error } = useFetch(props.src, {
+  key: props.src + props.tipeData + props.type + String(props.timeseries),
   server: false,
   lazy: true,
   params: params,
@@ -116,6 +118,13 @@ watch(forecastData, () => {
   if (!forecastData.value && !data.value)
     return;
   chartData.value = setData(data.value, forecastData.value);
+});
+
+const { update: newUpdate } = storeToRefs(useDataUpdate());
+watch(newUpdate, () => {
+  if (props.listenUpdate) {
+    refresh();
+  }
 });
 
 function forecast() {
