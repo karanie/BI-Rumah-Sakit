@@ -3,20 +3,20 @@
     <div class="grid-item-chart">
       <div class="grid-item-chart__item1">
         <BIChart src="/api/kunjungan" timeseries tipeData="pertumbuhanPertahun" type="bar"
-          :setChartData="setKunjunganBarChartData" style="height: 100%;">
+          :setChartData="setKunjunganBarChartData" style="height: 100%;" :chartOpt="generateChartOption()" listenUpdate>
           <template #title>Jumlah Kunjungan Pasien Setiap Tahun</template>
         </BIChart>
       </div>
 
       <div class="grid-item-chart__item2">
-        <BIChart src="/api/kunjungan" tipeData="pertumbuhan" timeseries type="line">
+        <BIChart src="/api/kunjungan" tipeData="pertumbuhan" timeseries type="line" :chartOpt="generateChartOption()" listenUpdate>
           <template #title>Pertumbuhan Kunjungan Seiring Waktu</template>
         </BIChart>
       </div>
 
       <div class="grid-item-chart__item3">
         <BIChart src="/api/kunjungan" tipeData="penjamin" :chartOpt="generateChartOption('percent')" type="doughnut"
-          style="height: 100%;">
+          style="height: 100%;" listenUpdate>
           <template #title>Distribusi Kunjungan Berdasarkan Jenis Penjamin</template>
           <template #subtitle>
             <div style="display: flex; align-items: center;">
@@ -29,13 +29,13 @@
 
       <div class="grid-item-chart__item4">
         <BIChart src="/api/kunjungan" tipeData="usia" timeseries style="height: 100%" type="line"
-          :setChartData="processChartData">
+          :setChartData="processChartData" :chartOpt="generateChartOption()" listenUpdate>
           <template #title>Distribusi Kunjungan Berdasarkan Kelompok Usia</template>
         </BIChart>
       </div>
 
       <div class="grid-item-chart__item5">
-        <BIChart src="/api/kunjungan" tipeData="jenis_registrasi" timeseries type="line" forecast>
+        <BIChart src="/api/kunjungan" tipeData="jenis_registrasi" timeseries type="line" forecast :chartOpt="generateChartOption()" listenUpdate>
           <template #title>Pertumbuhan Kunjungan Berdasarkan Jenis Registrasi</template>
         </BIChart>
       </div>
@@ -50,7 +50,7 @@
             </div>
           </template>
           <template #content>
-            <Skeleton v-if='tableDataIsPending' height="8rem" />
+            <Skeleton v-if='tableDataIsPending && !products' height="8rem" />
             <DataTable v-else :value="products">
               <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
                 <template #body="scope">
@@ -71,7 +71,7 @@
                   <Icon style="font-size: 2.5rem; margin-right: 10px" color="var(--surface-400)"
                     name="material-symbols:e911-emergency-rounded" />
                   <span class="font-bold white-space-nowrap" style="margin-right: 10px;">IGD</span>
-                  <ProgressSpinner v-if="jenisRegisDataPending" style="width: 25px; height: 25px" strokeWidth="8"
+                  <ProgressSpinner v-if="jenisRegisDataPending && !igd_count" style="width: 25px; height: 25px" strokeWidth="8"
                     fill="var(--surface-ground)" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
                   <Badge v-else :value="igd_count" class="ml-auto mr-2" />
                 </span>
@@ -89,7 +89,7 @@
                     name="material-symbols:outpatient-rounded" />
                   <span class="font-bold white-space-nowrap" style="margin-right: 10px;">Rawat
                     Jalan</span>
-                  <ProgressSpinner v-if="jenisRegisDataPending" style="width: 25px; height: 25px" strokeWidth="8"
+                  <ProgressSpinner v-if="jenisRegisDataPending && !rawatJalan_count" style="width: 25px; height: 25px" strokeWidth="8"
                     fill="var(--surface-ground)" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
                   <Badge v-else :value="rawatJalan_count" class="ml-auto mr-2" />
                 </span>
@@ -106,7 +106,7 @@
                     name="material-symbols:inpatient-rounded" />
                   <span class="font-bold white-space-nowrap" style="margin-right: 10px;">Rawat
                     Inap</span>
-                  <ProgressSpinner v-if="jenisRegisDataPending" style="width: 25px; height: 25px" strokeWidth="8"
+                  <ProgressSpinner v-if="jenisRegisDataPending && !inap_count" style="width: 25px; height: 25px" strokeWidth="8"
                     fill="var(--surface-ground)" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
                   <Badge v-else :value="inap_count" class="ml-auto mr-2" />
                 </span>
@@ -125,7 +125,6 @@
 </template>
 
 <script setup>
-
 import axios from 'axios';
 
 definePageMeta({
@@ -205,6 +204,7 @@ const rawatJalan_count = ref();
 
 const {
   pending: jenisRegisDataPending,
+  refresh: jenisRegisDataRefresh,
 } = await useFetch("/api/kunjungan", {
   server: false,
   lazy: true,
@@ -231,6 +231,7 @@ const columns = [
 
 const {
   pending: tableDataIsPending,
+  refresh: tableDataRefresh,
 } = await useFetch("/api/kunjungan", {
   server: false,
   lazy: true,
@@ -307,6 +308,12 @@ function getBulanOrTahun() {
     }
   }
 }
+
+const { update } = storeToRefs(useDataUpdate());
+watch(update, () => {
+  tableDataRefresh();
+  jenisRegisDataRefresh();
+});
 </script>
 
 <style scoped lang="scss">
