@@ -2,22 +2,20 @@
   <Nuxt-link :to="props.link" class="no-underline">
     <Card :class="{ 'active': route.path == props.link }" class="numeric-data__card">
       <template #title>
-        <span v-if='status == "success"'>
+        <span>
           <slot name="title"></slot>
         </span>
-        <Skeleton v-else height="1.25rem" />
       </template>
       <template #subtitle>
-        <span v-if='status == "success"'>
+        <span>
           <slot name="subtitle"></slot>
         </span>
-        <Skeleton v-else height="1rem" />
       </template>
       <template #content>
-        <template v-if='status == "success"'>
+        <Skeleton v-if='status == "pending" && !data' height="2.25rem" />
+        <template v-else>
           <div class="big-number">{{ getData }}</div>
         </template>
-        <Skeleton v-else height="2.25rem" />
       </template>
     </Card>
   </Nuxt-link>
@@ -30,7 +28,8 @@ const props = defineProps<{
   src: string,
   link: string,
   tipeData?: string,
-  currency?: boolean
+  currency?: boolean,
+  listenUpdate?: boolean
 }>();
 
 const {
@@ -69,6 +68,13 @@ const getData = computed(() => {
 
 watch(lastFilter, () => {
   refresh()
+});
+
+const { update: newUpdate } = storeToRefs(useDataUpdate());
+watch(newUpdate, () => {
+  if (props.listenUpdate) {
+    refresh();
+  }
 });
 
 </script>
