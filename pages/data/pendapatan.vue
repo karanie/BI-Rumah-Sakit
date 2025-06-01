@@ -1,7 +1,7 @@
 <template>
   <div class="grid">
     <div class="grid-row1">
-      <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green">
+      <BICard src="/api/pendapatan" tipeData="totalPendapatan" color="green" listenUpdate>
         <template #title>
           Total Pendapatan
         </template>
@@ -9,7 +9,7 @@
           Jumlah total tagihan pada
         </template>
       </BICard>
-      <BICard src="/api/pendapatan" tipeData="totalPengeluaran" color="red">
+      <BICard src="/api/pendapatan" tipeData="totalPengeluaran" color="red" listenUpdate>
         <template #title>
           Total Pengeluaran
         </template>
@@ -20,11 +20,11 @@
     </div>
 
     <BIChart src="/api/pendapatan" timeseries type="line" forecast :setChartData="setPendapatanName"
-      :chartOpt="setPendapatanCurrencyChartDataOpt()">
+      :chartOpt="setPendapatanCurrencyChartDataOpt()" listenUpdate>
       <template #title>Jumlah Pendapatan Seiring Waktu</template>
     </BIChart>
 
-    <BIChart src="/api/pendapatan" timeseries tipeData="jenis_registrasi" forecast :chartOpt="setPendapatanCurrencyChartDataOpt()" type="line">
+    <BIChart src="/api/pendapatan" timeseries tipeData="jenis_registrasi" forecast :chartOpt="setPendapatanCurrencyChartDataOpt()" type="line" listenUpdate>
       <template #title>Jumlah Pendapatan Seiring Waktu Berdasarkan jenis_registrasi</template>
     </BIChart>
 
@@ -131,7 +131,8 @@ const setPendapatanCurrencyChartDataOpt = () => {
           label: tooltipLabelCallbackCurrency({ style: 'currency', currency: 'IDR' }),
         }
       }
-    }
+    },
+    animation: false,
   }
 }
 
