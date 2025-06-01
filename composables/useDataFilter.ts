@@ -32,33 +32,33 @@ export const useDataFilter = defineStore('dataFilter', () => {
   }
 
   function clearOption(data: any) {
-    selectedDateRange.value = null;
+    selectedDateRange.value = undefined;
     if (Array.isArray(data)) {
       data.forEach(i => {
-        i.value = null;
+        i.value = undefined;
       });
     } else {
-      data.value = null;
+      data.value = undefined;
     }
     if (!filterOptionAvailable.value) {
-      lastFilter.value = null;
+      lastFilter.value = undefined;
       kabupaten.value = selectedKabupaten.value;
       tahun.value = selectedTahun.value;
       bulan.value = selectedBulan.value?.value;
       relative.value = selectedRelative.value?.value;
-      startDate.value = null;
-      endDate.value = null;
+      startDate.value = undefined;
+      endDate.value = undefined;
     }
   }
 
   function $reset() {
-    selectedKabupaten.value = null;
-    selectedTahun.value = null;
-    selectedBulan.value = null;
-    relative.value = null;
-    startDate.value = null;
-    endDate.value = null;
-    lastFilter.value = null;
+    selectedKabupaten.value = undefined;
+    selectedTahun.value = undefined;
+    selectedBulan.value = undefined;
+    relative.value = undefined;
+    startDate.value = undefined;
+    endDate.value = undefined;
+    lastFilter.value = undefined;
 
     kabupaten.value = selectedKabupaten.value;
     tahun.value = selectedTahun.value;
