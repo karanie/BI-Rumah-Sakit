@@ -3,7 +3,7 @@
     <div class="grid-item-number">
       <Card>
         <template #content>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="8.5rem"></Skeleton>
+          <Skeleton v-if="pasienBaruLamaDataIsPending && !pasienBaruCount" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Baru</div>
@@ -24,7 +24,7 @@
 
       <Card>
         <template #content>
-          <Skeleton v-if="pasienBaruLamaDataIsPending" height="8.5rem"></Skeleton>
+          <Skeleton v-if="pasienBaruLamaDataIsPending && !pasienLamaCount" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Lama</div>
@@ -46,7 +46,7 @@
 
       <Card>
         <template #content>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="8.5rem"></Skeleton>
+          <Skeleton v-if="jumlahJenisKelaminDataPending && !maleCount" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Laki-Laki</div>
@@ -67,7 +67,7 @@
 
       <Card>
         <template #content>
-          <Skeleton v-if="jumlahJenisKelaminDataPending" height="8.5rem"></Skeleton>
+          <Skeleton v-if="jumlahJenisKelaminDataPending && !femaleCount" height="8.5rem"></Skeleton>
           <template v-else>
             <div class="header_numberCard">
               <div class="title_numberCard">Pasien Perempuan</div>
@@ -90,14 +90,14 @@
 
     <div class="grid-item-chart">
       <div class="grid-item-chart__item1">
-        <BIChart src="/api/pasien" tipeData="jumlahPasienPertahun" type="bar" :setChartData="setTop10Color">
+        <BIChart src="/api/pasien" tipeData="jumlahPasienPertahun" type="bar" :setChartData="setTop10Color" listenUpdate :chartOpt="generateChartOption()">
           <template #title>Perkembangan Pasien Pertahun</template>
         </BIChart>
       </div>
 
       <div class="grid-item-chart__item2">
         <BIChart src="/api/pasien" tipeData="usia" type="pie" :chartOpt="generateChartOption('percent')"
-          :setChartData="processChartData">
+          :setChartData="processChartData" listenUpdate>
           <template #title>Distribusi Usia</template>
           <template #subtitle>
             <div style="display: flex; align-items: center;">
@@ -109,7 +109,7 @@
       </div>
 
       <div class="grid-item-chart__item4">
-        <BIChart src="/api/demografi" type="geographic">
+        <BIChart src="/api/demografi" type="geographic" listenUpdate :chartOpt="generateChartOption()">
           <template #title>Demografi Riau</template>
           <template #subtitle>
             <div style="display: flex; align-items: center;">
@@ -120,8 +120,8 @@
         </BIChart>
       </div>
 
-      <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y' }"
-        :setChartData="setTop10Color">
+      <BIChart src="/api/pasien" tipeData="pekerjaan" type="bar" :chartOpt="{ indexAxis: 'y', animation: false }"
+        :setChartData="setTop10Color" listenUpdate>
         <template #title>Top 10 Pekerjaan Pasien</template>
         <template #subtitle>
             <div style="display: flex; align-items: center;">
@@ -148,6 +148,8 @@ const {
   selectedBulan,
   lastFilter,
 } = storeToRefs(useDataFilter());
+
+const { update } = storeToRefs(useDataUpdate());
 
 const maleCount = ref(0);
 const femaleCount = ref(0);
@@ -181,6 +183,7 @@ function getBulanOrTahun(now){
 // Data Jumlah Pasien Baru/Lama
 const {
   pending: pasienBaruLamaDataIsPending,
+  refresh: refreshPasienBaruLama,
 } = await useFetch("/api/pasien", {
   server: false,
   lazy: true,
@@ -201,6 +204,7 @@ const {
 
 const {
   pending: jumlahJenisKelaminDataPending,
+  refresh: refreshJumlahJenisKelamin,
 } = await useFetch("/api/pasien", {
   server: false,
   lazy: true,
@@ -217,6 +221,11 @@ const {
     femaleCount.value = response._data.values[femaleCountIdx];
   }
 })
+
+watch(update, () => {
+  refreshJumlahJenisKelamin();
+  refreshPasienBaruLama();
+});
 
 const processChartData = data => {
   const documentStyle = getComputedStyle(document.body);
@@ -248,7 +257,6 @@ const processChartData = data => {
 };
 
 function setTop10Color(data) {
-  console.log(data.index)
   // Mencari index dari nilai tertinggi
   const maxIndex = data.values.indexOf(Math.max(...data.values));
 
@@ -268,7 +276,7 @@ function setTop10Color(data) {
         borderWidth: 1, // Lebar garis batas
         backgroundColor: backgroundColors
       }
-    ]
+    ],
   };
 }
 
