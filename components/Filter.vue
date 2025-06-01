@@ -92,15 +92,10 @@ const bulan = ref([
 ]);
 
 onMounted(async () => {
-  kabupaten.value = data.value.kabupaten;
-  tahun.value = data.value.tahun;
+  const filterOptions = await $fetch("/api/filter-options");
+  kabupaten.value = filterOptions.kabupaten;
+  tahun.value = filterOptions.tahun;
 });
-// Filtering secara default : waktu regis terakhir
-// selectedTahun.value = lastRegisDate.getFullYear();
-// // selectedTahun.value = 2020;
-// let b = lastRegisDate.getMonth() + 1;
-// let a = bulan.value.find((element) => element.value === b)?.name
-// selectedBulan.value = { name: a, value: b };
 </script>
 
 <style scoped lang="scss">
