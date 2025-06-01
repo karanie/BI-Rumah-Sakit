@@ -8,10 +8,6 @@
       <!-- Last Update Notice -->
       <div class="bi__content">
         <Message class="message" :closable="false">
-          Data terakhir di-update pada
-          <b>{{ data?.mtimeLocaltime }}</b>
-        </Message>
-        <Message class="message" :closable="false">
           Waktu registrasi pasien terakhir dari tanggal
           <b>{{ data?.waktuRegistrasiTerakhir }}</b>
         </Message>
@@ -54,8 +50,6 @@ const {
     selectedBulan,
     lastFilter,
 } = storeToRefs(useDataFilter());
-
-
 
 function getBulanOrTahun(){
   if (!tahun.value){
