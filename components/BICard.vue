@@ -1,22 +1,19 @@
 <template>
   <Card class="card">
     <template #title>
-      <template v-if='status == "success"'>
-        <span ><slot name="title"/></span>
-      </template>
-      <Skeleton v-else height="1.25rem" />
+      <span ><slot name="title"/></span>
     </template>
     <template #subtitle>
-      <span v-if='status == "success"'> <slot name="subtitle"/> {{ bulanTahunFilter }}</span>
-      <Skeleton v-else height="1rem" />
+      <Skeleton v-if='status == "pending" && !bulanTahunFilter' height="1rem" />
+      <span v-else> <slot name="subtitle"/> {{ bulanTahunFilter }}</span>
     </template>
     <template #content>
-      <template v-if='status == "success"'>
+      <Skeleton v-if='status == "pending" && !data' height="2rem" />
+      <template v-else>
         <b v-if='color == "green"' class="big-number--positive">Rp{{ getData }}</b>
         <b v-if='color == "red"' class="big-number--negative">Rp{{ getData }}</b>
         <b v-if='!color' class="big-number">Rp{{ getData }}</b>
       </template>
-      <Skeleton v-else height="2rem" />
     </template>
   </Card>
 </template>
@@ -26,6 +23,7 @@ const props = defineProps<{
   src: string,
   tipeData?: string,
   color?: string,
+  listenUpdate?: boolean,
 }>();
 
 const {
@@ -64,6 +62,13 @@ const bulanTahunFilter = ref(getBulanTahunFilter());
 watch(lastFilter, () => {
   refresh()
   bulanTahunFilter.value = getBulanTahunFilter()
+});
+
+const { update: newUpdate } = storeToRefs(useDataUpdate());
+watch(newUpdate, () => {
+  if (props.listenUpdate) {
+    refresh();
+  }
 });
 
 function getBulanTahunFilter() {
