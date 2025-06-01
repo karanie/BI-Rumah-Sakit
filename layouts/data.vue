@@ -15,19 +15,19 @@
         <!-- Card -->
         <div class="container">
       <div class="container__card">
-        <BIClickableCard link="/data/pasien" src="/api/pasien" tipeData="jumlahPasien">
+        <BIClickableCard link="/data/pasien" src="/api/pasien" tipeData="jumlahPasien" listenUpdate>
           <template #title>Total Pasien</template>
           <template #subtitle>{{ getBulanOrTahun() }}</template>
         </BIClickableCard>
       </div>
       <div class="container__card">
-        <BIClickableCard link="/data/kunjungan" src="/api/kunjungan" tipeData="jumlahKunjungan">
+        <BIClickableCard link="/data/kunjungan" src="/api/kunjungan" tipeData="jumlahKunjungan" listenUpdate>
           <template #title>Total Kunjungan</template>
           <template #subtitle>{{ getBulanOrTahun() }}</template>
         </BIClickableCard>
       </div>
       <div class="container__card">
-        <BIClickableCard link="/data/pendapatan" src="/api/pendapatan" tipeData="profit" currency>
+        <BIClickableCard link="/data/pendapatan" src="/api/pendapatan" tipeData="profit" currency listenUpdate>
           <template #title>Total Profit</template>
           <template #subtitle>{{ getBulanOrTahun() }} </template>
         </BIClickableCard>
