@@ -53,6 +53,7 @@ export default defineNuxtPlugin(async () => {
     host: config.biDatabaseAddr,
     database: config.biDatabaseName,
     password: config.biDatabasePassword,
+    port: config.biDatabasePort,
   });
   pgclient.connect();
 

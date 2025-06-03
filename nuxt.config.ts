@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     biApiBase: "http://localhost:5000",
     biDatabaseAddr: "localhost",
+    biDatabasePort: 5432,
     biDatabaseName: "birumahsakit",
     biDatabaseUser: "birumahsakit",
     biDatabasePassword: "birumahsakit",
