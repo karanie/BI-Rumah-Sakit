@@ -8,7 +8,12 @@ export const useDataUpdate = defineStore('dataUpdate', () => {
   }
   ws.onerror = e => console.log(e)
 
+  function close() {
+    ws.close()
+  }
+
   return {
     update,
+    close
   }
 });

@@ -50,6 +50,7 @@
 <script setup lang="ts">
 const { status, data, signOut } = useAuth();
 
+const { close } = useDataUpdate();
 const profileOverlayLayout = ref();
 const profileMenu = [
   {
@@ -58,7 +59,10 @@ const profileMenu = [
   },
   {
     label: "Logout",
-    command: profileMenuClickWrapper(() => signOut({ callbackUrl: "/login" })),
+    command: profileMenuClickWrapper(() => {
+      signOut({ callbackUrl: "/login" });
+      close();
+    }),
   },
 ];
 
