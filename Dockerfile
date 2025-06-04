@@ -2,7 +2,7 @@ FROM alpine AS base
 WORKDIR /code
 RUN apk add npm
 ENV NUXT_TELEMETRY_DISABLED=1
-COPY package.json package-lock.json .
+COPY package.json package-lock.json ./
 RUN npm install
 
 FROM base AS dev
@@ -17,5 +17,5 @@ RUN npm run build
 
 FROM build AS production
 WORKDIR /code
-COPY --from=build /code/.output .
+COPY --from=build /code/.output ./
 CMD ["node", "server/index.mjs"]
