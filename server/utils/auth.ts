@@ -1,33 +1,15 @@
-import jwt from "jsonwebtoken";
-
-const config = useRuntimeConfig();
-
 export default function(role?: string) {
-  return defineEventHandler((event) => {
-    const ipAddr = getRequestIP(event);
-    const url = getRequestURL(event);
-    console.log(`Auth checking from ${ipAddr} on ${url}`);
+  return defineEventHandler(async (event) => {
+    const session = await getUserSession(event)
 
-    const cookiepookiedookie = parseCookies(event)
-    if (!cookiepookiedookie['auth.token']) {
+    if (!session.user) {
       throw createError({
         statusCode: 403,
         statusMessage: "Unauthorized",
       });
     }
 
-    const token = cookiepookiedookie['auth.token'];
-    try {
-      const decodedToken = jwt.verify(token, config.tokenSecret);
-      if (role) {
-        if (role !== (decodedToken as any).role) {
-          throw createError({
-            statusCode: 403,
-            statusMessage: "Unauthorized",
-          });
-        }
-      }
-    } catch(err) {
+    if (role && session.user?.role != role) {
       throw createError({
         statusCode: 403,
         statusMessage: "Unauthorized",
