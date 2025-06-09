@@ -1,7 +1,8 @@
 <template>
   <div class="form">
     <div class="form__message">
-      Silahkan login dengan username dan password anda.
+      Silahkan masukkan password lama dan password baru yang ingin digunakan.
+      Anda akan harus login kembali setelah berhasil mengganti password.
     </div>
     <form @submit.prevent="changePassword" class="form__content">
       <FloatLabel>
