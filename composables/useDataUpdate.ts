@@ -1,7 +1,15 @@
 export const useDataUpdate = defineStore('dataUpdate', () => {
-  const update = ref()
+  if (!import.meta.client) {
+    return {
+      update: 0,
+      close: () => {},
+    };
+  }
 
-  const ws = new WebSocket("/_ws");
+  const update = ref()
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  const ws = new WebSocket(`${protocol}//${host}/_ws/`);
   ws.onmessage = e => {
     console.log(e.data);
     update.value = Date.now()
