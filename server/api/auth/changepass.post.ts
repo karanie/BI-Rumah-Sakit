@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
         body.username,
       ]
     );
+    await clearUserSession(event);
     return "Success";
   } catch (err) {
     console.log(err);
