@@ -15,12 +15,12 @@
           <NuxtLink to="/compare">
             <Button label="Compare" text plain />
           </NuxtLink>
-          <NuxtLink v-if="status == 'unauthenticated'" to="/login">
+          <NuxtLink v-if="!loggedIn" to="/login">
             <Button text plain>
               <template #icon><Icon name="material-symbols:login"/></template>
             </Button>
           </NuxtLink>
-          <Button v-if="status != 'unauthenticated'" @click="e => profileOverlayLayout.toggle(e)" text plain>
+          <Button v-if="loggedIn" @click="e => profileOverlayLayout.toggle(e)" text plain>
             <template #icon><Icon name="material-symbols:person"/></template>
           </Button>
           <OverlayPanel ref="profileOverlayLayout">
@@ -29,8 +29,8 @@
                 <Icon name="material-symbols:account-circle" size="40px" />
               </div>
               <div class="profile__name">
-                <span class="profile__name__fullname">{{ data?.nama_lengkap }}</span><br>
-                <span class="profile__name__username">{{ data?.username }}</span>
+                <span class="profile__name__fullname">{{ user?.nama_lengkap }}</span><br>
+                <span class="profile__name__username">{{ user?.username }}</span>
               </div>
             </div>
             <Divider />
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-const { status, data, signOut } = useAuth();
+const { loggedIn, user, fetch } = useUserSession()
 
 const { close } = useDataUpdate();
 const profileOverlayLayout = ref();
@@ -59,8 +59,12 @@ const profileMenu = [
   },
   {
     label: "Logout",
-    command: profileMenuClickWrapper(() => {
-      signOut({ callbackUrl: "/login" });
+    command: profileMenuClickWrapper(async () => {
+      await $fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      await navigateTo("/login");
+      await fetch();
       close();
     }),
   },
