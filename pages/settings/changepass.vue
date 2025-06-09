@@ -25,7 +25,7 @@ definePageMeta({
   layout: "loginregis",
 });
 
-const { user } = useUserSession();
+const { user, fetch } = useUserSession();
 const oldPassword = ref();
 const newPassword = ref();
 const wrongPassword = ref(false);
@@ -44,7 +44,8 @@ const { execute } = await useFetch('/api/auth/changepass', {
   onResponse(foobar) {
     if (foobar.response.status >= 400)
       return;
-    navigateTo("/settings");
+    fetch();
+    navigateTo("/login");
   },
   onResponseError(foobar) {
     wrongPassword.value = true;
