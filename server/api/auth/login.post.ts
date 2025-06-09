@@ -1,8 +1,5 @@
 import pgclient from "@/utils/db.server";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-const config = useRuntimeConfig();
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -25,16 +22,17 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const token = jwt.sign({
-    user_id: res.rows[0].user_id,
-    username: res.rows[0].username,
-    nama_lengkap: res.rows[0].nama_lengkap,
-    jabatan: res.rows[0].jabatan,
-    role: res.rows[0].role,
-  }, config.tokenSecret);
+  const session = await setUserSession(event, {
+    user: {
+      user_id: res.rows[0].user_id,
+      username: res.rows[0].username,
+      nama_lengkap: res.rows[0].nama_lengkap,
+      jabatan: res.rows[0].jabatan,
+      role: res.rows[0].role,
+    },
+  });
 
   return {
     message: "Success",
-    token: token,
   };
 });
