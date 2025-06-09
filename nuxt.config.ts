@@ -22,29 +22,11 @@ export default defineNuxtConfig({
     'nuxt-primevue',
     'nuxt-icon',
     '@pinia/nuxt',
-    '@sidebase/nuxt-auth',
     'nuxt3-leaflet',
+    'nuxt-auth-utils'
   ],
   primevue: {
     /* option */
-  },
-  auth: {
-    globalAppMiddleware: true,
-    provider: {
-      type: 'local',
-      session: {
-        dataType: {
-          user_id: 'number',
-          username: 'string',
-          nama_lengkap: 'string',
-          jabatan: 'string',
-          role: 'admin | non_admin',
-        }
-      },
-      token: {
-        maxAgeInSeconds: 60 * 60 * 6,
-      },
-    }
   },
   css: [
     'primevue/resources/themes/aura-light-blue/theme.css',
