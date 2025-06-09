@@ -24,7 +24,7 @@ definePageMeta({
   layout: "settings",
 });
 
-const { status, data, signOut } = useAuth();
+const { user } = useUserSession();
 
 const settings = ref([
   {
@@ -41,7 +41,7 @@ const settings = ref([
   },
 ]);
 const getSettings = computed(() => {
-  return settings.value.filter((i: any) => i.roles.some((role: string) => role == data.value?.role));
+  return settings.value.filter((i: any) => i.roles.some((role: string) => role == user.value?.role));
 });
 </script>
 
