@@ -40,7 +40,7 @@ async function login() {
       }
     });
     await fetch();
-    await navigateTo('/');
+    await navigateTo('/data/pasien');
   } catch (err) {
     wrongUsernameOrPassword.value = true;
   }
