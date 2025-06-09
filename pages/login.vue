@@ -23,27 +23,25 @@
 <script setup lang="ts">
 definePageMeta({
   layout: "loginregis",
-  auth: {
-    unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/'
-  },
 });
 
-const { signIn } = useAuth();
+const { fetch } = useUserSession();
 const username = ref();
 const password = ref();
 const wrongUsernameOrPassword = ref(false);
 
 async function login() {
   try {
-    await signIn({
-      username: username.value,
-      password: password.value,
-    }, {
-      callbackUrl: "/",
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        username: username.value,
+        password: password.value,
+      }
     });
+    await fetch();
+    await navigateTo('/');
   } catch (err) {
-    console.log(err);
     wrongUsernameOrPassword.value = true;
   }
 }
