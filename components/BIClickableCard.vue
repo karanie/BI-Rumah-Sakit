@@ -59,6 +59,8 @@ const { data, status, refresh, error } = useFetch(props.src, {
 });
 
 const getData = computed(() => {
+  if (!import.meta.client)
+    return
   if (props.currency) {
     return new Intl.NumberFormat(document.documentElement.lang, { style: 'currency', currency: 'IDR' }).format((data.value as any)?.value);
   }
