@@ -25,7 +25,7 @@ definePageMeta({
   layout: "loginregis",
 });
 
-const { data } = useAuth();
+const { user } = useUserSession();
 const oldPassword = ref();
 const newPassword = ref();
 const wrongPassword = ref(false);
@@ -33,7 +33,7 @@ const wrongPassword = ref(false);
 const { execute } = await useFetch('/api/auth/changepass', {
   method: "POST",
   body: {
-    username: data.value?.username,
+    username: user.value?.username,
     oldPassword: oldPassword,
     newPassword: newPassword,
   },
