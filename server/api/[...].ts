@@ -6,6 +6,11 @@ export default defineEventHandler({
     const runtimeConfig = useRuntimeConfig();
     const proxyUrl = runtimeConfig.biApiBase;
     const target = joinURL(proxyUrl, event.path);
-    return proxyRequest(event, target);
+    const headers = runtimeConfig.biApiKey ? {
+      "X-Api-Key": runtimeConfig.biApiKey,
+    } : {}
+    return proxyRequest(event, target, {
+      headers: headers
+    });
   }
 });
