@@ -25,10 +25,16 @@ definePageMeta({
   layout: "loginregis",
 });
 
-const { fetch } = useUserSession();
+const { loggedIn, fetch } = useUserSession();
 const username = ref();
 const password = ref();
 const wrongUsernameOrPassword = ref(false);
+
+onMounted(async () => {
+  await fetch();
+  if (loggedIn)
+    navigateTo("/data/kunjungan");
+});
 
 async function login() {
   try {
