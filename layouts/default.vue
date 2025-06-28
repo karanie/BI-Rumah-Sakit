@@ -12,9 +12,6 @@
           <NuxtLink to="/data/pasien">
             <Button label="Dashboard" text plain />
           </NuxtLink>
-          <NuxtLink to="/compare">
-            <Button label="Compare" text plain />
-          </NuxtLink>
           <NuxtLink v-if="!loggedIn" to="/login">
             <Button text plain>
               <template #icon><Icon name="material-symbols:login"/></template>
