@@ -118,13 +118,17 @@ const displayChart = computed(() => status.value == 'success' || (status.value !
 watch(data, () => {
   if (!data.value)
     return;
-  chartData.value = setData(data.value);
+  chartData.value = setData(data.value, forecastData.value);
 });
 
 watch(forecastData, () => {
   if (!forecastData.value && !data.value)
     return;
   chartData.value = setData(data.value, forecastData.value);
+});
+
+watch(lastFilter, () => {
+  forecastData.value = null;
 });
 
 const { update: newUpdate } = storeToRefs(useDataUpdate());
